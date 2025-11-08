@@ -1,0 +1,74 @@
+
+<div class="flex min-h-screen bg-gray-100">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-md flex flex-col">
+    <div class="h-16 flex items-center justify-center border-b">
+      <h1 class="text-xl font-bold text-blue-600">SIGIV</h1>
+    </div>
+
+    <nav class="flex-1 px-4 py-6 space-y-2">
+      <a routerLink="dashboard" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+        class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+        📊 Dashboard
+      </a>
+
+      <a routerLink="ecommerce" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+        class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+        🛒 eCommerce
+      </a>
+
+      <a routerLink="analytics" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+        class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+        📈 Analytics
+      </a>
+
+      <a *ngIf="isEmpresa" routerLink="users" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+        class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+        👥 Usuarios
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col">
+    <!-- Topbar -->
+    <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+      <h2 class="text-lg font-semibold">{{ getPanelTitle() }}</h2>
+      <div class="flex items-center space-x-3">
+    <div class="flex flex-col items-end text-sm">
+  <span class="text-gray-700 font-medium">{{ getUserName() }}</span>
+  <span class="text-green-600 font-semibold">
+    {{ totalDelDia | currency:'COP':'symbol-narrow':'1.0-0' }}
+  </span>
+</div>
+
+        <button (click)="logout()" class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition">
+          Salir
+        </button>
+      </div>
+    </header>
+
+    <!-- Router outlet con loader -->
+    <main class="flex-1 p-6 overflow-y-auto relative">
+      <div
+        *ngIf="internalLoading"
+        class="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn"
+        style="animation: fadeIn 0.15s ease-in-out;"
+      >
+        <div class="flex flex-col items-center space-y-3">
+          <!-- Spinner -->
+          <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+
+          <!-- Texto -->
+          <p class="text-sm text-gray-600 font-medium">Cargando vista...</p>
+        </div>
+      </div>
+
+      <div [class.opacity-50]="internalLoading" [class.pointer-events-none]="internalLoading" class="transition-opacity duration-200">
+        <router-outlet></router-outlet>
+      </div>
+
+    </main>
+  </div>
+</div>

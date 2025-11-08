@@ -1,0 +1,89 @@
+<div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
+  <!-- Loader -->
+  <div *ngIf="loading" class="flex justify-center items-center py-6 text-blue-600 dark:text-blue-400">
+    <svg class="animate-spin h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+    </svg>
+    Cargando...
+  </div>
+
+  <!-- Tabla -->
+  <table *ngIf="!loading" class="min-w-full border-collapse">
+    <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+      <tr>
+        <th *ngFor="let col of columns" class="px-6 py-3 text-left text-sm font-medium">
+          {{ col.header }}
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of data" class="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+        <td *ngFor="let col of columns" class="px-6 py-3 text-sm text-gray-800 dark:text-gray-100">
+
+          <!-- Texto normal -->
+          <ng-container *ngIf="col.type === 'text' || !col.type">
+            {{ item[col.field] }}
+          </ng-container>
+
+          <!-- Estado -->
+          <ng-container *ngIf="col.type === 'status'">
+            <span
+              class="px-3 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="{
+                'bg-green-100 text-green-700': item[col.field] === 'Activo',
+                'bg-red-100 text-red-700': item[col.field] !== 'Activo'
+              }"
+            >
+              {{ item[col.field] }}
+            </span>
+          </ng-container>
+
+          <!-- Acciones -->
+          <ng-container *ngIf="col.type === 'actions'">
+            <button
+              class="text-blue-600 hover:text-blue-800 font-medium mr-3"
+              (click)="actionClick.emit({ action: 'edit', row: item })">
+              Editar
+            </button>
+            <button
+              class="text-red-600 hover:text-red-800 font-medium"
+              (click)="actionClick.emit({ action: 'delete', row: item })">
+              Eliminar
+            </button>
+          </ng-container>
+        </td>
+      </tr>
+
+      <tr *ngIf="data.length === 0">
+        <td [attr.colspan]="columns.length" class="text-center py-4 text-gray-500 dark:text-gray-400">
+          No hay datos disponibles.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+    <button
+      (click)="previous.emit()"
+      [disabled]="currentPage === 0 || loading"
+      class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+    >
+      Anterior
+    </button>
+
+    <p class="text-sm text-gray-600 dark:text-gray-300">
+      Página {{ currentPage + 1 }} de {{ totalPages }}
+    </p>
+
+    <button
+      (click)="next.emit()"
+      [disabled]="currentPage >= totalPages - 1 || loading"
+      class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

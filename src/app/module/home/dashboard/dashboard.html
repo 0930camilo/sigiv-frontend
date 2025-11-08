@@ -1,0 +1,67 @@
+<div class="space-y-8">
+  <h1 class="text-2xl font-semibold text-gray-800">Resumen general</h1>
+
+  <!-- 🔹 Filtro por rango de fechas -->
+  <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex flex-col md:flex-row gap-4 items-center">
+    <div class="flex flex-col">
+      <label for="fechaInicio" class="text-sm text-gray-600">Fecha inicio</label>
+      <input
+        id="fechaInicio"
+        type="date"
+        [(ngModel)]="fechaInicio"
+        class="border border-gray-300 rounded-lg px-3 py-2"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <label for="fechaFin" class="text-sm text-gray-600">Fecha fin</label>
+      <input
+        id="fechaFin"
+        type="date"
+        [(ngModel)]="fechaFin"
+        class="border border-gray-300 rounded-lg px-3 py-2"
+      />
+    </div>
+
+    <button
+      (click)="filtrarVentasPorFechas()"
+      class="bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+    >
+      Filtrar
+    </button>
+  </div>
+
+  <!-- 🔹 Empresa -->
+  <div *ngIf="isEmpresa" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <p class="text-gray-500">Usuarios activos</p>
+      <h2 class="text-3xl font-bold text-blue-600 mt-2">{{ usuariosActivos }}</h2>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <p class="text-gray-500">Ventas del rango seleccionado</p>
+      <h2 class="text-3xl font-bold text-green-600 mt-2">
+        {{ ventasDelMes | currency:'COP':'symbol-narrow':'1.0-0' }}
+      </h2>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <p class="text-gray-500">Ganancia total</p>
+      <h2 class="text-3xl font-bold text-purple-600 mt-2">
+        {{ gananciaTotal | currency:'COP':'symbol-narrow':'1.0-0' }}
+      </h2>
+    </div>
+  </div>
+
+  <!-- 🔹 Usuario -->
+  <div *ngIf="isUsuario" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <p class="text-gray-500">Ventas del rango seleccionado</p>
+      <h2 class="text-3xl font-bold text-green-600 mt-2">
+        {{ ventasDelMes | currency:'COP':'symbol-narrow':'1.0-0' }}
+      </h2>
+    </div>
+
+
+  </div>
+</div>
