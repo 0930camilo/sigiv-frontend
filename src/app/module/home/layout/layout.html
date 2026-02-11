@@ -27,6 +27,36 @@
         class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
         👥 Usuarios
       </a>
+
+      <a *ngIf="isEmpresa"
+   routerLink="proveedores"
+   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+  🚚 Proveedores
+</a>
+
+<a *ngIf="isEmpresa"
+   routerLink="categorias"
+   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+  🗂️ Categorías
+</a>
+<a *ngIf="isEmpresa"
+   routerLink="productos"
+   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+  📦 Productos
+</a>
+
+
+<a *ngIf="isEmpresa"
+   routerLink="ventas"
+   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+  🛒 Ventas
+</a>
+
+
     </nav>
   </aside>
 

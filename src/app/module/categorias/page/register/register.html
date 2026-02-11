@@ -1,0 +1,45 @@
+<button
+  (click)="abrirModal()"
+  class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow">
+  Crear Categoría
+</button>
+
+<div *ngIf="mostrarModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg w-full max-w-md p-6 relative">
+    <h3 class="text-lg font-semibold mb-4">Crear nueva categoría</h3>
+
+    <form [formGroup]="formCategoria" (ngSubmit)="crearCategoria()">
+
+      <div class="space-y-4">
+        <input
+          formControlName="nombre"
+          type="text"
+          placeholder="Nombre"
+          class="w-full border rounded-lg px-3 py-2"
+        />
+
+        <select formControlName="estado" class="w-full border rounded-lg px-3 py-2">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-3">
+        <button type="button" (click)="cerrarModal()"
+          class="px-4 py-2 bg-gray-300 rounded-lg">
+          Cancelar
+        </button>
+
+        <button type="submit"
+          [disabled]="formCategoria.invalid || creandoCategoria"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50">
+          {{ creandoCategoria ? 'Creando...' : 'Guardar' }}
+        </button>
+      </div>
+
+    </form>
+
+    <button (click)="cerrarModal()" class="absolute top-3 right-3">✕</button>
+  </div>
+</div>

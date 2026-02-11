@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  sigiv-backend:
+    image: sigiv-backend
+    container_name: sigiv-backend
+    ports:
+      - "8081:8080"
+    networks:
+      - sigiv-net
+
+  sigiv-frontend:
+    image: sigiv-frontend
+    container_name: sigiv-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - sigiv-backend
+    networks:
+      - sigiv-net
+
+networks:
+  sigiv-net:

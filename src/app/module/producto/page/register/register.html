@@ -1,0 +1,109 @@
+<button
+  (click)="abrirModal()"
+  class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow">
+  Crear Producto
+</button>
+
+<div *ngIf="mostrarModal"
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+
+  <div class="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative">
+
+    <h3 class="text-lg font-semibold mb-6">Crear nuevo producto</h3>
+
+    <form [formGroup]="formProducto" (ngSubmit)="crearProducto()" class="space-y-3">
+
+      <!-- NOMBRE -->
+      <div class="flex items-center gap-3">
+        <label class="w-28 font-medium">Nombre</label>
+        <input type="text"
+               formControlName="nombre"
+               class="flex-1 border rounded-lg px-3 py-2"
+               placeholder="Nombre"/>
+      </div>
+
+      <!-- DESCRIPCIÓN -->
+      <div class="flex items-start gap-3">
+        <label class="w-28 font-medium">Descripción</label>
+        <textarea formControlName="descripcion"
+                  class="flex-1 border rounded-lg px-3 py-2"
+                  placeholder="Descripción"></textarea>
+      </div>
+
+      <!-- CANTIDAD -->
+      <div class="flex items-center gap-3">
+        <label class="w-28 font-medium">Cantidad</label>
+        <input type="number"
+               formControlName="cantidad"
+               class="flex-1 border rounded-lg px-3 py-2"/>
+      </div>
+
+      <!-- PRECIO COMPRA -->
+      <div class="flex items-center gap-3">
+        <label class="w-28 font-medium">Precio Compra</label>
+        <input type="number"
+               formControlName="precioCompra"
+               class="flex-1 border rounded-lg px-3 py-2"/>
+      </div>
+
+      <!-- PRECIO VENTA -->
+      <div class="flex items-center gap-3">
+        <label class="w-28 font-medium">Precio Venta</label>
+        <input type="number"
+               formControlName="precio"
+               class="flex-1 border rounded-lg px-3 py-2"/>
+      </div>
+
+      <!-- ESTADO -->
+      <div class="flex items-center gap-3">
+        <label class="w-28 font-medium">Estado</label>
+        <select formControlName="estado"
+                class="flex-1 border rounded-lg px-3 py-2">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+
+      <!-- CATEGORÍA -->
+      <div class="flex items-center gap-3">
+        <label class="w-28 font-medium">Categoría</label>
+        <select formControlName="categoriaId"
+                class="flex-1 border rounded-lg px-3 py-2">
+          <option value="">Seleccione</option>
+          <option *ngFor="let c of categorias" [value]="c.idCategoria">
+            {{ c.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- PROVEEDOR -->
+      <div class="flex items-center gap-3">
+        <label class="w-28 font-medium">Proveedor</label>
+        <select formControlName="proveedorId"
+                class="flex-1 border rounded-lg px-3 py-2">
+          <option value="">Seleccione</option>
+          <option *ngFor="let p of proveedores" [value]="p.idProveedor">
+            {{ p.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- BOTONES -->
+      <div class="mt-6 flex justify-end gap-3">
+        <button type="button"
+                (click)="cerrarModal()"
+                class="px-4 py-2 bg-gray-300 rounded-lg">
+          Cancelar
+        </button>
+
+        <button type="submit"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+          {{ creandoProducto ? 'Creando...' : 'Guardar' }}
+        </button>
+      </div>
+
+    </form>
+
+    <button (click)="cerrarModal()" class="absolute top-3 right-3 text-gray-500">✕</button>
+  </div>
+</div>

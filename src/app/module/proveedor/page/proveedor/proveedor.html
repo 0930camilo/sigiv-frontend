@@ -1,0 +1,43 @@
+<div class="p-4 sm:p-6">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Proveedores de la Empresa</h2>
+
+    <app-register-proveedor
+      [empresaId]="empresaId"
+      (proveedorCreado)="onProveedorCreado($event)">
+    </app-register-proveedor>
+  </div>
+
+  <!-- FILTROS -->
+  <app-filtros-proveedor
+    (filtrarNombre)="filtrarPorNombre($event)"
+    (filtrarEstado)="filtrarPorEstado($event)">
+  </app-filtros-proveedor>
+
+  <app-reusable-table
+    [data]="proveedores"
+    [columns]="columns"
+    [loading]="loading"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (next)="getProveedores(currentPage + 1)"
+    (previous)="getProveedores(currentPage - 1)"
+    (actionClick)="onAction($event)">
+  </app-reusable-table>
+
+  <!-- MODAL EDITAR -->
+  <app-edit-proveedor
+    *ngIf="proveedorSeleccionado"
+    [proveedor]="proveedorSeleccionado"
+    (proveedorActualizado)="onProveedorActualizado($event)"
+    (cerrar)="proveedorSeleccionado = null">
+  </app-edit-proveedor>
+
+  <!-- MODAL ELIMINAR -->
+  <app-delete-proveedor
+    *ngIf="proveedorAEliminar"
+    [proveedor]="proveedorAEliminar"
+    (eliminado)="onProveedorEliminado($event)"
+    (cerrar)="proveedorAEliminar = null">
+  </app-delete-proveedor>
+</div>

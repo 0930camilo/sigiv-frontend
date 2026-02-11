@@ -1,0 +1,49 @@
+<div class="p-4 sm:p-6">
+
+  <!-- HEADER -->
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-800">
+      Productos de la Empresa
+    </h2>
+
+    <app-register-producto
+      (productoCreado)="onProductoCreado($event)">
+    </app-register-producto>
+  </div>
+
+<app-filtros-producto
+  [empresaId]="empresaId!"
+  (filtrarNombre)="filtrarPorNombre($event)"
+  (filtrarEstado)="filtrarPorEstado($event)"
+  (filtrarCategoria)="filtrarPorCategoria($event)"
+  (filtrarProveedor)="filtrarPorProveedor($event)">
+</app-filtros-producto>
+
+
+  <!-- TABLA -->
+  <app-reusable-table
+    [data]="productos"
+    [columns]="columns"
+    [loading]="loading"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (next)="getProductos(currentPage + 1)"
+    (previous)="getProductos(currentPage - 1)"
+    (actionClick)="onAction($event)">
+  </app-reusable-table>
+
+   <app-edit-producto
+    *ngIf="productoSeleccionado"
+    [producto]="productoSeleccionado"
+    (productoActualizado)="onProductoActualizado($event)"
+    (cerrar)="productoSeleccionado = null">
+  </app-edit-producto>
+
+  <!-- MODAL ELIMINAR -->
+  <app-delete-producto
+    *ngIf="productoAEliminar"
+    [producto]="productoAEliminar"
+    (eliminado)="onProductoEliminado($event)"
+    (cerrar)="productoAEliminar = null">
+  </app-delete-producto>
+</div>

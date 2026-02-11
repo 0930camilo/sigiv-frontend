@@ -65,4 +65,40 @@ export class EmpresaService {
       })
     );
   }
+
+  // ===============================
+// 🏭 PRODUCTOS POR PROVEEDOR
+// ===============================
+getProductosByProveedor(
+  idEmpresa: number,
+  idProveedor: number
+): Observable<any> {
+
+  const headers = this.headerUtil.getAuthHeaders();
+  const url = `${environment.empresasApi}/${idEmpresa}/productos/proveedor/${idProveedor}`;
+
+  return this.http.get<any>(url, { headers }).pipe(
+    map(res => res),
+    catchError(err => {
+      console.error('❌ Error al listar productos por proveedor:', err);
+      return throwError(() => err);
+    })
+  );
+}
+getProductosByCategoria(
+  idEmpresa: number,
+  idCategoria: number
+): Observable<any> {
+
+  const headers = this.headerUtil.getAuthHeaders();
+  const url = `${environment.empresasApi}/${idEmpresa}/productos/categoria/${idCategoria}`;
+  return this.http.get<any>(url, { headers }).pipe(
+    map(res => res),
+    catchError(err => {
+      console.error('❌ Error al listar productos por categoría:', err);
+      return throwError(() => err);
+    })
+  );
+}
+
 }

@@ -1,0 +1,18 @@
+<div class="p-4 sm:p-6">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+      🛒 Ventas de la Empresa
+    </h2>
+  </div>
+
+ <app-reusable-table
+  [data]="ventas"
+  [columns]="columns"
+  [loading]="loading"
+  [currentPage]="currentPage"
+  [totalPages]="totalPages"
+  (next)="getVentas(currentPage + 1)"
+  (previous)="getVentas(currentPage - 1)">
+</app-reusable-table>
+
+</div>
