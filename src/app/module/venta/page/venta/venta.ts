@@ -8,7 +8,7 @@ import { AuthService } from '../../../auth/service/auth-service';
 import { ReusableTable } from '../../../../components/reusable-table/reusable-table';
 import { VentaService } from '../../service/venta-service';
 import { Venta } from '../../model/venta.model';
-import { FiltrosVentasComponent } from "../filtro/filtro";
+import { FiltrosVentasComponent } from '../filtro/filtro';
 
 @Component({
   selector: 'app-venta',
@@ -31,9 +31,11 @@ export class VentaComponent implements OnInit {
 
   empresaId!: number;
   pageSize = 10;
-filtroId: number | null = null;
 
+  // 🔥 filtro
+  filtroId: number | null = null;
 
+  // 🔥 detalle
   ventaSeleccionada: Venta | null = null;
   mostrarDetalle = false;
 
@@ -42,11 +44,13 @@ filtroId: number | null = null;
     { field: 'fecha', header: 'Fecha' },
     { field: 'nombreCliente', header: 'Cliente' },
     { field: 'telefonoCliente', header: 'Teléfono' },
-    { field: 'empresaNombre', header: 'Empresa' }, // ✅ nueva columna
+    { field: 'empresaNombre', header: 'Empresa' },
     { field: 'efectivo', header: 'Efectivo', type: 'number' },
     { field: 'cambio', header: 'Cambio', type: 'number' },
     { field: 'total', header: 'Total', type: 'number' },
     { field: 'nombreUsuario', header: 'Vendedor' },
+
+    // 👁 VER DETALLE
     {
       field: 'acciones',
       header: 'Detalle',
@@ -54,6 +58,8 @@ filtroId: number | null = null;
       icon: 'fa-solid fa-eye text-green-600',
       action: (row: Venta) => this.verDetalle(row)
     },
+
+    // 📄 DESCARGAR FACTURA
     {
       field: 'factura',
       header: 'Factura',
@@ -68,13 +74,27 @@ filtroId: number | null = null;
     private authService: AuthService
   ) {}
 
+  // ===============================
+  // INIT
+  // ===============================
   ngOnInit(): void {
-    this.empresaId = Number(this.authService.getEmpresaId());
+    const empresa = this.authService.getEmpresaId();
+
+    if (!empresa) {
+      console.error('Empresa no encontrada');
+      return;
+    }
+
+    this.empresaId = Number(empresa);
     this.getVentas(0);
   }
 
+  // ===============================
+  // OBTENER VENTAS
+  // ===============================
   getVentas(page: number = 0): void {
 
+    // 🚫 evitar páginas inválidas
     if (page < 0 || (this.totalPages && page >= this.totalPages)) {
       return;
     }
@@ -82,36 +102,60 @@ filtroId: number | null = null;
     this.loading = true;
 
     this.ventaService
-      .getVentasByEmpresa(this.empresaId, page, this.pageSize, this.filtroId)
+      .getVentasByEmpresa(
+        this.empresaId,
+        page,
+        this.pageSize,
+        this.filtroId
+      )
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (res) => {
-          this.ventas = res.data.ventas;
-          this.currentPage = res.data.currentPage;
-          this.totalPages = res.data.totalPages;
+          // 🔥 CORRECTO (según tu backend)
+          this.ventas = res.data?.ventas ?? [];
+          this.currentPage = res.data?.currentPage ?? 0;
+          this.totalPages = res.data?.totalPages ?? 0;
         },
-        error: (err) => console.error('Error cargando ventas:', err)
+        error: (err) => {
+          console.error('Error cargando ventas:', err);
+        }
       });
   }
 
- filtrarPorId(id: number | null) {
+  // ===============================
+  // FILTRO POR ID 🔥
+  // ===============================
+  filtrarPorId(id: number | null): void {
     this.filtroId = id;
-    this.getVentas(0);
+    this.getVentas(0); // 🔥 reinicia paginación
   }
 
+  // ===============================
+  // VER DETALLE
+  // ===============================
   verDetalle(venta: Venta): void {
     this.ventaSeleccionada = venta;
     this.mostrarDetalle = true;
   }
 
-  descargarFactura(id: number) {
-    this.ventaService.descargarFactura(id).subscribe(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `factura-${id}.pdf`;
-      a.click();
-      window.URL.revokeObjectURL(url);
+  // ===============================
+  // DESCARGAR FACTURA PDF
+  // ===============================
+  descargarFactura(id: number): void {
+    this.ventaService.descargarFactura(id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `factura-${id}.pdf`;
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error descargando factura:', err);
+      }
     });
   }
 }

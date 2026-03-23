@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
-import { UsuarioCreateRequest, UsuarioCreateResponse, UsuariosResponse } from '../model/user.model';
+import { UsuarioCreateRequest, UsuarioCreateResponse, UsuarioDeleteResponse, UsuariosResponse, UsuarioUpdateRequest, UsuarioUpdateResponse } from '../model/user.model';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AuthService } from '../../auth/service/auth-service';
 import { environment } from '../../../../environments/environment';
@@ -16,10 +16,16 @@ export class UserService {
     private headerUtil: HeaderTokenUtil
   ) { }
 
-  getUsersByEmpresa(empresaId: number, page = 0, size = 10): Observable<UsuariosResponse> {
-    const params = new HttpParams()
+  getUsersByEmpresa(empresaId: number, page = 0, size = 10, estado?: string, nombres?: string): Observable<UsuariosResponse> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size);
+    if (estado) {
+      params = params.set('estado', estado);
+    }
+    if (nombres) {
+      params = params.set('nombres', nombres);
+    }
     const headers = this.headerUtil.getAuthHeaders();
     return this.http
       .get<UsuariosResponse>(`${environment.usersApi}/empresa/${empresaId}/list-users`, { headers, params })
@@ -41,6 +47,30 @@ export class UserService {
         map(res => res),
         catchError(err => {
           console.error('Error al crear usuario:', err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  updateUser(id: number, usuario: UsuarioUpdateRequest): Observable<UsuarioUpdateResponse> {
+    const headers = this.headerUtil.getAuthHeaders();
+    return this.http
+      .put<UsuarioUpdateResponse>(`${environment.usersApi}/update-user/${id}`, usuario, { headers })
+      .pipe(
+        catchError(err => {
+          console.error('Error al actualizar usuario:', err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  deleteUser(id: number): Observable<UsuarioDeleteResponse> {
+    const headers = this.headerUtil.getAuthHeaders();
+    return this.http
+      .delete<UsuarioDeleteResponse>(`${environment.usersApi}/delete-user/${id}`, { headers })
+      .pipe(
+        catchError(err => {
+          console.error('Error al eliminar usuario:', err);
           return throwError(() => err);
         })
       );

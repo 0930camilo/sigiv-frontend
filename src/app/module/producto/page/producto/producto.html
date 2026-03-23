@@ -6,7 +6,7 @@
     </h2>
 
     <app-register-producto
-      (productoCreado)="onProductoCreado()">
+      (productoCreado)="onProductoCreado($event)">
     </app-register-producto>
   </div>
 
@@ -33,14 +33,14 @@
   <app-edit-producto
     *ngIf="productoSeleccionado"
     [producto]="productoSeleccionado"
-    (productoActualizado)="onProductoActualizado()"
+    (productoActualizado)="onProductoActualizado($event)"
     (cerrar)="productoSeleccionado = null">
   </app-edit-producto>
 
   <app-delete-producto
     *ngIf="productoAEliminar"
     [producto]="productoAEliminar"
-    (eliminado)="onProductoEliminado()"
+    (eliminado)="onProductoEliminado($event)"
     (cerrar)="productoAEliminar = null">
   </app-delete-producto>
 

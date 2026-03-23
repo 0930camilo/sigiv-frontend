@@ -4,6 +4,11 @@
     <app-register [empresaId]="empresaId" (usuarioCreado)="getUsuarios()"></app-register>
   </div>
 
+  <app-filtros-usuario
+    (filtrarNombre)="onFiltrarNombre($event)"
+    (filtrarEstado)="onFiltrarEstado($event)">
+  </app-filtros-usuario>
+
   <app-reusable-table
     [data]="usuarios"
     [columns]="columns"
@@ -14,4 +19,20 @@
     (previous)="getUsuarios(currentPage - 1)"
     (actionClick)="onAction($event)">
   </app-reusable-table>
+
+  @if (mostrarEditar && usuarioSeleccionado) {
+    <app-edit-usuario
+      [usuario]="usuarioSeleccionado"
+      (usuarioActualizado)="onUsuarioActualizado()"
+      (cerrar)="mostrarEditar = false">
+    </app-edit-usuario>
+  }
+
+  @if (mostrarEliminar && usuarioSeleccionado) {
+    <app-delete-user
+      [usuario]="usuarioSeleccionado"
+      (eliminado)="onUsuarioEliminado()"
+      (cerrar)="mostrarEliminar = false">
+    </app-delete-user>
+  }
 </div>

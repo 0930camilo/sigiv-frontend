@@ -38,11 +38,11 @@ getProductosByEmpresa(
   const headers = this.headerUtil.getAuthHeaders();
 
   let params = new HttpParams()
-    .set('page', page.toString())
-    .set('size', size.toString());
+    .set('page', page)
+    .set('size', size);
 
-  if (filtros?.nombre?.trim()) {
-    params = params.set('nombre', filtros.nombre.trim());
+  if (filtros?.nombre) {
+    params = params.set('nombre', filtros.nombre);
   }
 
   if (filtros?.estado) {
@@ -57,17 +57,16 @@ getProductosByEmpresa(
     params = params.set('proveedor', filtros.proveedor);
   }
 
-  const url = `${environment.productosApi}/empresa/${empresaId}`;
-
-  return this.http.get<any>(url, { headers, params }).pipe(
-    map(res => res?.data ?? res),
-    catchError(err => {
-      console.error('Error al obtener productos:', err);
-      return throwError(() => err);
-    })
-  );
+  return this.http
+    .get<any>(`${environment.productosApi}/empresa/${empresaId}`, { headers, params })
+    .pipe(
+      map(res => res.data), // 🔥 SIEMPRE data
+      catchError(err => {
+        console.error(err);
+        return throwError(() => err);
+      })
+    );
 }
-
 
 
   createProducto(producto: ProductoCreateRequest): Observable<any> {

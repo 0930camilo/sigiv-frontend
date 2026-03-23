@@ -41,36 +41,32 @@ export class FiltrosProductoComponent implements OnInit {
     }
   }
 
-  buscarPorNombre() {
+  buscarPorNombre(): void {
     this.filtrarNombre.emit(this.filtroNombre);
   }
 
-  filtrarPorEstado() {
+  filtrarPorEstado(): void {
     this.filtrarEstado.emit(this.filtroEstado);
   }
 
-  filtrarPorCategoria() {
-    this.filtrarCategoria.emit(
-      this.categoriaNombre || null
-    );
+  filtrarPorCategoria(): void {
+    this.filtrarCategoria.emit(this.categoriaNombre || null);
   }
 
-  filtrarPorProveedor() {
-    this.filtrarProveedor.emit(
-      this.proveedorNombre || null
-    );
+  filtrarPorProveedor(): void {
+    this.filtrarProveedor.emit(this.proveedorNombre || null);
   }
 
-  cargarCategorias() {
+  cargarCategorias(): void {
     this.categoriaService.getCategoriasByEmpresa(this.empresaId).subscribe({
-      next: res => this.categorias = res.data.categorias || [],
+      next: (res: any) => this.categorias = res.data?.categorias || res.data || [],
       error: () => Swal.fire('Error', 'No se pudieron cargar categorías', 'error')
     });
   }
 
-  cargarProveedores() {
+  cargarProveedores(): void {
     this.proveedorService.getProveedoresByEmpresa(this.empresaId).subscribe({
-      next: res => this.proveedores = res.data.proveedores || [],
+      next: (res: any) => this.proveedores = res.data?.proveedores || res.data || [],
       error: () => Swal.fire('Error', 'No se pudieron cargar proveedores', 'error')
     });
   }

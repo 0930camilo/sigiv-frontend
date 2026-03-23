@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../../service/user-service';
 import { UsuarioCreateRequest } from '../../model/user.model';
@@ -21,7 +21,8 @@ export class Register {
 
   constructor(
     private fb: FormBuilder,
-    private userService: UserService
+    private userService: UserService,
+    private cdr: ChangeDetectorRef
   ) {
     this.initForm();
   }
@@ -68,6 +69,7 @@ export class Register {
       this.creandoUsuario = false;
       this.cerrarModal();
       this.usuarioCreado.emit();
+      this.cdr.markForCheck();
 
       Swal.fire({
         icon: 'success',
@@ -81,6 +83,7 @@ export class Register {
     error: (err) => {
       console.error('Error al crear usuario:', err);
       this.creandoUsuario = false;
+      this.cdr.markForCheck();
 
       Swal.fire({
         icon: 'error',

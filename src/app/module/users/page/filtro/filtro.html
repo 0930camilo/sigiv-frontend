@@ -1,0 +1,23 @@
+<div class="flex gap-4 mb-4 flex-wrap">
+
+  <!-- BUSCAR POR NOMBRE -->
+  <input
+    type="text"
+    placeholder="Buscar usuario por nombre..."
+    class="border rounded px-3 py-2 w-60"
+    [(ngModel)]="filtroNombre"
+    (input)="buscarPorNombre()"
+  />
+
+  <!-- ESTADO -->
+  <select
+    class="border rounded px-3 py-2"
+    [(ngModel)]="filtroEstado"
+    (change)="filtrarPorEstado()"
+  >
+    <option value="">Filtrar por estado</option>
+    <option value="Activo">Activo</option>
+    <option value="Inactivo">Inactivo</option>
+  </select>
+
+</div>

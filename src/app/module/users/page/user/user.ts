@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UserService } from '../../service/user-service';
 import { AuthService } from '../../../auth/service/auth-service';
 import { CommonModule } from '@angular/common';
@@ -6,11 +6,14 @@ import { RouterModule } from '@angular/router';
 import { Register } from "../register/register";
 import { TableColumn } from '../../../../shared/interface/TableColumn';
 import { ReusableTable } from '../../../../components/reusable-table/reusable-table';
+import { FiltrosUsuarioComponent } from '../filtro/filtro';
+import { EditarUsuarioComponent } from '../editar/editar';
+import { EliminarUsuarioComponent } from '../eliminar/eliminar';
 import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-user',
-  imports: [RouterModule, CommonModule, Register, ReusableTable],
+  imports: [RouterModule, CommonModule, Register, ReusableTable, FiltrosUsuarioComponent, EditarUsuarioComponent, EliminarUsuarioComponent],
   templateUrl: './user.html',
   styleUrl: './user.scss'
 })
@@ -21,6 +24,13 @@ export class User implements OnInit {
   loading = false;
   empresaId: number | null = null;
   pageSize = 10;
+
+  filtroNombre: string = '';
+  filtroEstado: string = '';
+
+  mostrarEditar = false;
+  mostrarEliminar = false;
+  usuarioSeleccionado: any = null;
 
   columns: TableColumn[] = [
     { field: 'idUsuario', header: 'ID', type: 'text' },
@@ -33,7 +43,8 @@ export class User implements OnInit {
 
   constructor(
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -41,30 +52,58 @@ export class User implements OnInit {
     if (this.empresaId) this.getUsuarios();
   }
 
- getUsuarios(page: number = 0): void {
-  if (!this.empresaId) return;
-  this.loading = true;
+  getUsuarios(page: number = 0): void {
+    if (!this.empresaId) return;
+    this.loading = true;
 
-  this.userService.getUsersByEmpresa(this.empresaId, page, this.pageSize)
-    .pipe(finalize(() => this.loading = false))
-    .subscribe({
-      next: (res: any) => {
-        this.usuarios = res.data.usuarios || [];
-        this.totalPages = res.data.totalPages || 1;
-        this.currentPage = res.data.currentPage || 0;
-      },
-      error: (err) => {
-        console.error('Error al cargar usuarios:', err);
-      }
-    });
-}
+    this.userService.getUsersByEmpresa(
+      this.empresaId, page, this.pageSize,
+      this.filtroEstado || undefined,
+      this.filtroNombre || undefined
+    )
+      .pipe(finalize(() => { this.loading = false; this.cdr.markForCheck(); }))
+      .subscribe({
+        next: (res: any) => {
+          this.usuarios = res.data.usuarios || [];
+          this.totalPages = res.data.totalPages || 1;
+          this.currentPage = res.data.currentPage || 0;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error al cargar usuarios:', err);
+        }
+      });
+  }
+
+  onFiltrarNombre(nombre: string): void {
+    this.filtroNombre = nombre;
+    this.getUsuarios(0);
+  }
+
+  onFiltrarEstado(estado: string): void {
+    this.filtroEstado = estado;
+    this.getUsuarios(0);
+  }
 
   onAction(event: { action: string; row: any }) {
+    this.usuarioSeleccionado = { ...event.row };
     if (event.action === 'edit') {
-      console.log('Editar:', event.row);
+      this.mostrarEditar = true;
     } else if (event.action === 'delete') {
-      console.log('Eliminar:', event.row);
+      this.mostrarEliminar = true;
     }
+  }
+
+  onUsuarioActualizado(): void {
+    this.mostrarEditar = false;
+    this.usuarioSeleccionado = null;
+    this.getUsuarios(this.currentPage);
+  }
+
+  onUsuarioEliminado(): void {
+    this.mostrarEliminar = false;
+    this.usuarioSeleccionado = null;
+    this.getUsuarios(this.currentPage);
   }
 
   onNextPage(): void {
