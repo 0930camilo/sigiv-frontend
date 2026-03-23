@@ -5,8 +5,6 @@ export interface VentaDetalle {
   subtotal: number;
 }
 
-
-
 export interface Venta {
   idventa: number;
   fecha: string;
@@ -16,7 +14,7 @@ export interface Venta {
   efectivo: number;
   cambio: number;
   nombreUsuario: string;
-  empresaNombre?: string; // ✅ agregado
+  empresaNombre?: string;
   detalles: VentaDetalle[];
 }
 
@@ -31,4 +29,29 @@ export interface VentasResponse {
     totalElements: number;
   };
   timestamp?: string;
+}
+
+// --- Request DTOs ---
+
+export interface DetalleVentaRequest {
+  productoId: number;
+  cantidad: number;
+}
+
+export interface VentaRequest {
+  usuarioId: number;
+  nombreCliente: string;
+  telefonoCliente: string;
+  efectivo: number;
+  detalles: DetalleVentaRequest[];
+}
+
+// --- Carrito (frontend only) ---
+
+export interface ItemCarrito {
+  productoId: number;
+  nombre: string;
+  precio: number;
+  cantidad: number;
+  disponible: number;
 }

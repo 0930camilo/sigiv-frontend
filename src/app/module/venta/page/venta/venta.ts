@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { finalize } from 'rxjs';
 
 import { TableColumn } from '../../../../shared/interface/TableColumn';
 import { AuthService } from '../../../auth/service/auth-service';
@@ -71,7 +70,8 @@ export class VentaComponent implements OnInit {
 
   constructor(
     private ventaService: VentaService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   // ===============================
@@ -108,16 +108,18 @@ export class VentaComponent implements OnInit {
         this.pageSize,
         this.filtroId
       )
-      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (res) => {
-          // 🔥 CORRECTO (según tu backend)
           this.ventas = res.data?.ventas ?? [];
           this.currentPage = res.data?.currentPage ?? 0;
           this.totalPages = res.data?.totalPages ?? 0;
+          this.loading = false;
+          this.cdr.markForCheck();
         },
         error: (err) => {
           console.error('Error cargando ventas:', err);
+          this.loading = false;
+          this.cdr.markForCheck();
         }
       });
   }
@@ -136,6 +138,7 @@ export class VentaComponent implements OnInit {
   verDetalle(venta: Venta): void {
     this.ventaSeleccionada = venta;
     this.mostrarDetalle = true;
+    this.cdr.markForCheck();
   }
 
   // ===============================
@@ -152,9 +155,11 @@ export class VentaComponent implements OnInit {
         a.click();
 
         window.URL.revokeObjectURL(url);
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error descargando factura:', err);
+        this.cdr.markForCheck();
       }
     });
   }

@@ -14,7 +14,8 @@ export const HOME_ROUTES: Routes = [
       { path: 'proveedores', loadComponent: () => import('../proveedor/page/proveedor/proveedor').then(m => m.Proveedor) },
       { path: 'categorias', loadComponent: () => import('../categorias/page/categoria/categoria').then(m => m.CategoriaComponent) },
       { path: 'productos', loadComponent: () => import('../producto/page/producto/producto').then(m => m.Producto) },
-      { path: 'ventas', loadComponent: () => import('../venta/page/venta/venta').then(m => m.VentaComponent) }
+      { path: 'ventas', loadComponent: () => import('../venta/page/venta/venta').then(m => m.VentaComponent) },
+      { path: 'registrar-venta', loadComponent: () => import('../venta/page/registrar-venta/registrar-venta').then(m => m.RegistrarVentaComponent) }
     ]
   }
 ];
