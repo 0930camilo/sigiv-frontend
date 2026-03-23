@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TableColumn } from '../../../../shared/interface/TableColumn';
@@ -60,7 +60,8 @@ export class Producto implements OnInit {
 
   constructor(
     private productoService: ProductoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -94,10 +95,12 @@ export class Producto implements OnInit {
           this.currentPage = data.currentPage;
           this.totalPages = data.totalPages;
           this.loading = false;
+          this.cdr.markForCheck();
         },
         error: (err) => {
           console.error("Error cargando productos:", err);
           this.loading = false;
+          this.cdr.markForCheck();
         }
       });
   }
@@ -121,26 +124,16 @@ export class Producto implements OnInit {
   // CRUD UI
   // ===============================
   onProductoCreado(nuevoProducto: any): void {
-    this.productos.unshift(nuevoProducto);
+    this.getProductos(0);
   }
 
   onProductoActualizado(productoEditado: any): void {
-    const index = this.productos.findIndex(
-      p => p.idProducto === productoEditado.idProducto
-    );
-
-    if (index !== -1) {
-      this.productos[index] = productoEditado;
-    }
-
+    this.getProductos(this.currentPage);
     this.productoSeleccionado = null;
   }
 
   onProductoEliminado(idProducto: number): void {
-    this.productos = this.productos.filter(
-      p => p.idProducto !== idProducto
-    );
-
+    this.getProductos(this.currentPage);
     this.productoAEliminar = null;
   }
 

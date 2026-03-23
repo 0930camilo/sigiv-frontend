@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -38,7 +38,7 @@ export class RegisterProducto implements OnInit {
     private categoriaService: CategoriaService,
     private proveedorService: ProveedorService,
     private authService: AuthService,
-
+    private cdr: ChangeDetectorRef
   ) {
     this.initForm();
   }
@@ -87,6 +87,7 @@ cargarCategorias() {
     next: (res) => {
       console.log("Respuesta categorías:", res);
       this.categorias = res.data.categorias || [];
+      this.cdr.markForCheck();
     },
     error: (err) => {
       console.error("Error cargando categorías:", err);
@@ -104,6 +105,7 @@ cargarProveedores() {
       next: (res) => {
         console.log("Respuesta proveedores:", res);
         this.proveedores = res.data?.proveedores || [];
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error("Error cargando proveedores:", err);
@@ -133,9 +135,9 @@ cargarProveedores() {
     this.productoService.createProducto(payload).subscribe({
       next: (res) => {
         this.creandoProducto = false;
-
         this.cerrarModal();
         this.productoCreado.emit(res.data);
+        this.cdr.markForCheck();
 
         Swal.fire({
           icon: 'success',
@@ -146,6 +148,7 @@ cargarProveedores() {
       },
       error: () => {
         this.creandoProducto = false;
+        this.cdr.markForCheck();
         Swal.fire('Error', 'Error al crear producto', 'error');
       }
     });

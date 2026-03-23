@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoriaService } from '../../../categorias/service/categoria-service';
@@ -31,7 +31,8 @@ export class FiltrosProductoComponent implements OnInit {
 
   constructor(
     private categoriaService: CategoriaService,
-    private proveedorService: ProveedorService
+    private proveedorService: ProveedorService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -59,14 +60,14 @@ export class FiltrosProductoComponent implements OnInit {
 
   cargarCategorias(): void {
     this.categoriaService.getCategoriasByEmpresa(this.empresaId).subscribe({
-      next: (res: any) => this.categorias = res.data?.categorias || res.data || [],
+      next: (res: any) => { this.categorias = res.data?.categorias || res.data || []; this.cdr.markForCheck(); },
       error: () => Swal.fire('Error', 'No se pudieron cargar categorías', 'error')
     });
   }
 
   cargarProveedores(): void {
     this.proveedorService.getProveedoresByEmpresa(this.empresaId).subscribe({
-      next: (res: any) => this.proveedores = res.data?.proveedores || res.data || [],
+      next: (res: any) => { this.proveedores = res.data?.proveedores || res.data || []; this.cdr.markForCheck(); },
       error: () => Swal.fire('Error', 'No se pudieron cargar proveedores', 'error')
     });
   }

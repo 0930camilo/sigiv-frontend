@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -35,7 +35,8 @@ export class EditarProductoComponent implements OnInit, OnChanges {
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
     private proveedorService: ProveedorService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     this.initForm();
   }
@@ -94,14 +95,14 @@ export class EditarProductoComponent implements OnInit, OnChanges {
   // ===============================
   cargarCategorias(): void {
     this.categoriaService.getCategoriasByEmpresa(this.empresaId!).subscribe({
-      next: res => this.categorias = res.data.categorias || [],
+      next: res => { this.categorias = res.data.categorias || []; this.cdr.markForCheck(); },
       error: () => Swal.fire('Error', 'No se pudieron cargar las categorías', 'error')
     });
   }
 
   cargarProveedores(): void {
     this.proveedorService.getProveedoresByEmpresa(this.empresaId!).subscribe({
-      next: res => this.proveedores = res.data.proveedores || [],
+      next: res => { this.proveedores = res.data.proveedores || []; this.cdr.markForCheck(); },
       error: () => Swal.fire('Error', 'No se pudieron cargar los proveedores', 'error')
     });
   }
@@ -123,20 +124,23 @@ export class EditarProductoComponent implements OnInit, OnChanges {
     this.productoService.updateProducto(this.producto.idProducto, payload)
       .subscribe({
         next: (res) => {
+          this.loading = false;
+          this.productoActualizado.emit(res.data);
+          this.cerrar.emit();
+          this.cdr.markForCheck();
+
           Swal.fire({
             icon: 'success',
             title: 'Producto actualizado',
             timer: 1500,
             showConfirmButton: false
           });
-
-          this.productoActualizado.emit(res.data);
-          this.cerrar.emit();
         },
         error: () => {
+          this.loading = false;
+          this.cdr.markForCheck();
           Swal.fire('Error', 'No se pudo actualizar el producto', 'error');
-        },
-        complete: () => this.loading = false
+        }
       });
   }
 }
