@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -52,7 +52,8 @@ export class Proveedor implements OnInit {
 
   constructor(
     private proveedorService: ProveedorService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -72,12 +73,16 @@ export class Proveedor implements OnInit {
       this.filtroEstado,
       this.filtroNombre
     )
-    .pipe(finalize(() => this.loading = false))
+    .pipe(finalize(() => {
+      this.loading = false;
+      this.cdr.markForCheck();
+    }))
     .subscribe({
       next: (res: any) => {
         this.proveedores = res.data.proveedores;
         this.totalPages = res.data.totalPages;
         this.currentPage = res.data.currentPage;
+        this.cdr.markForCheck();
       },
       error: (err) => console.error('Error al cargar proveedores:', err)
     });

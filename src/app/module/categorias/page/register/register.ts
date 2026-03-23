@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -22,7 +22,8 @@ export class RegisterCategoria {
 
   constructor(
     private fb: FormBuilder,
-    private categoriaService: CategoriaService
+    private categoriaService: CategoriaService,
+    private cdr: ChangeDetectorRef
   ) {
     this.initForm();
   }
@@ -65,7 +66,8 @@ export class RegisterCategoria {
       next: (res) => {
         this.creandoCategoria = false;
         this.cerrarModal();
-        this.categoriaCreada.emit(res.data || null); // ✅ Emite la categoria o null
+        this.categoriaCreada.emit(res.data || null);
+        this.cdr.markForCheck();
 
         Swal.fire({
           icon: 'success',
@@ -79,6 +81,7 @@ export class RegisterCategoria {
       error: (err) => {
         console.error('Error al crear categoria:', err);
         this.creandoCategoria = false;
+        this.cdr.markForCheck();
 
         Swal.fire({
           icon: 'error',

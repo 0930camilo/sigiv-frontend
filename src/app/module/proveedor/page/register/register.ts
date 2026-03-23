@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -22,7 +22,8 @@ export class RegisterProveedor {
 
   constructor(
     private fb: FormBuilder,
-    private proveedorService: ProveedorService
+    private proveedorService: ProveedorService,
+    private cdr: ChangeDetectorRef
   ) {
     this.initForm();
   }
@@ -67,7 +68,8 @@ export class RegisterProveedor {
       next: (res) => {
         this.creandoProveedor = false;
         this.cerrarModal();
-        this.proveedorCreado.emit(res.data || null); // ✅ Emite el proveedor o null
+        this.proveedorCreado.emit(res.data || null);
+        this.cdr.markForCheck();
 
         Swal.fire({
           icon: 'success',
@@ -81,6 +83,7 @@ export class RegisterProveedor {
       error: (err) => {
         console.error('Error al crear proveedor:', err);
         this.creandoProveedor = false;
+        this.cdr.markForCheck();
 
         Swal.fire({
           icon: 'error',

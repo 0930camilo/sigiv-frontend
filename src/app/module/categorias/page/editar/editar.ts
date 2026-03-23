@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -23,7 +23,8 @@ export class EditarCategoriaComponent implements OnChanges {
 
   constructor(
     private fb: FormBuilder,
-    private categoriaService: CategoriaService
+    private categoriaService: CategoriaService,
+    private cdr: ChangeDetectorRef
   ) {
     this.formEdit = this.fb.group({
       nombre: ['', Validators.required],
@@ -54,6 +55,11 @@ export class EditarCategoriaComponent implements OnChanges {
     this.categoriaService.updateCategoria(this.categoria.idCategoria, payload)
       .subscribe({
         next: (res) => {
+          this.loading = false;
+          this.categoriaActualizada.emit(res.data);
+          this.cerrar.emit();
+          this.cdr.markForCheck();
+
           Swal.fire({
             icon: 'success',
             title: 'Categoría actualizada',
@@ -61,18 +67,17 @@ export class EditarCategoriaComponent implements OnChanges {
             timer: 1500,
             showConfirmButton: false
           });
-
-          this.categoriaActualizada.emit(res.data);
-          this.cerrar.emit();
         },
         error: () => {
+          this.loading = false;
+          this.cdr.markForCheck();
+
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: 'No se pudo actualizar la categoría.',
           });
-        },
-        complete: () => this.loading = false
+        }
       });
   }
 }

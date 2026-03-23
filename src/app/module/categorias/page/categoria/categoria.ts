@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -52,7 +52,8 @@ export class CategoriaComponent implements OnInit {
 
   constructor(
     private categoriaService: CategoriaService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -76,12 +77,16 @@ export class CategoriaComponent implements OnInit {
         this.filtroEstado,
         this.filtroNombre
       )
-      .pipe(finalize(() => this.loading = false))
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }))
       .subscribe({
         next: (res: CategoriasResponse) => {
           this.categorias = res.data.categorias;
           this.totalPages = res.data.totalPages;
           this.currentPage = res.data.currentPage;
+          this.cdr.markForCheck();
         },
         error: (err) => console.error('Error al cargar categorías:', err)
       });

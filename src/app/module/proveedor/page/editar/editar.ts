@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -21,7 +21,7 @@ export class EditarProveedorComponent implements OnChanges {
   formEdit!: FormGroup;
   loading = false;
 
-  constructor(private fb: FormBuilder, private proveedorService: ProveedorService) {
+  constructor(private fb: FormBuilder, private proveedorService: ProveedorService, private cdr: ChangeDetectorRef) {
     this.formEdit = this.fb.group({
       nombre: ['', Validators.required],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
@@ -54,6 +54,11 @@ export class EditarProveedorComponent implements OnChanges {
     this.proveedorService.updateProveedor(this.proveedor.idProveedor, payload)
       .subscribe({
         next: (res) => {
+          this.loading = false;
+          this.proveedorActualizado.emit(res.data);
+          this.cerrar.emit();
+          this.cdr.markForCheck();
+
           Swal.fire({
             icon: 'success',
             title: 'Proveedor actualizado',
@@ -61,20 +66,19 @@ export class EditarProveedorComponent implements OnChanges {
             timer: 1600,
             showConfirmButton: false
           });
-
-          this.proveedorActualizado.emit(res.data);
-          this.cerrar.emit();
         },
         error: (err) => {
           console.error(err);
+          this.loading = false;
+          this.cdr.markForCheck();
+
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: 'No se pudo actualizar el proveedor.',
             confirmButtonColor: '#ef4444'
           });
-        },
-        complete: () => (this.loading = false)
+        }
       });
   }
 }

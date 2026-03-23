@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { CategoriaService } from '../../service/categoria-service';
@@ -18,7 +18,10 @@ export class EliminarCategoriaComponent {
 
   loading = false;
 
-  constructor(private categoriaService: CategoriaService) {}
+  constructor(
+    private categoriaService: CategoriaService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   confirmarEliminar() {
     this.loading = true;
@@ -26,6 +29,11 @@ export class EliminarCategoriaComponent {
     this.categoriaService.deleteCategoria(this.categoria.idCategoria)
       .subscribe({
         next: () => {
+          this.loading = false;
+          this.eliminado.emit(this.categoria.idCategoria);
+          this.cerrar.emit();
+          this.cdr.markForCheck();
+
           Swal.fire({
             icon: 'success',
             title: 'Categoría eliminada',
@@ -33,19 +41,16 @@ export class EliminarCategoriaComponent {
             timer: 1500,
             showConfirmButton: false
           });
-
-          this.eliminado.emit(this.categoria.idCategoria  );
         },
         error: () => {
+          this.loading = false;
+          this.cdr.markForCheck();
+
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: 'No se pudo eliminar la categoría.'
           });
-        },
-        complete: () => {
-          this.loading = false;
-          this.cerrar.emit();
         }
       });
   }
