@@ -65,38 +65,45 @@ export class Proveedor implements OnInit {
 
     this.loading = true;
 
-    this.proveedorService.getProveedoresByEmpresa(this.empresaId, page, this.pageSize)
-      .pipe(finalize(() => this.loading = false))
-      .subscribe({
-        next: (res: any) => {
-          this.proveedores = res.data.proveedores;
-          this.totalPages = res.data.totalPages;
-          this.currentPage = res.data.currentPage;
-        },
-        error: (err) => console.error('Error al cargar proveedores:', err)
-      });
+    this.proveedorService.getProveedoresByEmpresa(
+      this.empresaId,
+      page,
+      this.pageSize,
+      this.filtroEstado,
+      this.filtroNombre
+    )
+    .pipe(finalize(() => this.loading = false))
+    .subscribe({
+      next: (res: any) => {
+        this.proveedores = res.data.proveedores;
+        this.totalPages = res.data.totalPages;
+        this.currentPage = res.data.currentPage;
+      },
+      error: (err) => console.error('Error al cargar proveedores:', err)
+    });
+  }
+
+  filtrarPorNombre(nombre: string) {
+    this.filtroNombre = nombre;
+    this.getProveedores(0);
+  }
+
+  filtrarPorEstado(estado: string) {
+    this.filtroEstado = estado;
+    this.getProveedores(0);
   }
 
   onProveedorCreado(nuevoProveedor: any): void {
-    this.proveedores.unshift(nuevoProveedor);
+    this.getProveedores(this.currentPage);
   }
 
   onProveedorActualizado(proveedorEditado: any): void {
-    const index = this.proveedores.findIndex(
-      p => p.idProveedor === proveedorEditado.idProveedor
-    );
-
-    if (index !== -1) {
-      this.proveedores[index] = proveedorEditado;
-    }
-
+    this.getProveedores(this.currentPage);
     this.proveedorSeleccionado = null;
   }
 
   onProveedorEliminado(idProveedor: number): void {
-    this.proveedores = this.proveedores.filter(
-      p => p.idProveedor !== idProveedor
-    );
+    this.getProveedores(this.currentPage);
     this.proveedorAEliminar = null;
   }
 
@@ -107,43 +114,4 @@ export class Proveedor implements OnInit {
       this.proveedorAEliminar = { ...event.row };
     }
   }
-
-  // ----------------------------
-  //  FILTROS
-  // ----------------------------
-
- // ----------------------------
-//  FILTROS
-// ----------------------------
-
-filtrarPorNombre(nombre: string) {
-  if (!nombre.trim()) {
-    this.getProveedores();
-    return;
-  }
-
-  this.proveedorService.buscarPorNombre(nombre)
-    .subscribe({
-      next: (res) => {
-        // buscar devuelve un array directo
-        this.proveedores = res;
-      },
-      error: (err) => console.error("Error en filtro por nombre:", err)
-    });
-}
-filtrarPorEstado(estado: string) {
-  if (!estado) {
-    this.getProveedores();
-    return;
-  }
-
-  this.proveedorService.listarPorEstado(estado)
-    .subscribe({
-      next: (res) => {
-        this.proveedores = res.data ?? [];
-      }
-    });
-}
-
-
 }

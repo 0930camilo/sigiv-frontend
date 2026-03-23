@@ -26,13 +26,41 @@ export class ProductoService {
 getProductosByEmpresa(
   empresaId: number,
   page: number = 0,
-  size: number = 10
+  size: number = 10,
+  filtros?: {
+    nombre?: string;
+    estado?: string;
+    categoria?: string;
+    proveedor?: string;
+  }
 ): Observable<any> {
-  const headers = this.headerUtil.getAuthHeaders();
-  const url = `${environment.empresasApi}/${empresaId}/productos?page=${page}&size=${size}`;
 
-  return this.http.get<any>(url, { headers }).pipe(
-    map(res => res.data ?? { productos: [], currentPage: 0, totalPages: 0 }),
+  const headers = this.headerUtil.getAuthHeaders();
+
+  let params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString());
+
+  if (filtros?.nombre?.trim()) {
+    params = params.set('nombre', filtros.nombre.trim());
+  }
+
+  if (filtros?.estado) {
+    params = params.set('estado', filtros.estado);
+  }
+
+  if (filtros?.categoria) {
+    params = params.set('categoria', filtros.categoria);
+  }
+
+  if (filtros?.proveedor) {
+    params = params.set('proveedor', filtros.proveedor);
+  }
+
+  const url = `${environment.productosApi}/empresa/${empresaId}`;
+
+  return this.http.get<any>(url, { headers, params }).pipe(
+    map(res => res?.data ?? res),
     catchError(err => {
       console.error('Error al obtener productos:', err);
       return throwError(() => err);
@@ -80,23 +108,5 @@ getProductosByEmpresa(
       })
     );
   }
-
-listarPorEstado(estado: string): Observable<{ data: any[] }> {
-    const headers = this.headerUtil.getAuthHeaders();
-    const params = new HttpParams().set('estado', estado);
-
-    return this.http.get<{ data: any[] }>(
-      `${environment.productosApi}/list-producto-status`,
-      { headers, params }
-    );
-  }
-
-buscarPorNombre(nombre: string): Observable<any> {
-  const headers = this.headerUtil.getAuthHeaders();
-  const params = new HttpParams().set('nombre', nombre);
-
-  return this.http
-    .get<any>(`${environment.productosApi}/buscar`, { headers, params });
-}
 
 }

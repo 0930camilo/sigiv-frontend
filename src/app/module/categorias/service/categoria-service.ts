@@ -22,96 +22,65 @@ export class CategoriaService {
   getCategoriasByEmpresa(
     empresaId: number,
     page = 0,
-    size = 10
+    size = 10,
+    estado?: string,
+    nombre?: string
   ): Observable<CategoriasResponse> {
 
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size);
 
+    if (estado) {
+      params = params.set('estado', estado);
+    }
+
+    if (nombre && nombre.trim() !== '') {
+      params = params.set('nombre', nombre);
+    }
+
     const headers = this.headerUtil.getAuthHeaders();
 
-    return this.http
-      .get<CategoriasResponse>(
-        `${environment.empresasApi}/${empresaId}/categorias`,
-        { headers, params }
-      )
-      .pipe(
-        catchError(err => {
-          console.error('Error al obtener categorias:', err);
-          return throwError(() => err);
-        })
-      );
-  }
-
-  createCategoria(categoria: CategoriaCreateRequest): Observable<CategoriaCreateResponse> {
-    const headers = this.headerUtil.getAuthHeaders();
-    const url = `${environment.categoriasApi}/crear-categoria`;
-
-    return this.http
-      .post<CategoriaCreateResponse>(url, categoria, { headers })
-      .pipe(
-        catchError(err => {
-          console.error('Error al crear categoria:', err);
-          return throwError(() => err);
-        })
-      );
-  }
-
-  updateCategoria(id: number, categoria: any): Observable<any> {
-    const headers = this.headerUtil.getAuthHeaders();
-    const url = `${environment.categoriasApi}/update-categoria/${id}`;
-
-    return this.http
-      .put<any>(url, categoria, { headers })
-      .pipe(
-        catchError(err => {
-          console.error('Error al actualizar categoria:', err);
-          return throwError(() => err);
-        })
-      );
-  }
-
-  deleteCategoria(id: number): Observable<any> {
-  const headers = this.headerUtil.getAuthHeaders();
-  const url = `${environment.categoriasApi}/delete-categoria/${id}`;
-
-  return this.http.delete<any>(url, { headers }).pipe(
-    map(res => res),
-    catchError(err => {
-      console.error('Error al eliminar categoria:', err);
-      return throwError(() => err);
-    })
-  );
-}
-
-
- listarPorEstado(estado: string): Observable<{ data: any[] }> {
-    const headers = this.headerUtil.getAuthHeaders();
-    const params = new HttpParams().set('estado', estado);
-
-    return this.http.get<{ data: any[] }>(
-      `${environment.categoriasApi}/list-categoria-status`,
+    return this.http.get<CategoriasResponse>(
+      `${environment.categoriasApi}/empresa/${empresaId}`,
       { headers, params }
+    ).pipe(
+      catchError(err => {
+        console.error('Error al obtener categorias:', err);
+        return throwError(() => err);
+      })
     );
   }
 
-buscarPorNombre(nombre: string): Observable<any> {
-  const headers = this.headerUtil.getAuthHeaders();
-  const params = new HttpParams().set('nombre', nombre);
+  createCategoria(
+    categoria: CategoriaCreateRequest
+  ): Observable<CategoriaCreateResponse> {
 
-  return this.http
-    .get<any>(`${environment.categoriasApi}/buscar`, { headers, params });
-}
+    const headers = this.headerUtil.getAuthHeaders();
 
+    return this.http.post<CategoriaCreateResponse>(
+      `${environment.categoriasApi}/crear-categoria`,
+      categoria,
+      { headers }
+    );
+  }
 
-getCategoriasByEmpresaP(idEmpresa: number | null): Observable<any[]> {
-  const headers = this.headerUtil.getAuthHeaders();
+  updateCategoria(id: number, categoria: CategoriaCreateRequest): Observable<any> {
+    const headers = this.headerUtil.getAuthHeaders();
 
-  return this.http.get<any[]>(
-    `${environment.categoriasApi}/empresa/${idEmpresa}`,
-    { headers }
-  );
+    return this.http.put(
+      `${environment.categoriasApi}/update-categoria/${id}`,
+      categoria,
+      { headers }
+    );
+  }
 
-}
+  deleteCategoria(id: number): Observable<any> {
+    const headers = this.headerUtil.getAuthHeaders();
+
+    return this.http.delete(
+      `${environment.categoriasApi}/delete-categoria/${id}`,
+      { headers }
+    );
+  }
 }

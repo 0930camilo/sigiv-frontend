@@ -11,11 +11,12 @@
   </div>
 
 
-   <!-- FILTROS -->
+ <!-- FILTROS -->
   <app-filtros-categoria
     (filtrarNombre)="filtrarPorNombre($event)"
     (filtrarEstado)="filtrarPorEstado($event)">
   </app-filtros-categoria>
+
 
   <app-reusable-table
     [data]="categorias"

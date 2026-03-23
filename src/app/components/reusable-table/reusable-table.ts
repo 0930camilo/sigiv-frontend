@@ -4,10 +4,13 @@ import { TableColumn } from '../../shared/interface/TableColumn';
 
 @Component({
   selector: 'app-reusable-table',
+  standalone: true, // 👈 AGREGA ESTO
   imports: [CommonModule],
   templateUrl: './reusable-table.html',
   styleUrl: './reusable-table.scss'
 })
+
+
 export class ReusableTable {
 
   /** Datos a mostrar en la tabla */

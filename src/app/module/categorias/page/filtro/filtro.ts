@@ -11,8 +11,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class FiltrosCategoriaComponent {
 
-  filtroNombre: string = '';
-  filtroEstado: string = '';
+  filtroNombre = '';
+  filtroEstado = '';
 
   @Output() filtrarNombre = new EventEmitter<string>();
   @Output() filtrarEstado = new EventEmitter<string>();

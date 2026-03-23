@@ -5,6 +5,8 @@ export interface VentaDetalle {
   subtotal: number;
 }
 
+
+
 export interface Venta {
   idventa: number;
   fecha: string;
@@ -14,6 +16,7 @@ export interface Venta {
   efectivo: number;
   cambio: number;
   nombreUsuario: string;
+  empresaNombre?: string; // ✅ agregado
   detalles: VentaDetalle[];
 }
 
@@ -27,5 +30,5 @@ export interface VentasResponse {
     totalPages: number;
     totalElements: number;
   };
-  timestamp: string;
+  timestamp?: string;
 }

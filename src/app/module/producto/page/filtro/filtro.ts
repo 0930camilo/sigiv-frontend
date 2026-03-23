@@ -16,18 +16,18 @@ export class FiltrosProductoComponent implements OnInit {
 
   @Input() empresaId!: number;
 
-  filtroNombre = '';
-  filtroEstado = '';
-  categoriaId: number | '' = '';
-  proveedorId: number | '' = '';
+  filtroNombre: string = '';
+  filtroEstado: string = '';
+  categoriaNombre: string = '';
+  proveedorNombre: string = '';
 
   categorias: any[] = [];
   proveedores: any[] = [];
 
   @Output() filtrarNombre = new EventEmitter<string>();
   @Output() filtrarEstado = new EventEmitter<string>();
-  @Output() filtrarCategoria = new EventEmitter<number | null>();
-  @Output() filtrarProveedor = new EventEmitter<number | null>();
+  @Output() filtrarCategoria = new EventEmitter<string | null>();
+  @Output() filtrarProveedor = new EventEmitter<string | null>();
 
   constructor(
     private categoriaService: CategoriaService,
@@ -51,26 +51,26 @@ export class FiltrosProductoComponent implements OnInit {
 
   filtrarPorCategoria() {
     this.filtrarCategoria.emit(
-      this.categoriaId ? Number(this.categoriaId) : null
+      this.categoriaNombre || null
     );
   }
 
   filtrarPorProveedor() {
     this.filtrarProveedor.emit(
-      this.proveedorId ? Number(this.proveedorId) : null
+      this.proveedorNombre || null
     );
   }
 
   cargarCategorias() {
-    this.categoriaService.getCategoriasByEmpresaP(this.empresaId).subscribe({
-      next: res => this.categorias = res || [],
+    this.categoriaService.getCategoriasByEmpresa(this.empresaId).subscribe({
+      next: res => this.categorias = res.data.categorias || [],
       error: () => Swal.fire('Error', 'No se pudieron cargar categorías', 'error')
     });
   }
 
   cargarProveedores() {
-    this.proveedorService.getProveedoresByEmpresaP(this.empresaId).subscribe({
-      next: res => this.proveedores = res || [],
+    this.proveedorService.getProveedoresByEmpresa(this.empresaId).subscribe({
+      next: res => this.proveedores = res.data.proveedores || [],
       error: () => Swal.fire('Error', 'No se pudieron cargar proveedores', 'error')
     });
   }

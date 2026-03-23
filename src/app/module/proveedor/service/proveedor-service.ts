@@ -19,25 +19,40 @@ export class ProveedorService {
     private headerUtil: HeaderTokenUtil
   ) {}
 
-  getProveedoresByEmpresa(empresaId: number, page = 0, size = 10): Observable<ProveedoresResponse> {
-    const params = new HttpParams().set('page', page).set('size', size);
-    const headers = this.headerUtil.getAuthHeaders();
+getProveedoresByEmpresa(
+  empresaId: number,
+  page = 0,
+  size = 10,
+  estado?: string,
+  nombre?: string
+): Observable<ProveedoresResponse> {
 
-   return this.http
-  .get<ProveedoresResponse>(
-    `${environment.empresasApi}/${empresaId}/proveedores`,
-    { headers, params }
-  )
-      .pipe(
-        map(res => res),
-        catchError(err => {
-          console.error('Error al obtener proveedores:', err);
-          return throwError(() => err);
-        })
-      );
+  let params = new HttpParams()
+    .set('page', page)
+    .set('size', size);
+
+  if (estado && estado.trim() !== '') {
+    params = params.set('estado', estado);
   }
 
+  if (nombre && nombre.trim() !== '') {
+    params = params.set('nombre', nombre);
+  }
 
+  const headers = this.headerUtil.getAuthHeaders();
+
+  return this.http.get<ProveedoresResponse>(
+    `${environment.proveedoresApi}/empresa/${empresaId}`,
+    { headers, params }
+  )
+  .pipe(
+    map(res => res),
+    catchError(err => {
+      console.error('Error al obtener proveedores:', err);
+      return throwError(() => err);
+    })
+  );
+}
 
   createProveedor(proveedor: ProveedorCreateRequest): Observable<ProveedorCreateResponse> {
     const headers = this.headerUtil.getAuthHeaders();
@@ -83,23 +98,8 @@ deleteProveedor(id: number): Observable<any> {
   );
 }
 
- listarPorEstado(estado: string): Observable<{ data: any[] }> {
-    const headers = this.headerUtil.getAuthHeaders();
-    const params = new HttpParams().set('estado', estado);
 
-    return this.http.get<{ data: any[] }>(
-      `${environment.proveedoresApi}/list-proveedor-status`,
-      { headers, params }
-    );
-  }
 
-buscarPorNombre(nombre: string): Observable<any> {
-  const headers = this.headerUtil.getAuthHeaders();
-  const params = new HttpParams().set('nombre', nombre);
-
-  return this.http
-    .get<any>(`${environment.proveedoresApi}/buscar`, { headers, params });
-}
 
 getProveedoresByEmpresaP(idEmpresa: number | null): Observable<any[]> {
   const headers = this.headerUtil.getAuthHeaders();

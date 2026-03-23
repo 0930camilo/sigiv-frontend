@@ -4,6 +4,7 @@ import { FiltrosCategoriaComponent } from './filtro';
 describe('FiltrosCategoriaComponent', () => {
   let component: FiltrosCategoriaComponent;
   let fixture: ComponentFixture<FiltrosCategoriaComponent>;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FiltrosCategoriaComponent]

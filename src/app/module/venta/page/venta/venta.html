@@ -1,18 +1,87 @@
 <div class="p-4 sm:p-6">
+
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+    <h2 class="text-lg font-semibold">
       🛒 Ventas de la Empresa
     </h2>
   </div>
 
- <app-reusable-table
-  [data]="ventas"
-  [columns]="columns"
-  [loading]="loading"
-  [currentPage]="currentPage"
-  [totalPages]="totalPages"
-  (next)="getVentas(currentPage + 1)"
-  (previous)="getVentas(currentPage - 1)">
-</app-reusable-table>
+  <app-filtros-ventas
+    (filtrarId)="filtrarPorId($event)">
+  </app-filtros-ventas>
 
+  <app-reusable-table
+    [data]="ventas"
+    [columns]="columns"
+    [loading]="loading"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (next)="getVentas(currentPage + 1)"
+    (previous)="getVentas(currentPage - 1)">
+  </app-reusable-table>
+
+</div>
+
+<!-- MODAL DETALLE -->
+<div
+  *ngIf="mostrarDetalle && ventaSeleccionada"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  role="dialog"
+  aria-modal="true">
+
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-3xl">
+
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">
+        🧾 Detalle Venta #{{ ventaSeleccionada.idventa }}
+      </h3>
+      <button
+        type="button"
+        class="text-red-600 text-xl"
+        aria-label="Cerrar"
+        (click)="mostrarDetalle = false">
+        ✖
+      </button>
+    </div>
+
+    <table class="w-full border text-sm">
+      <thead class="bg-gray-100 dark:bg-gray-700">
+        <tr>
+          <th class="p-2 text-left">Producto</th>
+          <th class="p-2 text-center">Cantidad</th>
+          <th class="p-2 text-center">Precio</th>
+          <th class="p-2 text-center">Subtotal</th>
+        </tr>
+      </thead>
+
+      <tbody *ngIf="ventaSeleccionada.detalles?.length; else sinDetalles">
+        <tr *ngFor="let d of ventaSeleccionada.detalles">
+          <td class="p-2">{{ d.descripcionProducto }}</td>
+          <td class="p-2 text-center">{{ d.cantidad }}</td>
+          <td class="p-2 text-center">
+            {{ d.precio | number:'1.0-0' }}
+          </td>
+          <td class="p-2 text-center">
+            {{ d.subtotal | number:'1.0-0' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #sinDetalles>
+      <div class="p-4 text-center text-gray-500">
+        No hay productos en esta venta
+      </div>
+    </ng-template>
+
+    <div class="flex justify-end mt-4">
+      <button
+        type="button"
+        class="px-4 py-2 bg-blue-600 text-white rounded"
+        (click)="mostrarDetalle = false">
+        Cerrar
+      </button>
+    </div>
+
+  </div>
 </div>

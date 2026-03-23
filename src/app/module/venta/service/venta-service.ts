@@ -1,9 +1,10 @@
-  import { Injectable } from '@angular/core';
-  import { HttpClient, HttpParams } from '@angular/common/http';
-  import { Observable, throwError, catchError } from 'rxjs';
-  import { environment } from '../../../../environments/environment';
-  import { HeaderTokenUtil } from '../../../shared/services/header-token-util';
-  import { VentasResponse } from '../model/venta.model';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
+import { HeaderTokenUtil } from '../../../shared/services/header-token-util';
+import { VentasResponse } from '../model/venta.model';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,18 +18,37 @@ export class VentaService {
   getVentasByEmpresa(
     empresaId: number,
     page = 0,
-    size = 10
+    size = 10,
+idVenta?: number | null
+
   ): Observable<VentasResponse> {
 
-    const params = new HttpParams()
-      .set('page', page)
-      .set('size', size);
+ let params = new HttpParams()
+  .set('page', page.toString())
+  .set('size', size.toString());
 
-    const headers = this.headerUtil.getAuthHeaders();
+if (idVenta !== null && idVenta !== undefined) {
+  params = params.set('idVenta', idVenta.toString());
+}
+
 
     return this.http.get<VentasResponse>(
-      `http://localhost:8080/ventas/empresa/${empresaId}/ventas`,
-      { headers, params }
+      `${environment.ventasApi}/empresa/${empresaId}/ventas`,
+      {
+        headers: this.headerUtil.getAuthHeaders(),
+        params
+      }
     );
   }
+
+  descargarFactura(id: number) {
+    return this.http.get(
+      `${environment.ventasApi}/${id}/factura`,
+      {
+        responseType: 'blob',
+        headers: this.headerUtil.getAuthHeaders()
+      }
+    );
+  }
+
 }

@@ -20,26 +20,26 @@
     <option value="Inactivo">Inactivo</option>
   </select>
 
-  <!-- CATEGORÍA -->
+  <!-- CATEGORÍA (ENVÍA NOMBRE) -->
   <select
     class="border rounded px-3 py-2"
-    [(ngModel)]="categoriaId"
+    [(ngModel)]="categoriaNombre"
     (change)="filtrarPorCategoria()"
   >
     <option value="">Categoría</option>
-    <option *ngFor="let c of categorias" [value]="c.idCategoria">
+    <option *ngFor="let c of categorias" [ngValue]="c.nombre">
       {{ c.nombre }}
     </option>
   </select>
 
-  <!-- PROVEEDOR -->
+  <!-- PROVEEDOR (ENVÍA NOMBRE) -->
   <select
     class="border rounded px-3 py-2"
-    [(ngModel)]="proveedorId"
+    [(ngModel)]="proveedorNombre"
     (change)="filtrarPorProveedor()"
   >
     <option value="">Proveedor</option>
-    <option *ngFor="let p of proveedores" [value]="p.idProveedor">
+    <option *ngFor="let p of proveedores" [ngValue]="p.nombre">
       {{ p.nombre }}
     </option>
   </select>

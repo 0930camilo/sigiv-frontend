@@ -93,15 +93,15 @@ export class EditarProductoComponent implements OnInit, OnChanges {
   // CARGAR LISTAS
   // ===============================
   cargarCategorias(): void {
-    this.categoriaService.getCategoriasByEmpresaP(this.empresaId!).subscribe({
-      next: res => this.categorias = res || [],
+    this.categoriaService.getCategoriasByEmpresa(this.empresaId!).subscribe({
+      next: res => this.categorias = res.data.categorias || [],
       error: () => Swal.fire('Error', 'No se pudieron cargar las categorías', 'error')
     });
   }
 
   cargarProveedores(): void {
-    this.proveedorService.getProveedoresByEmpresaP(this.empresaId!).subscribe({
-      next: res => this.proveedores = res || [],
+    this.proveedorService.getProveedoresByEmpresa(this.empresaId!).subscribe({
+      next: res => this.proveedores = res.data.proveedores || [],
       error: () => Swal.fire('Error', 'No se pudieron cargar los proveedores', 'error')
     });
   }

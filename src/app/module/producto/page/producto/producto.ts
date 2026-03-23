@@ -21,8 +21,7 @@ import { FiltrosProductoComponent } from '../filtro/filtro';
     ReusableTable,
     EditarProductoComponent,
     EliminarProductoComponent,
-     FiltrosProductoComponent
-
+    FiltrosProductoComponent
   ],
   templateUrl: './producto.html',
   styleUrls: ['./producto.scss']
@@ -35,53 +34,67 @@ export class Producto implements OnInit {
   empresaId: number | null = null;
   productoSeleccionado: any = null;
   productoAEliminar: any = null;
+
   currentPage = 0;
   totalPages = 0;
   pageSize = 10;
 
-columns: TableColumn[] = [
-  { field: 'idProducto', header: 'ID', type: 'text' },
-  { field: 'nombre', header: 'Nombre', type: 'text' },
-  { field: 'descripcion', header: 'Descripción', type: 'text' },
-  { field: 'cantidad', header: 'Cantidad', type: 'text' },
-  { field: 'precioCompra', header: 'Precio Compra', type: 'text' },
-  { field: 'precio', header: 'Precio Venta', type: 'text' },
-  { field: 'estado', header: 'Estado', type: 'status' },
-  { field: 'categoriaNombre', header: 'Categoría', type: 'text' },
-  { field: 'proveedorNombre', header: 'Proveedor', type: 'text' },
-  { field: 'acciones', header: 'Acciones', type: 'actions' }
-];
+  filtros: any = {
+    nombre: '',
+    estado: '',
+    categoria: null,
+    proveedor: null
+  };
 
+  columns: TableColumn[] = [
+    { field: 'idProducto', header: 'ID', type: 'text' },
+    { field: 'nombre', header: 'Nombre', type: 'text' },
+    { field: 'descripcion', header: 'Descripción', type: 'text' },
+    { field: 'cantidad', header: 'Cantidad', type: 'number' },
+    { field: 'precioCompra', header: 'Precio Compra', type: 'currency' },
+    { field: 'precio', header: 'Precio Venta', type: 'currency' },
+    { field: 'estado', header: 'Estado', type: 'status' },
+    { field: 'categoriaNombre', header: 'Categoría', type: 'text' },
+    { field: 'proveedorNombre', header: 'Proveedor', type: 'text' },
+    { field: 'acciones', header: 'Acciones', type: 'actions' }
+  ];
 
   constructor(
     private productoService: ProductoService,
-     private empresaService: EmpresaService,
     private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.empresaId = this.authService.getEmpresaId();
-    if (this.empresaId) this.getProductos();
+    if (this.empresaId) {
+      this.getProductos();
+    }
   }
-getProductos(page: number = 0): void {
-  if (!this.empresaId) return;
 
-  this.loading = true;
+  getProductos(page: number = 0): void {
+    if (!this.empresaId) return;
 
-  this.productoService.getProductosByEmpresa(this.empresaId, page, this.pageSize)
-    .subscribe({
-      next: (data) => {
-        this.productos = data.productos ?? [];
-        this.currentPage = data.currentPage ?? 0;
-        this.totalPages = data.totalPages ?? 0;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error al cargar productos:', err);
-        this.loading = false;
-      }
-    });
-}
+    this.loading = true;
+
+    this.productoService
+      .getProductosByEmpresa(
+        this.empresaId,
+        page,
+        this.pageSize,
+        this.filtros
+      )
+      .subscribe({
+        next: (data) => {
+          this.productos = data.productos ?? [];
+          this.currentPage = data.currentPage ?? 0;
+          this.totalPages = data.totalPages ?? 0;
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+        }
+      });
+  }
 
 
   onProductoCreado(nuevoProducto: any): void {

@@ -83,10 +83,10 @@ export class RegisterProducto implements OnInit {
 cargarCategorias() {
   console.log("Empresa enviada >>> ", this.empresaId); // 👈 IMPORTANTÍSIMO
 
-  this.categoriaService.getCategoriasByEmpresaP(this.empresaId).subscribe({
+  this.categoriaService.getCategoriasByEmpresa(this.empresaId!).subscribe({
     next: (res) => {
       console.log("Respuesta categorías:", res);
-      this.categorias = res || [];
+      this.categorias = res.data.categorias || [];
     },
     error: (err) => {
       console.error("Error cargando categorías:", err);
@@ -96,33 +96,21 @@ cargarCategorias() {
 }
 
 cargarProveedores() {
-  console.log("Empresa enviada >>> ", this.empresaId); // 👈 IMPORTANTÍSIMO
+  if (!this.empresaId) return;
 
-  this.proveedorService.getProveedoresByEmpresaP(this.empresaId).subscribe({
-    next: (res) => {
-      console.log("Respuesta proveedores:", res);
-      this.proveedores = res || [];
-    },
-    error: (err) => {
-      console.error("Error cargando proveedores:", err);
-      Swal.fire('Error', 'No se pudieron cargar los proveedores', 'error');
-    }
-  });
+  this.proveedorService
+    .getProveedoresByEmpresa(this.empresaId, 0, 1000)
+    .subscribe({
+      next: (res) => {
+        console.log("Respuesta proveedores:", res);
+        this.proveedores = res.data?.proveedores || [];
+      },
+      error: (err) => {
+        console.error("Error cargando proveedores:", err);
+        Swal.fire('Error', 'No se pudieron cargar los proveedores', 'error');
+      }
+    });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   // ===============================

@@ -2,14 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
-import { TableColumn } from '../../../../shared/interface/TableColumn';
 import { AuthService } from '../../../auth/service/auth-service';
+import { CategoriaService } from '../../service/categoria-service';
+import { Categoria, CategoriasResponse } from '../../model/categorias.model';
+
 import { ReusableTable } from '../../../../components/reusable-table/reusable-table';
 import { RegisterCategoria } from '../register/register';
-import { CategoriaService } from '../../service/categoria-service';
 import { EditarCategoriaComponent } from '../editar/editar';
 import { EliminarCategoriaComponent } from '../eliminar/eliminar';
 import { FiltrosCategoriaComponent } from '../filtro/filtro';
+import { TableColumn } from '../../../../shared/interface/TableColumn';
 
 @Component({
   selector: 'app-categoria',
@@ -26,17 +28,20 @@ import { FiltrosCategoriaComponent } from '../filtro/filtro';
   templateUrl: './categoria.html',
   styleUrls: ['./categoria.scss']
 })
-export class Categoria implements OnInit {
+export class CategoriaComponent implements OnInit {
 
-  categorias: any[] = [];
+  categorias: Categoria[] = [];
   totalPages = 0;
   currentPage = 0;
   loading = false;
   empresaId: number | null = null;
   pageSize = 10;
 
-  categoriaSeleccionada: any = null;
-  categoriaAEliminar: any = null;
+  filtroNombre = '';
+  filtroEstado = '';
+
+  categoriaSeleccionada: Categoria | null = null;
+  categoriaAEliminar: Categoria | null = null;
 
   columns: TableColumn[] = [
     { field: 'idCategoria', header: 'ID', type: 'text' },
@@ -59,15 +64,21 @@ export class Categoria implements OnInit {
 
   getCategorias(page: number = 0): void {
     if (!this.empresaId) return;
-
     if (page < 0 || (this.totalPages > 0 && page >= this.totalPages)) return;
 
     this.loading = true;
 
-    this.categoriaService.getCategoriasByEmpresa(this.empresaId, page, this.pageSize)
+    this.categoriaService
+      .getCategoriasByEmpresa(
+        this.empresaId,
+        page,
+        this.pageSize,
+        this.filtroEstado,
+        this.filtroNombre
+      )
       .pipe(finalize(() => this.loading = false))
       .subscribe({
-        next: (res: any) => {
+        next: (res: CategoriasResponse) => {
           this.categorias = res.data.categorias;
           this.totalPages = res.data.totalPages;
           this.currentPage = res.data.currentPage;
@@ -76,67 +87,35 @@ export class Categoria implements OnInit {
       });
   }
 
-  onCategoriaCreada(nuevaCategoria: any): void {
-    this.categorias.unshift(nuevaCategoria);
+  filtrarPorNombre(nombre: string) {
+    this.filtroNombre = nombre;
+    this.getCategorias(0);
   }
 
-  onCategoriaActualizada(categoriaEditada: any): void {
-    const index = this.categorias.findIndex(
-      c => c.idCategoria === categoriaEditada.idCategoria
-    );
+  filtrarPorEstado(estado: string) {
+    this.filtroEstado = estado;
+    this.getCategorias(0);
+  }
 
-    if (index !== -1) {
-      this.categorias[index] = categoriaEditada;
-    }
+  onCategoriaCreada(nuevaCategoria: Categoria): void {
+    this.getCategorias(0);
+  }
 
+  onCategoriaActualizada(categoriaEditada: Categoria): void {
+    this.getCategorias(this.currentPage);
     this.categoriaSeleccionada = null;
   }
 
-
- onCategoriaEliminada(idCategoria: number): void {
-    this.categorias = this.categorias.filter(
-      c => c.idCategoria !== idCategoria
-    );
+  onCategoriaEliminada(idCategoria: number): void {
+    this.getCategorias(this.currentPage);
     this.categoriaAEliminar = null;
   }
 
-  onAction(event: { action: string; row: any }) {
+  onAction(event: { action: string; row: Categoria }) {
     if (event.action === 'edit') {
       this.categoriaSeleccionada = { ...event.row };
     } else if (event.action === 'delete') {
       this.categoriaAEliminar = { ...event.row };
     }
   }
-
-
-
-filtrarPorNombre(nombre: string) {
-  if (!nombre.trim()) {
-    this.getCategorias();
-    return;
-  }
-
-  this.categoriaService.buscarPorNombre(nombre)
-    .subscribe({
-      next: (res) => {
-        // buscar devuelve un array directo
-        this.categorias = res;
-      },
-      error: (err) => console.error("Error en filtro por nombre:", err)
-    });
-}
-filtrarPorEstado(estado: string) {
-  if (!estado) {
-    this.getCategorias();
-    return;
-  }
-
-  this.categoriaService.listarPorEstado(estado)
-    .subscribe({
-      next: (res) => {
-        this.categorias = res.data ?? [];
-      }
-    });
-}
-
 }

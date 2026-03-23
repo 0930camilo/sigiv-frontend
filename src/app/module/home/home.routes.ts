@@ -12,7 +12,7 @@ export const HOME_ROUTES: Routes = [
       { path: 'ecommerce', loadComponent: () => import('./page/ecommerce/ecommerce').then(m => m.Ecommerce) },
       { path: 'users',      loadComponent: () => import('../users/page/user/user').then(m => m.User) },
       { path: 'proveedores', loadComponent: () => import('../proveedor/page/proveedor/proveedor').then(m => m.Proveedor) },
-      { path: 'categorias', loadComponent: () => import('../categorias/page/categoria/categoria').then(m => m.Categoria) },
+      { path: 'categorias', loadComponent: () => import('../categorias/page/categoria/categoria').then(m => m.CategoriaComponent) },
       { path: 'productos', loadComponent: () => import('../producto/page/producto/producto').then(m => m.Producto) },
       { path: 'ventas', loadComponent: () => import('../venta/page/venta/venta').then(m => m.VentaComponent) }
     ]

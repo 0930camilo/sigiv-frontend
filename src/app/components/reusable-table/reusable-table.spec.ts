@@ -1,23 +1,26 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TableColumn } from '../../shared/interface/TableColumn';
 
-import { ReusableTable } from './reusable-table';
+@Component({
+  selector: 'app-reusable-table',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './reusable-table.html',
+  styleUrl: './reusable-table.scss'
+})
+export class ReusableTable {
 
-describe('ReusableTable', () => {
-  let component: ReusableTable;
-  let fixture: ComponentFixture<ReusableTable>;
+  @Input() data: any[] = [];
+  @Input() columns: TableColumn[] = [];
+  @Input() loading = false;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ReusableTable]
-    })
-    .compileComponents();
+  @Input() currentPage = 0;
+  @Input() totalPages = 0;
 
-    fixture = TestBed.createComponent(ReusableTable);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  @Output() next = new EventEmitter<void>();
+  @Output() previous = new EventEmitter<void>();
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+  // para Editar / Eliminar
+  @Output() actionClick = new EventEmitter<{ action: string; row: any }>();
+}
