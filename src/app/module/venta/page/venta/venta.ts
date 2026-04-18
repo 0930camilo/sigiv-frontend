@@ -40,7 +40,7 @@ export class VentaComponent implements OnInit {
 
   columns: TableColumn[] = [
     { field: 'idventa', header: 'ID' },
-    { field: 'fecha', header: 'Fecha' },
+    { field: 'fecha', header: 'Fecha', type: 'date' },
     { field: 'nombreCliente', header: 'Cliente' },
     { field: 'telefonoCliente', header: 'Teléfono' },
     { field: 'empresaNombre', header: 'Empresa' },
