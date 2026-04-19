@@ -7,101 +7,119 @@
       <h1 class="text-xl font-bold text-blue-600">SIGIV</h1>
     </div>
 
-    <nav class="flex-1 px-4 py-6 space-y-2">
+    <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+
+      <!-- Principal -->
       <a routerLink="dashboard" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
         class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
         📊 Dashboard
       </a>
-
       <a routerLink="ecommerce" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
         class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
         🛒 eCommerce
       </a>
-
       <a routerLink="analytics" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
         class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
         📈 Analytics
       </a>
-
       <a *ngIf="isEmpresa" routerLink="users" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
         class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
         👥 Usuarios
       </a>
 
-      <a *ngIf="isEmpresa"
-   routerLink="proveedores"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  🚚 Proveedores
-</a>
+      <!-- Inventario -->
+      <div *ngIf="isEmpresa" class="pt-3">
+        <button (click)="toggleMenu('inventario')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+          <span>📦 Inventario</span>
+          <span class="text-[10px] transition-transform duration-200" [class.rotate-180]="menuOpen['inventario']">▼</span>
+        </button>
+        <div *ngIf="menuOpen['inventario']" class="space-y-0.5 mt-1">
+          <a routerLink="proveedores" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            🚚 Proveedores
+          </a>
+          <a routerLink="categorias" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            🗂️ Categorías
+          </a>
+          <a routerLink="productos" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            📦 Productos
+          </a>
+        </div>
+      </div>
 
-<a *ngIf="isEmpresa"
-   routerLink="categorias"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  🗂️ Categorías
-</a>
-<a *ngIf="isEmpresa"
-   routerLink="productos"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  📦 Productos
-</a>
+      <!-- Ventas -->
+      <div class="pt-3">
+        <button (click)="toggleMenu('ventas')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+          <span>💰 Ventas</span>
+          <span class="text-[10px] transition-transform duration-200" [class.rotate-180]="menuOpen['ventas']">▼</span>
+        </button>
+        <div *ngIf="menuOpen['ventas']" class="space-y-0.5 mt-1">
+          <a *ngIf="isEmpresa" routerLink="ventas" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            🛒 Ventas
+          </a>
+          <a routerLink="registrar-venta" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            💰 Registrar Venta
+          </a>
+        </div>
+      </div>
 
+      <!-- Cotizaciones -->
+      <div class="pt-3">
+        <button (click)="toggleMenu('cotizaciones')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+          <span>📋 Cotizaciones</span>
+          <span class="text-[10px] transition-transform duration-200" [class.rotate-180]="menuOpen['cotizaciones']">▼</span>
+        </button>
+        <div *ngIf="menuOpen['cotizaciones']" class="space-y-0.5 mt-1">
+          <a *ngIf="isEmpresa" routerLink="cotizaciones" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            📋 Cotizaciones
+          </a>
+          <a routerLink="registrar-cotizacion" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            📝 Registrar Cotización
+          </a>
+        </div>
+      </div>
 
-<a *ngIf="isEmpresa"
-   routerLink="ventas"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  🛒 Ventas
-</a>
+      <!-- Devoluciones -->
+      <div class="pt-3">
+        <button (click)="toggleMenu('devoluciones')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+          <span>🔄 Devoluciones</span>
+          <span class="text-[10px] transition-transform duration-200" [class.rotate-180]="menuOpen['devoluciones']">▼</span>
+        </button>
+        <div *ngIf="menuOpen['devoluciones']" class="space-y-0.5 mt-1">
+          <a *ngIf="isEmpresa" routerLink="devoluciones" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            🔄 Devoluciones
+          </a>
+          <a routerLink="registrar-devolucion" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            📝 Registrar Devolución
+          </a>
+        </div>
+      </div>
 
-<a routerLink="registrar-venta"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  💰 Registrar Venta
-</a>
-
-<a *ngIf="isEmpresa"
-   routerLink="cotizaciones"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  📋 Cotizaciones
-</a>
-
-<a routerLink="registrar-cotizacion"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  📝 Registrar Cotización
-</a>
-
-<a *ngIf="isEmpresa"
-   routerLink="devoluciones"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  🔄 Devoluciones
-</a>
-
-<a routerLink="registrar-devolucion"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  📝 Registrar Devolución
-</a>
-
-<a *ngIf="isEmpresa"
-   routerLink="personas"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  👤 Personas
-</a>
-
-<a *ngIf="isEmpresa"
-   routerLink="nominas"
-   routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
-   class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
-  💼 Nóminas
-</a>
-
+      <!-- Nómina -->
+      <div *ngIf="isEmpresa" class="pt-3">
+        <button (click)="toggleMenu('nomina')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+          <span>👤 Nómina</span>
+          <span class="text-[10px] transition-transform duration-200" [class.rotate-180]="menuOpen['nomina']">▼</span>
+        </button>
+        <div *ngIf="menuOpen['nomina']" class="space-y-0.5 mt-1">
+          <a routerLink="personas" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            👤 Personas
+          </a>
+          <a routerLink="nominas" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+            class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+            💼 Nóminas
+          </a>
+        </div>
+      </div>
 
     </nav>
   </aside>

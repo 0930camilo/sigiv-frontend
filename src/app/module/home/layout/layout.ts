@@ -23,6 +23,13 @@ export class Layout implements OnInit, OnDestroy {
   isUsuario = false;
   internalLoading = false;
   totalDelDia = 0;
+  menuOpen: Record<string, boolean> = {
+    inventario: false,
+    ventas: false,
+    cotizaciones: false,
+    devoluciones: false,
+    nomina: false
+  };
   private destroy$ = new Subject<void>();
   private loadingTimeout: any = null;
   private isFirstLoad = true;
@@ -172,5 +179,9 @@ export class Layout implements OnInit, OnDestroy {
 
   getPanelTitle(): string {
     return this.isEmpresa ? 'Panel de Empresa' : 'Panel de Usuario';
+  }
+
+  toggleMenu(section: string): void {
+    this.menuOpen[section] = !this.menuOpen[section];
   }
 }
