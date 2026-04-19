@@ -54,9 +54,12 @@ export class EmpresaService {
   }
 
   /** 🔹 Ganancia total por empresa */
-  getGananciaTotal(idEmpresa: number): Observable<number> {
+  getGananciaTotal(idEmpresa: number, fechaInicio?: string, fechaFin?: string): Observable<number> {
     const headers = this.headerUtil.getAuthHeaders();
-    const url = `${environment.empresasApi}/ganancia/empresa/${idEmpresa}`;
+    let url = `${environment.empresasApi}/ganancia/empresa/${idEmpresa}`;
+    if (fechaInicio && fechaFin) {
+      url += `?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+    }
     return this.http.get<any>(url, { headers }).pipe(
       map(response => Number(response.data ?? 0)),
       catchError((err: any) => {

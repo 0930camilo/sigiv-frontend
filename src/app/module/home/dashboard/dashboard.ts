@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { EmpresaService } from '../../home/dashboard/empresa/service/empresa.service';
 import { UsuarioService } from '../../home/dashboard/usuario/service/usuario.service';
 import { AuthService } from '../../auth/service/auth-service';
@@ -27,7 +29,8 @@ export class Dashboard implements OnInit {
   constructor(
     private empresaService: EmpresaService,
     private usuarioService: UsuarioService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -41,8 +44,8 @@ export class Dashboard implements OnInit {
       const hoy = new Date();
       const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
       const finMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
-      this.fechaInicio = inicioMes.toISOString().split('T')[0];
-      this.fechaFin = finMes.toISOString().split('T')[0];
+      this.fechaInicio = `${inicioMes.getFullYear()}-${String(inicioMes.getMonth() + 1).padStart(2, '0')}-${String(inicioMes.getDate()).padStart(2, '0')}`;
+      this.fechaFin = `${finMes.getFullYear()}-${String(finMes.getMonth() + 1).padStart(2, '0')}-${String(finMes.getDate()).padStart(2, '0')}`;
 
       this.cargarDatos();
     } else {
@@ -54,37 +57,54 @@ export class Dashboard implements OnInit {
   private cargarDatos(): void {
     if (this.isEmpresa) {
       this.cargarUsuariosActivos();
-      this.cargarVentasEmpresa();
-      this.cargarGananciaEmpresa();
+      this.cargarDatosEmpresa();
     } else if (this.isUsuario) {
-      this.cargarVentasUsuario();
-      this.cargarGananciaUsuario();
+      this.cargarDatosUsuario();
     }
   }
 
   /** 🔹 Empresa: cargar usuarios activos */
   private cargarUsuariosActivos(): void {
     this.empresaService.getUsuariosActivos(this.idEntidad).subscribe({
-      next: (total: number) => (this.usuariosActivos = total),
+      next: (total: number) => {
+        this.usuariosActivos = total;
+        this.cdr.markForCheck();
+      },
       error: (err: any) => console.error('Error al obtener usuarios activos:', err)
     });
   }
 
-  /** 🔹 Empresa: total vendido entre fechas */
-  private cargarVentasEmpresa(): void {
+  /** 🔹 Empresa: cargar ventas + ganancia en paralelo */
+  private cargarDatosEmpresa(): void {
     if (!this.fechaInicio || !this.fechaFin) return;
-    this.empresaService.getTotalVendidoEntreFechas(this.idEntidad, this.fechaInicio, this.fechaFin).subscribe({
-      next: (total: number) => (this.ventasDelMes = total),
-      error: (err: any) => console.error('Error al obtener ventas de empresa:', err)
+    forkJoin({
+      ventas: this.empresaService.getTotalVendidoEntreFechas(this.idEntidad, this.fechaInicio, this.fechaFin).pipe(
+        catchError(err => { console.error('Error ventas empresa:', err); return of(0); })
+      ),
+      ganancia: this.empresaService.getGananciaTotal(this.idEntidad, this.fechaInicio, this.fechaFin).pipe(
+        catchError(err => { console.error('Error ganancia empresa:', err); return of(0); })
+      )
+    }).subscribe(({ ventas, ganancia }) => {
+      this.ventasDelMes = ventas;
+      this.gananciaTotal = ganancia;
+      this.cdr.markForCheck();
     });
   }
 
-  /** 🔹 Usuario: total vendido entre fechas */
-  private cargarVentasUsuario(): void {
+  /** 🔹 Usuario: cargar ventas + ganancia en paralelo */
+  private cargarDatosUsuario(): void {
     if (!this.fechaInicio || !this.fechaFin) return;
-    this.usuarioService.getTotalVendidoEntreFechas(this.idEntidad, this.fechaInicio, this.fechaFin).subscribe({
-      next: (total: number) => (this.ventasDelMes = total),
-      error: (err: any) => console.error('Error al obtener ventas del usuario:', err)
+    forkJoin({
+      ventas: this.usuarioService.getTotalVendidoEntreFechas(this.idEntidad, this.fechaInicio, this.fechaFin).pipe(
+        catchError(err => { console.error('Error ventas usuario:', err); return of(0); })
+      ),
+      ganancia: this.usuarioService.getGananciaTotal(this.idEntidad, this.fechaInicio, this.fechaFin).pipe(
+        catchError(err => { console.error('Error ganancia usuario:', err); return of(0); })
+      )
+    }).subscribe(({ ventas, ganancia }) => {
+      this.ventasDelMes = ventas;
+      this.gananciaTotal = ganancia;
+      this.cdr.markForCheck();
     });
   }
 
@@ -95,23 +115,7 @@ export class Dashboard implements OnInit {
       return;
     }
 
-    if (this.isEmpresa) this.cargarVentasEmpresa();
-    else if (this.isUsuario) this.cargarVentasUsuario();
-  }
-
-  /** 🔹 Empresa: ganancia total */
-  private cargarGananciaEmpresa(): void {
-    this.empresaService.getGananciaTotal(this.idEntidad).subscribe({
-      next: (data: number) => (this.gananciaTotal = data),
-      error: (err: any) => console.error('Error al obtener ganancia de empresa:', err)
-    });
-  }
-
-  /** 🔹 Usuario: ganancia total */
-  private cargarGananciaUsuario(): void {
-    this.usuarioService.getGananciaTotal(this.idEntidad).subscribe({
-      next: (data: number) => (this.gananciaTotal = data),
-      error: (err: any) => console.error('Error al obtener ganancia de usuario:', err)
-    });
+    if (this.isEmpresa) this.cargarDatosEmpresa();
+    else if (this.isUsuario) this.cargarDatosUsuario();
   }
 }

@@ -1,0 +1,92 @@
+<div class="p-4 sm:p-6">
+
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-800">👤 Personas</h2>
+    <button (click)="abrirModalCrear()"
+      class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition">
+      + Nueva Persona
+    </button>
+  </div>
+
+  <app-reusable-table
+    [data]="personas"
+    [columns]="columns"
+    [loading]="loading"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (next)="cargarPersonas(currentPage + 1)"
+    (previous)="cargarPersonas(currentPage - 1)"
+    (actionClick)="onAction($event)">
+  </app-reusable-table>
+
+  <div *ngIf="!loading && personas.length === 0" class="text-center text-gray-500 py-6">
+    No hay personas registradas en esta empresa.
+  </div>
+
+  <!-- Modal Crear/Editar -->
+  <div *ngIf="mostrarModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+      <h3 class="text-lg font-semibold mb-4">
+        {{ editando ? '✏️ Editar Persona' : '➕ Nueva Persona' }}
+      </h3>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+          <input type="text" [(ngModel)]="form.nombre"
+            class="w-full border rounded px-3 py-2 text-sm" placeholder="Nombre completo" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+          <input type="email" [(ngModel)]="form.correo"
+            class="w-full border rounded px-3 py-2 text-sm" placeholder="correo@ejemplo.com" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+          <input type="text" [(ngModel)]="form.telefono"
+            class="w-full border rounded px-3 py-2 text-sm" placeholder="300 123 4567" />
+        </div>
+
+        <div class="col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+          <input type="text" [(ngModel)]="form.direccion"
+            class="w-full border rounded px-3 py-2 text-sm" placeholder="Dirección" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Nacimiento</label>
+          <input type="date" [(ngModel)]="form.fechaNacimiento"
+            class="w-full border rounded px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Ingreso</label>
+          <input type="date" [(ngModel)]="form.fechaIngreso"
+            class="w-full border rounded px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+          <select [(ngModel)]="form.estado" class="w-full border rounded px-3 py-2 text-sm">
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button (click)="cerrarModal()"
+          class="bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-400 transition">
+          Cancelar
+        </button>
+        <button (click)="guardar()"
+          class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition">
+          {{ editando ? 'Actualizar' : 'Crear' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

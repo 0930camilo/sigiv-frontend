@@ -34,8 +34,10 @@
     [data]="devoluciones"
     [columns]="columns"
     [loading]="loading"
-    [currentPage]="0"
-    [totalPages]="1">
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (next)="cargarDevoluciones(currentPage + 1)"
+    (previous)="cargarDevoluciones(currentPage - 1)">
   </app-reusable-table>
 
   <div *ngIf="!loading && ventaBuscada && devoluciones.length === 0" class="text-center text-gray-500 py-6">

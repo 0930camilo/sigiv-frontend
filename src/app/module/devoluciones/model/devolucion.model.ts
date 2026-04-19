@@ -14,3 +14,16 @@ export interface DevolucionResponse {
   motivo: string;
   fecha: string;
 }
+
+export interface DevolucionApiResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    devoluciones: DevolucionResponse[];
+    totalElements: number;
+    totalPages: number;
+    currentPage: number;
+  };
+  timestamp: string;
+}

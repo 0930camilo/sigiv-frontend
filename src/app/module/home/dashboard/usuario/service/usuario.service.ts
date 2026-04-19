@@ -43,10 +43,12 @@ export class UsuarioService {
   }
 
   /** ✅ Ganancia total por usuario (corregido) */
-  getGananciaTotal(idUsuario: number): Observable<number> {
+  getGananciaTotal(idUsuario: number, fechaInicio?: string, fechaFin?: string): Observable<number> {
     const headers = this.headerUtil.getAuthHeaders();
-    // 🔹 URL corregida
-    const url = `${environment.usersApi}/ganancia/usuario/${idUsuario}`;
+    let url = `${environment.usersApi}/ganancia/usuario/${idUsuario}`;
+    if (fechaInicio && fechaFin) {
+      url += `?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+    }
     return this.http.get<any>(url, { headers }).pipe(
       map(response => Number(response.data ?? 0)), // ✅ tu backend usa "data"
       catchError((err: any) => {

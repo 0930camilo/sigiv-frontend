@@ -11,6 +11,9 @@ export const environment = {
   cotizacionesApi: 'http://localhost:8080/cotizaciones',
   detalleCotizacionApi: 'http://localhost:8080/api/detallecotizacion',
   devolucionesApi: 'http://localhost:8080/api/devoluciones',
+  personasApi: 'http://localhost:8080/personas',
+  nominasApi: 'http://localhost:8080/nominas',
+  personaNominaApi: 'http://localhost:8080/persona-nomina',
 };
 
 

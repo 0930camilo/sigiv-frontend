@@ -30,7 +30,7 @@
         <div><strong>Cliente:</strong> {{ ventaEncontrada.nombreCliente }}</div>
         <div><strong>Teléfono:</strong> {{ ventaEncontrada.telefonoCliente }}</div>
         <div><strong>Fecha:</strong> {{ ventaEncontrada.fecha }}</div>
-        <div><strong>Total:</strong> {{ ventaEncontrada.total | number:'1.0-0' }}</div>
+        <div><strong>Total:</strong> {{ ventaEncontrada.total | number:'1.0-0':'es-CO' }}</div>
         <div><strong>Vendedor:</strong> {{ ventaEncontrada.nombreUsuario }}</div>
       </div>
 
@@ -50,8 +50,8 @@
             <tr *ngFor="let d of ventaEncontrada.detalles">
               <td class="p-1">{{ d.descripcionProducto }}</td>
               <td class="p-1 text-center">{{ d.cantidad }}</td>
-              <td class="p-1 text-center">{{ d.precio | number:'1.0-0' }}</td>
-              <td class="p-1 text-center">{{ d.subtotal | number:'1.0-0' }}</td>
+              <td class="p-1 text-center">{{ d.precio | number:'1.0-0':'es-CO' }}</td>
+              <td class="p-1 text-center">{{ d.subtotal | number:'1.0-0':'es-CO' }}</td>
             </tr>
           </tbody>
         </table>
@@ -149,7 +149,7 @@
             <td class="p-2">{{ p.idProducto }}</td>
             <td class="p-2">{{ p.nombre }}</td>
             <td class="p-2 text-center">{{ p.cantidad }}</td>
-            <td class="p-2 text-center">{{ p.precio | number:'1.0-0' }}</td>
+            <td class="p-2 text-center">{{ p.precio | number:'1.0-0':'es-CO' }}</td>
             <td class="p-2 text-center">
               <button
                 (click)="seleccionarProducto(p)"

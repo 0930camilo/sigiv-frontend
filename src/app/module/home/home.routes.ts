@@ -19,7 +19,9 @@ export const HOME_ROUTES: Routes = [
       { path: 'cotizaciones', loadComponent: () => import('../cotizacion/page/cotizacion/cotizacion').then(m => m.CotizacionComponent) },
       { path: 'registrar-cotizacion', loadComponent: () => import('../cotizacion/page/registrar-cotizacion/registrar-cotizacion').then(m => m.RegistrarCotizacionComponent) },
       { path: 'devoluciones', loadComponent: () => import('../devoluciones/page/devolucion/devolucion').then(m => m.DevolucionComponent) },
-      { path: 'registrar-devolucion', loadComponent: () => import('../devoluciones/page/registrar-devolucion/registrar-devolucion').then(m => m.RegistrarDevolucionComponent) }
+      { path: 'registrar-devolucion', loadComponent: () => import('../devoluciones/page/registrar-devolucion/registrar-devolucion').then(m => m.RegistrarDevolucionComponent) },
+      { path: 'personas', loadComponent: () => import('../persona/page/persona/persona').then(m => m.PersonaComponent) },
+      { path: 'nominas', loadComponent: () => import('../nomina/page/nomina/nomina').then(m => m.NominaComponent) }
     ]
   }
 ];

@@ -9,6 +9,7 @@ import { VentaService } from '../../service/venta-service';
 import { Producto } from '../../../producto/model/productos.model';
 import { Categoria } from '../../../categorias/model/categorias.model';
 import { ItemCarrito, VentaRequest } from '../../model/venta.model';
+import { VentaNotificacionService } from '../../../../shared/services/venta-notificacion.service';
 
 import Swal from 'sweetalert2';
 
@@ -51,6 +52,7 @@ export class RegistrarVentaComponent implements OnInit {
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
     private ventaService: VentaService,
+    private ventaNotificacion: VentaNotificacionService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -196,6 +198,7 @@ export class RegistrarVentaComponent implements OnInit {
     this.ventaService.crearVenta(venta).subscribe({
       next: (res: any) => {
         Swal.fire('Venta registrada', res.message || 'Venta creada exitosamente', 'success');
+        this.ventaNotificacion.notificarVentaRegistrada();
         this.limpiarFormulario();
         this.cargarProductos(this.currentPage);
         this.cdr.markForCheck();

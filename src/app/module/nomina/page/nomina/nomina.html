@@ -1,0 +1,184 @@
+<div class="p-4 sm:p-6">
+
+  <!-- Vista principal: Lista de Nóminas -->
+  <div *ngIf="!mostrarDetalle">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-800">💼 Nóminas</h2>
+      <button (click)="abrirModalCrear()"
+        class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition">
+        + Nueva Nómina
+      </button>
+    </div>
+
+    <app-reusable-table
+      [data]="nominas"
+      [columns]="columns"
+      [loading]="loading"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      (next)="cargarNominas(currentPage + 1)"
+      (previous)="cargarNominas(currentPage - 1)"
+      (actionClick)="onAction($event)">
+    </app-reusable-table>
+
+    <!-- Click para ver detalle -->
+    <div *ngIf="!loading && nominas.length > 0" class="mt-4">
+      <p class="text-sm text-gray-500 mb-2">Seleccione una nómina para ver las personas asignadas:</p>
+      <div class="grid gap-2">
+        <button *ngFor="let n of nominas" (click)="verDetalle(n)"
+          class="text-left border rounded px-4 py-2 hover:bg-blue-50 transition text-sm">
+          <span class="font-medium">{{ n.descripcion }}</span>
+          <span class="text-gray-500 ml-2">({{ n.fechaInicio }} - {{ n.fechaFin }})</span>
+          <span class="float-right font-semibold text-green-700">$ {{ n.totalPago | number:'1.0-0':'es-CO' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && nominas.length === 0" class="text-center text-gray-500 py-6">
+      No hay nóminas registradas en esta empresa.
+    </div>
+  </div>
+
+  <!-- Vista detalle: Personas asignadas a nómina -->
+  <div *ngIf="mostrarDetalle && nominaSeleccionada">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <button (click)="cerrarDetalle()"
+          class="text-blue-600 hover:underline text-sm mb-1">&larr; Volver a nóminas</button>
+        <h2 class="text-lg font-semibold text-gray-800">
+          📋 {{ nominaSeleccionada.descripcion }}
+        </h2>
+        <p class="text-sm text-gray-500">
+          {{ nominaSeleccionada.fechaInicio }} - {{ nominaSeleccionada.fechaFin }}
+          &nbsp;|&nbsp; Total: <span class="font-semibold text-green-700">$ {{ nominaSeleccionada.totalPago | number:'1.0-0':'es-CO' }}</span>
+        </p>
+      </div>
+      <button (click)="abrirModalAsignar()"
+        class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition">
+        + Asignar Persona
+      </button>
+    </div>
+
+    <div *ngIf="loadingDetalle" class="text-center text-gray-500 py-6">Cargando...</div>
+
+    <table *ngIf="!loadingDetalle && personasNomina.length > 0"
+      class="w-full text-sm border rounded overflow-hidden">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-4 py-2 text-left">ID Persona</th>
+          <th class="px-4 py-2 text-left">Días Trabajados</th>
+          <th class="px-4 py-2 text-left">Valor Día</th>
+          <th class="px-4 py-2 text-left">Salario</th>
+          <th class="px-4 py-2 text-left">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pn of personasNomina" class="border-t hover:bg-gray-50">
+          <td class="px-4 py-2">{{ pn.idPersona }}</td>
+          <td class="px-4 py-2">{{ pn.diasTrabajados }}</td>
+          <td class="px-4 py-2">$ {{ pn.valorDia | number:'1.0-0':'es-CO' }}</td>
+          <td class="px-4 py-2 font-semibold">$ {{ pn.salario | number:'1.0-0':'es-CO' }}</td>
+          <td class="px-4 py-2">
+            <button (click)="eliminarPersonaNomina(pn)"
+              class="text-red-600 hover:underline text-xs">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!loadingDetalle && personasNomina.length === 0" class="text-center text-gray-500 py-6">
+      No hay personas asignadas a esta nómina.
+    </div>
+  </div>
+
+  <!-- Modal Crear/Editar Nómina -->
+  <div *ngIf="mostrarModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+      <h3 class="text-lg font-semibold mb-4">
+        {{ editando ? '✏️ Editar Nómina' : '➕ Nueva Nómina' }}
+      </h3>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
+          <input type="text" [(ngModel)]="form.descripcion"
+            class="w-full border rounded px-3 py-2 text-sm" placeholder="Descripción de la nómina" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+          <input type="date" [(ngModel)]="form.fechaInicio"
+            class="w-full border rounded px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+          <input type="date" [(ngModel)]="form.fechaFin"
+            class="w-full border rounded px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+          <select [(ngModel)]="form.estado" class="w-full border rounded px-3 py-2 text-sm">
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button (click)="cerrarModal()"
+          class="bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-400 transition">
+          Cancelar
+        </button>
+        <button (click)="guardar()"
+          class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition">
+          {{ editando ? 'Actualizar' : 'Crear' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Asignar Persona a Nómina -->
+  <div *ngIf="mostrarModalAsignar" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+      <h3 class="text-lg font-semibold mb-4">👤 Asignar Persona a Nómina</h3>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Persona *</label>
+          <select [(ngModel)]="asignarForm.idPersona" class="w-full border rounded px-3 py-2 text-sm">
+            <option [ngValue]="0" disabled>-- Seleccionar persona --</option>
+            <option *ngFor="let p of personasDisponibles" [ngValue]="p.idpersona">
+              {{ p.nombre }} ({{ p.correo }})
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Días Trabajados *</label>
+          <input type="number" [(ngModel)]="asignarForm.diasTrabajados"
+            class="w-full border rounded px-3 py-2 text-sm" min="1" placeholder="30" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Valor Día *</label>
+          <input type="number" [(ngModel)]="asignarForm.valorDia"
+            class="w-full border rounded px-3 py-2 text-sm" min="0" step="0.01" placeholder="50000" />
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button (click)="cerrarModalAsignar()"
+          class="bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-400 transition">
+          Cancelar
+        </button>
+        <button (click)="asignarPersona()"
+          class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition">
+          Asignar
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { InternalLoader } from '../../../core/services/internal-loader/internal-loader';
 import { EmpresaService } from '../../home/dashboard/empresa/service/empresa.service';
 import { UsuarioService } from '../../home/dashboard/usuario/service/usuario.service';
+import { VentaNotificacionService } from '../../../shared/services/venta-notificacion.service';
 
 @Component({
   selector: 'app-layout',
@@ -33,12 +34,23 @@ export class Layout implements OnInit, OnDestroy {
     private internalLoader: InternalLoader,
     private empresaService: EmpresaService,
     private usuarioService: UsuarioService,
+    private ventaNotificacion: VentaNotificacionService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadUserData();
     this.setupInternalLoader();
+    this.ventaNotificacion.onVentaRegistrada$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.cargarTotalDelDia());
+
+    // Fallback: si la carga inicial no disparó el total, reintentamos
+    setTimeout(() => {
+      if (this.totalDelDia === 0 && this.userData) {
+        this.cargarTotalDelDia();
+      }
+    }, 1000);
   }
 
   ngAfterViewInit(): void {
@@ -112,7 +124,8 @@ export class Layout implements OnInit, OnDestroy {
   /** 🔹 Cargar total vendido del día */
   private cargarTotalDelDia(): void {
     if (!this.userData) return;
-    const hoy = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const hoy = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     if (this.isEmpresa) {
       const id = this.userData.empresa_id ?? this.userData.id;

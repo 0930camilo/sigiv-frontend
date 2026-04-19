@@ -90,7 +90,7 @@
       <div><strong>Cliente:</strong> {{ cotizacionSeleccionada.nombreCliente }}</div>
       <div><strong>Teléfono:</strong> {{ cotizacionSeleccionada.telefonoCliente }}</div>
       <div><strong>Vendedor:</strong> {{ cotizacionSeleccionada.nombreUsuario }}</div>
-      <div><strong>Total:</strong> {{ cotizacionSeleccionada.total | number:'1.0-0' }}</div>
+      <div><strong>Total:</strong> {{ cotizacionSeleccionada.total | number:'1.0-0':'es-CO' }}</div>
     </div>
 
     <!-- Tabla detalles -->
@@ -108,8 +108,8 @@
         <tr *ngFor="let d of cotizacionSeleccionada.detalles">
           <td class="p-2">{{ d.descripcionProducto }}</td>
           <td class="p-2 text-center">{{ d.cantidad }}</td>
-          <td class="p-2 text-center">{{ d.precio | number:'1.0-0' }}</td>
-          <td class="p-2 text-center">{{ d.subtotal | number:'1.0-0' }}</td>
+          <td class="p-2 text-center">{{ d.precio | number:'1.0-0':'es-CO' }}</td>
+          <td class="p-2 text-center">{{ d.subtotal | number:'1.0-0':'es-CO' }}</td>
         </tr>
       </tbody>
     </table>

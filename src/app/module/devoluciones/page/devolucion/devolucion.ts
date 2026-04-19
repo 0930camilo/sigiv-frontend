@@ -24,6 +24,9 @@ export class DevolucionComponent implements OnInit {
   ventaIdBuscar: number | null = null;
   ventaBuscada = false;
   empresaId: number | null = null;
+  currentPage = 0;
+  totalPages = 0;
+  pageSize = 10;
 
   columns: TableColumn[] = [
     { field: 'iddevolucion', header: 'ID' },
@@ -45,14 +48,17 @@ export class DevolucionComponent implements OnInit {
     this.cargarDevoluciones();
   }
 
-  cargarDevoluciones(): void {
+  cargarDevoluciones(page: number = 0): void {
     if (!this.empresaId) return;
+    if (page < 0 || (this.totalPages > 0 && page >= this.totalPages)) return;
     this.loading = true;
     this.ventaBuscada = true;
 
-    this.devolucionService.listarPorEmpresa(this.empresaId).subscribe({
+    this.devolucionService.listarPorEmpresa(this.empresaId, page, this.pageSize).subscribe({
       next: (res) => {
-        this.devoluciones = Array.isArray(res) ? res : [];
+        this.devoluciones = Array.isArray(res.data?.devoluciones) ? res.data.devoluciones : [];
+        this.currentPage = res.data?.currentPage ?? 0;
+        this.totalPages = res.data?.totalPages ?? 0;
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -72,9 +78,11 @@ export class DevolucionComponent implements OnInit {
     this.loading = true;
     this.ventaBuscada = true;
 
-    this.devolucionService.listarPorEmpresa(this.empresaId, this.ventaIdBuscar).subscribe({
+    this.devolucionService.listarPorEmpresa(this.empresaId, 0, this.pageSize, this.ventaIdBuscar).subscribe({
       next: (res) => {
-        this.devoluciones = Array.isArray(res) ? res : [];
+        this.devoluciones = Array.isArray(res.data?.devoluciones) ? res.data.devoluciones : [];
+        this.currentPage = res.data?.currentPage ?? 0;
+        this.totalPages = res.data?.totalPages ?? 0;
         this.loading = false;
         this.cdr.detectChanges();
       },

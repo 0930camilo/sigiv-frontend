@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { HeaderTokenUtil } from '../../../shared/services/header-token-util';
-import { DevolucionRequest, DevolucionResponse } from '../model/devolucion.model';
+import { DevolucionRequest, DevolucionResponse, DevolucionApiResponse } from '../model/devolucion.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +23,14 @@ export class DevolucionService {
     );
   }
 
-  listarPorEmpresa(empresaId: number, ventaId?: number | null): Observable<DevolucionResponse[]> {
-    let params = new HttpParams();
+  listarPorEmpresa(empresaId: number, page: number = 0, size: number = 10, ventaId?: number | null): Observable<DevolucionApiResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
     if (ventaId !== null && ventaId !== undefined) {
       params = params.set('ventaId', ventaId.toString());
     }
-    return this.http.get<DevolucionResponse[]>(
+    return this.http.get<DevolucionApiResponse>(
       `${environment.devolucionesApi}/empresa/${empresaId}`,
       {
         headers: this.headerUtil.getAuthHeaders(),
