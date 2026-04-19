@@ -17,7 +17,9 @@ export const HOME_ROUTES: Routes = [
       { path: 'ventas', loadComponent: () => import('../venta/page/venta/venta').then(m => m.VentaComponent) },
       { path: 'registrar-venta', loadComponent: () => import('../venta/page/registrar-venta/registrar-venta').then(m => m.RegistrarVentaComponent) },
       { path: 'cotizaciones', loadComponent: () => import('../cotizacion/page/cotizacion/cotizacion').then(m => m.CotizacionComponent) },
-      { path: 'registrar-cotizacion', loadComponent: () => import('../cotizacion/page/registrar-cotizacion/registrar-cotizacion').then(m => m.RegistrarCotizacionComponent) }
+      { path: 'registrar-cotizacion', loadComponent: () => import('../cotizacion/page/registrar-cotizacion/registrar-cotizacion').then(m => m.RegistrarCotizacionComponent) },
+      { path: 'devoluciones', loadComponent: () => import('../devoluciones/page/devolucion/devolucion').then(m => m.DevolucionComponent) },
+      { path: 'registrar-devolucion', loadComponent: () => import('../devoluciones/page/registrar-devolucion/registrar-devolucion').then(m => m.RegistrarDevolucionComponent) }
     ]
   }
 ];

@@ -10,6 +10,7 @@ export const environment = {
   ventasApi: 'http://localhost:8080/ventas',
   cotizacionesApi: 'http://localhost:8080/cotizaciones',
   detalleCotizacionApi: 'http://localhost:8080/api/detallecotizacion',
+  devolucionesApi: 'http://localhost:8080/api/devoluciones',
 };
 
 
