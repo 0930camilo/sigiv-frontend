@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import { TableColumn } from '../../../../shared/interface/TableColumn';
 import { AuthService } from '../../../auth/service/auth-service';
@@ -38,6 +39,12 @@ export class VentaComponent implements OnInit {
   ventaSeleccionada: Venta | null = null;
   mostrarDetalle = false;
 
+  // 📄 preview factura
+  mostrarPreviewFactura = false;
+  facturaPreviewUrl: SafeResourceUrl | null = null;
+  facturaBlob: Blob | null = null;
+  facturaIdActual: number | null = null;
+
   columns: TableColumn[] = [
     { field: 'idventa', header: 'ID' },
     { field: 'fecha', header: 'Fecha', type: 'date' },
@@ -58,20 +65,21 @@ export class VentaComponent implements OnInit {
       action: (row: Venta) => this.verDetalle(row)
     },
 
-    // 📄 DESCARGAR FACTURA
+    // 📄 VER FACTURA (preview)
     {
       field: 'factura',
       header: 'Factura',
       type: 'button',
-      icon: 'fa-solid fa-file-arrow-down text-blue-600',
-      action: (row: Venta) => this.descargarFactura(row.idventa)
+      icon: 'fa-solid fa-file-invoice text-blue-600',
+      action: (row: Venta) => this.previewFactura(row.idventa)
     }
   ];
 
   constructor(
     private ventaService: VentaService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) {}
 
   // ===============================
@@ -142,25 +150,47 @@ export class VentaComponent implements OnInit {
   }
 
   // ===============================
-  // DESCARGAR FACTURA PDF
+  // PREVIEW FACTURA PDF
   // ===============================
-  descargarFactura(id: number): void {
+  previewFactura(id: number): void {
     this.ventaService.descargarFactura(id).subscribe({
       next: (blob) => {
+        this.facturaBlob = blob;
+        this.facturaIdActual = id;
         const url = window.URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `factura-${id}.pdf`;
-        a.click();
-
-        window.URL.revokeObjectURL(url);
+        this.facturaPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        this.mostrarPreviewFactura = true;
         this.cdr.markForCheck();
       },
       error: (err) => {
-        console.error('Error descargando factura:', err);
+        console.error('Error cargando factura:', err);
         this.cdr.markForCheck();
       }
     });
+  }
+
+  // ===============================
+  // DESCARGAR FACTURA DESDE PREVIEW
+  // ===============================
+  descargarFacturaDesdePreview(): void {
+    if (!this.facturaBlob || !this.facturaIdActual) return;
+
+    const url = window.URL.createObjectURL(this.facturaBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `factura-${this.facturaIdActual}.pdf`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  // ===============================
+  // CERRAR PREVIEW FACTURA
+  // ===============================
+  cerrarPreviewFactura(): void {
+    this.mostrarPreviewFactura = false;
+    this.facturaPreviewUrl = null;
+    this.facturaBlob = null;
+    this.facturaIdActual = null;
+    this.cdr.markForCheck();
   }
 }
