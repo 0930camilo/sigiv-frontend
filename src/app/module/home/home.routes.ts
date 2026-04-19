@@ -15,7 +15,9 @@ export const HOME_ROUTES: Routes = [
       { path: 'categorias', loadComponent: () => import('../categorias/page/categoria/categoria').then(m => m.CategoriaComponent) },
       { path: 'productos', loadComponent: () => import('../producto/page/producto/producto').then(m => m.Producto) },
       { path: 'ventas', loadComponent: () => import('../venta/page/venta/venta').then(m => m.VentaComponent) },
-      { path: 'registrar-venta', loadComponent: () => import('../venta/page/registrar-venta/registrar-venta').then(m => m.RegistrarVentaComponent) }
+      { path: 'registrar-venta', loadComponent: () => import('../venta/page/registrar-venta/registrar-venta').then(m => m.RegistrarVentaComponent) },
+      { path: 'cotizaciones', loadComponent: () => import('../cotizacion/page/cotizacion/cotizacion').then(m => m.CotizacionComponent) },
+      { path: 'registrar-cotizacion', loadComponent: () => import('../cotizacion/page/registrar-cotizacion/registrar-cotizacion').then(m => m.RegistrarCotizacionComponent) }
     ]
   }
 ];

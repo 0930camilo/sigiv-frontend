@@ -1,0 +1,181 @@
+<div class="p-4 sm:p-6">
+
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold">
+      📋 Cotizaciones de la Empresa
+    </h2>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+    <div class="flex flex-wrap gap-3 items-end">
+      <div class="flex flex-col">
+        <label class="text-xs text-gray-500 mb-1">Cliente</label>
+        <input
+          type="text"
+          placeholder="Nombre del cliente..."
+          class="border rounded-lg px-3 py-2 text-sm w-52 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          [(ngModel)]="filtroCliente" />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-xs text-gray-500 mb-1">Fecha inicio</label>
+        <input
+          type="date"
+          class="border rounded-lg px-3 py-2 text-sm w-44 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          [(ngModel)]="filtroFechaInicio" />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-xs text-gray-500 mb-1">Fecha fin</label>
+        <input
+          type="date"
+          class="border rounded-lg px-3 py-2 text-sm w-44 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          [(ngModel)]="filtroFechaFin" />
+      </div>
+
+      <button
+        type="button"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+        (click)="buscar()">
+        <i class="fa-solid fa-search mr-1"></i> Buscar
+      </button>
+
+      <button
+        type="button"
+        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition"
+        (click)="limpiarFiltros()">
+        <i class="fa-solid fa-eraser mr-1"></i> Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <app-reusable-table
+    [data]="cotizaciones"
+    [columns]="columns"
+    [loading]="loading"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (next)="getCotizaciones(currentPage + 1)"
+    (previous)="getCotizaciones(currentPage - 1)">
+  </app-reusable-table>
+
+</div>
+
+<!-- MODAL DETALLE -->
+<div
+  *ngIf="mostrarDetalle && cotizacionSeleccionada"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  role="dialog"
+  aria-modal="true">
+
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-3xl">
+
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">
+        🧾 Detalle Cotización #{{ cotizacionSeleccionada.idcotizacion }}
+      </h3>
+      <button
+        type="button"
+        class="text-red-600 text-xl"
+        aria-label="Cerrar"
+        (click)="mostrarDetalle = false">
+        ✖
+      </button>
+    </div>
+
+    <!-- Info general -->
+    <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+      <div><strong>Cliente:</strong> {{ cotizacionSeleccionada.nombreCliente }}</div>
+      <div><strong>Teléfono:</strong> {{ cotizacionSeleccionada.telefonoCliente }}</div>
+      <div><strong>Vendedor:</strong> {{ cotizacionSeleccionada.nombreUsuario }}</div>
+      <div><strong>Total:</strong> {{ cotizacionSeleccionada.total | number:'1.0-0' }}</div>
+    </div>
+
+    <!-- Tabla detalles -->
+    <table class="w-full border text-sm">
+      <thead class="bg-gray-100 dark:bg-gray-700">
+        <tr>
+          <th class="p-2 text-left">Producto</th>
+          <th class="p-2 text-center">Cantidad</th>
+          <th class="p-2 text-center">Precio</th>
+          <th class="p-2 text-center">Subtotal</th>
+        </tr>
+      </thead>
+
+      <tbody *ngIf="cotizacionSeleccionada.detalles?.length; else sinDetalles">
+        <tr *ngFor="let d of cotizacionSeleccionada.detalles">
+          <td class="p-2">{{ d.descripcionProducto }}</td>
+          <td class="p-2 text-center">{{ d.cantidad }}</td>
+          <td class="p-2 text-center">{{ d.precio | number:'1.0-0' }}</td>
+          <td class="p-2 text-center">{{ d.subtotal | number:'1.0-0' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #sinDetalles>
+      <div class="p-4 text-center text-gray-500">
+        No hay productos en esta cotización
+      </div>
+    </ng-template>
+
+    <div class="flex justify-end mt-4">
+      <button
+        type="button"
+        class="px-4 py-2 bg-blue-600 text-white rounded"
+        (click)="mostrarDetalle = false">
+        Cerrar
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL PREVIEW PDF -->
+<div
+  *ngIf="mostrarPreviewPdf && pdfPreviewUrl"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  role="dialog"
+  aria-modal="true">
+
+  <div class="bg-white dark:bg-gray-800 p-4 rounded-lg w-full max-w-4xl h-[85vh] flex flex-col">
+
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-lg font-semibold">
+        📄 Cotización #{{ pdfIdActual }}
+      </h3>
+      <button
+        type="button"
+        class="text-red-600 text-xl"
+        aria-label="Cerrar"
+        (click)="cerrarPreviewPdf()">
+        ✖
+      </button>
+    </div>
+
+    <div class="flex-1 min-h-0">
+      <iframe
+        [src]="pdfPreviewUrl"
+        class="w-full h-full rounded border"
+        type="application/pdf">
+      </iframe>
+    </div>
+
+    <div class="flex justify-end gap-3 mt-3">
+      <button
+        type="button"
+        class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white rounded hover:bg-gray-400"
+        (click)="cerrarPreviewPdf()">
+        Cerrar
+      </button>
+      <button
+        type="button"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
+        (click)="descargarPdfDesdePreview()">
+        <i class="fa-solid fa-download"></i> Descargar
+      </button>
+    </div>
+
+  </div>
+</div>
