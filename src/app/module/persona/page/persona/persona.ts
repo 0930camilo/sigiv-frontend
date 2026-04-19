@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { finalize } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { TableColumn } from '../../../../shared/interface/TableColumn';
@@ -26,6 +27,11 @@ export class PersonaComponent implements OnInit {
   totalPages = 0;
   pageSize = 10;
 
+  // Filtros
+  filtroEstado: string = '';
+  filtroDocumento: string = '';
+  filtroNombre: string = '';
+
   mostrarModal = false;
   editando = false;
   personaEditandoId: number | null = null;
@@ -33,7 +39,7 @@ export class PersonaComponent implements OnInit {
   form: PersonaRequest = this.formVacio();
 
   columns: TableColumn[] = [
-    { field: 'idpersona', header: 'ID' },
+    { field: 'documento', header: 'Documento' },
     { field: 'nombre', header: 'Nombre' },
     { field: 'correo', header: 'Correo' },
     { field: 'telefono', header: 'Teléfono' },
@@ -60,21 +66,30 @@ export class PersonaComponent implements OnInit {
     if (page < 0 || (this.totalPages > 0 && page >= this.totalPages)) return;
     this.loading = true;
 
-    this.personaService.listarPorEmpresa(this.empresaId, page, this.pageSize).subscribe({
-      next: (res) => {
-        this.personas = Array.isArray(res.data?.personas) ? res.data.personas : [];
-        this.currentPage = res.data?.currentPage ?? 0;
-        this.totalPages = res.data?.totalPages ?? 0;
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error cargando personas:', err);
-        this.personas = [];
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
+    const filtros: { estado?: string; documento?: string; nombre?: string } = {};
+    if (this.filtroEstado) filtros.estado = this.filtroEstado;
+    if (this.filtroDocumento.trim()) filtros.documento = this.filtroDocumento.trim();
+    if (this.filtroNombre.trim()) filtros.nombre = this.filtroNombre.trim();
+
+    this.personaService.listarPorEmpresa(this.empresaId, page, this.pageSize, filtros)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.personas = Array.isArray(res.data?.personas) ? res.data.personas : [];
+          this.currentPage = res.data?.currentPage ?? 0;
+          this.totalPages = res.data?.totalPages ?? 0;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error cargando personas:', err);
+          this.personas = [];
+        }
+      });
   }
 
   abrirModalCrear(): void {
@@ -84,11 +99,24 @@ export class PersonaComponent implements OnInit {
     this.mostrarModal = true;
   }
 
+  filtrar(): void {
+    this.currentPage = 0;
+    this.cargarPersonas(0);
+  }
+
+  limpiarFiltros(): void {
+    this.filtroEstado = '';
+    this.filtroDocumento = '';
+    this.currentPage = 0;
+    this.cargarPersonas(0);
+  }
+
   abrirModalEditar(persona: Persona): void {
     this.editando = true;
     this.personaEditandoId = persona.idpersona;
     this.form = {
       nombre: persona.nombre,
+      documento: persona.documento,
       correo: persona.correo,
       telefono: persona.telefono,
       direccion: persona.direccion,
@@ -119,6 +147,7 @@ export class PersonaComponent implements OnInit {
           Swal.fire('Actualizado', 'Persona actualizada correctamente', 'success');
           this.cerrarModal();
           this.cargarPersonas();
+          this.cdr.markForCheck();
         },
         error: () => Swal.fire('Error', 'No se pudo actualizar la persona', 'error')
       });
@@ -128,6 +157,7 @@ export class PersonaComponent implements OnInit {
           Swal.fire('Creado', 'Persona creada correctamente', 'success');
           this.cerrarModal();
           this.cargarPersonas();
+          this.cdr.markForCheck();
         },
         error: () => Swal.fire('Error', 'No se pudo crear la persona', 'error')
       });
@@ -148,6 +178,7 @@ export class PersonaComponent implements OnInit {
           next: () => {
             Swal.fire('Eliminado', 'Persona eliminada', 'success');
             this.cargarPersonas();
+            this.cdr.markForCheck();
           },
           error: () => Swal.fire('Error', 'No se pudo eliminar', 'error')
         });
@@ -157,7 +188,10 @@ export class PersonaComponent implements OnInit {
 
   cambiarEstado(persona: Persona): void {
     this.personaService.cambiarEstado(persona.idpersona).subscribe({
-      next: () => this.cargarPersonas(),
+      next: () => {
+        this.cargarPersonas();
+        this.cdr.markForCheck();
+      },
       error: () => Swal.fire('Error', 'No se pudo cambiar el estado', 'error')
     });
   }
@@ -172,6 +206,7 @@ export class PersonaComponent implements OnInit {
 
   private formVacio(): PersonaRequest {
     return {
+      documento: '',
       nombre: '',
       correo: '',
       telefono: '',

@@ -37,7 +37,12 @@ export class Dashboard implements OnInit {
     const tokenData = this.authService.getUserData();
     this.isEmpresa = tokenData?.rol === 'ROLE_EMPRESA';
     this.isUsuario = tokenData?.rol === 'ROLE_USUARIO';
-    this.idEntidad = tokenData?.empresa_id ?? tokenData?.id ?? 0;
+
+    if (this.isEmpresa) {
+      this.idEntidad = tokenData?.empresa_id ?? tokenData?.id ?? 0;
+    } else if (this.isUsuario) {
+      this.idEntidad = tokenData?.id ?? 0;
+    }
 
     if (this.idEntidad) {
       // Establecer fechas por defecto (mes actual)

@@ -1,5 +1,6 @@
 export interface Persona {
   idpersona: number;
+  documento: string;
   nombre: string;
   correo: string;
   telefono: string;
@@ -11,6 +12,7 @@ export interface Persona {
 }
 
 export interface PersonaRequest {
+  documento: string;
   nombre: string;
   correo: string;
   telefono: string;

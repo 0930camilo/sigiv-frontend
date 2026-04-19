@@ -8,6 +8,30 @@
     </button>
   </div>
 
+  <!-- Filtros -->
+  <div class="bg-gray-50 border rounded-lg p-4 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">Estado</label>
+        <select [(ngModel)]="filtroEstado" (change)="filtrar()" class="w-full border rounded px-3 py-2 text-sm">
+          <option value="">Todos</option>
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">Documento</label>
+        <input type="text" [(ngModel)]="filtroDocumento" (input)="filtrar()" placeholder="Buscar por documento..."
+          class="w-full border rounded px-3 py-2 text-sm" />
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">Nombre</label>
+        <input type="text" [(ngModel)]="filtroNombre" (input)="filtrar()" placeholder="Buscar por nombre..."
+          class="w-full border rounded px-3 py-2 text-sm" />
+      </div>
+    </div>
+  </div>
+
   <app-reusable-table
     [data]="personas"
     [columns]="columns"
@@ -31,7 +55,13 @@
       </h3>
 
       <div class="grid grid-cols-2 gap-4">
-        <div class="col-span-2">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Documento *</label>
+          <input type="text" [(ngModel)]="form.documento"
+            class="w-full border rounded px-3 py-2 text-sm" placeholder="Número de documento" />
+        </div>
+
+        <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
           <input type="text" [(ngModel)]="form.nombre"
             class="w-full border rounded px-3 py-2 text-sm" placeholder="Nombre completo" />
