@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from '../../../../../../environments/environment';
 import { HeaderTokenUtil } from '../../../../../shared/services/header-token-util';
+
+export interface ResumenVendedor {
+  nombreUsuario: string;
+  cantidadVentas: number;
+  totalVendido: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -104,4 +110,21 @@ getProductosByCategoria(
   );
 }
 
+  /** 🔹 Resumen ventas por vendedor */
+  getResumenVendedores(idEmpresa: number, fechaInicio: string, fechaFin: string): Observable<ResumenVendedor[]> {
+    const headers = this.headerUtil.getAuthHeaders();
+    const params = new HttpParams()
+      .set('fechaInicio', fechaInicio)
+      .set('fechaFin', fechaFin);
+    return this.http.get<any>(
+      `${environment.ventasApi}/empresa/${idEmpresa}/resumen-vendedores`,
+      { headers, params }
+    ).pipe(
+      map(response => response.data ?? []),
+      catchError((err: any) => {
+        console.error('❌ Error al obtener resumen vendedores:', err);
+        return throwError(() => err);
+      })
+    );
+  }
 }

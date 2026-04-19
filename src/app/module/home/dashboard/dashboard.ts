@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { EmpresaService } from '../../home/dashboard/empresa/service/empresa.service';
+import { EmpresaService, ResumenVendedor } from '../../home/dashboard/empresa/service/empresa.service';
 import { UsuarioService } from '../../home/dashboard/usuario/service/usuario.service';
 import { AuthService } from '../../auth/service/auth-service';
 
@@ -25,6 +25,9 @@ export class Dashboard implements OnInit {
   // 🗓️ Variables para el rango de fechas
   fechaInicio = '';
   fechaFin = '';
+
+  // 📊 Resumen por vendedor
+  resumenVendedores: ResumenVendedor[] = [];
 
   constructor(
     private empresaService: EmpresaService,
@@ -79,7 +82,7 @@ export class Dashboard implements OnInit {
     });
   }
 
-  /** 🔹 Empresa: cargar ventas + ganancia en paralelo */
+  /** 🔹 Empresa: cargar ventas + ganancia + resumen vendedores en paralelo */
   private cargarDatosEmpresa(): void {
     if (!this.fechaInicio || !this.fechaFin) return;
     forkJoin({
@@ -88,10 +91,14 @@ export class Dashboard implements OnInit {
       ),
       ganancia: this.empresaService.getGananciaTotal(this.idEntidad, this.fechaInicio, this.fechaFin).pipe(
         catchError(err => { console.error('Error ganancia empresa:', err); return of(0); })
+      ),
+      resumen: this.empresaService.getResumenVendedores(this.idEntidad, this.fechaInicio, this.fechaFin).pipe(
+        catchError(err => { console.error('Error resumen vendedores:', err); return of([] as ResumenVendedor[]); })
       )
-    }).subscribe(({ ventas, ganancia }) => {
+    }).subscribe(({ ventas, ganancia, resumen }) => {
       this.ventasDelMes = ventas;
       this.gananciaTotal = ganancia;
+      this.resumenVendedores = resumen;
       this.cdr.markForCheck();
     });
   }

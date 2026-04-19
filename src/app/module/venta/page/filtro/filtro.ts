@@ -18,7 +18,6 @@ export class FiltrosVentasComponent {
   buscarPorCodigo() {
     const id = this.filtroCodigo.trim();
 
-    // 🔥 Validación clave
     if (!id) {
       this.filtrarId.emit(null);
       return;

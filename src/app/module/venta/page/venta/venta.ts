@@ -193,4 +193,5 @@ export class VentaComponent implements OnInit {
     this.facturaIdActual = null;
     this.cdr.markForCheck();
   }
+
 }
