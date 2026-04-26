@@ -1,0 +1,13 @@
+body, .min-h-screen {
+  background: #f5f3ef;
+}
+
+footer {
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  main > div, section > div {
+    padding: 1.5rem !important;
+  }
+}

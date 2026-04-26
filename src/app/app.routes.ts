@@ -5,6 +5,11 @@ import { LoginGuard } from './core/guards/LoginGuard';
 
 export const routes: Routes = [
   {
+    path: RoutesEnum.LANDING,
+    pathMatch: 'full',
+    loadComponent: () => import('./module/landing/landing').then(m => m.Landing)
+  },
+  {
     path: RoutesEnum.AUTH_LOGIN,
     canActivate: [LoginGuard],
     loadComponent: () => import('./module/auth/page/login/login').then(m => m.Login)
@@ -16,12 +21,7 @@ export const routes: Routes = [
       import('./module/home/home.routes').then(m => m.HOME_ROUTES)
   },
   {
-    path: '',
-    redirectTo: `/${RoutesEnum.AUTH_LOGIN}`,
-    pathMatch: 'full'
-  },
-  {
     path: '**',
-    redirectTo: `/${RoutesEnum.AUTH_LOGIN}`
+    redirectTo: '',
   }
 ];
