@@ -26,4 +26,7 @@ export interface TokenPayload {
   sub: string;
   iat: number;
   exp: number;
+  correo?: string;
+  direccion?: string;
+  telefono?: string;
 }

@@ -6,8 +6,15 @@ footer {
   font-size: 0.95rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   main > div, section > div {
+    max-width: 98vw !important;
     padding: 1.5rem !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  main > div, section > div {
+    max-width: 90vw;
   }
 }

@@ -9,6 +9,11 @@
 
     <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
 
+      <!-- Perfil (solo empresa) -->
+      <a *ngIf="isEmpresa" routerLink="perfil" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+        class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+        👤 Perfil
+      </a>
       <!-- Principal -->
       <a routerLink="dashboard" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
         class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">

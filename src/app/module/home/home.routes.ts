@@ -7,6 +7,7 @@ export const HOME_ROUTES: Routes = [
     component: Layout,
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'perfil', loadComponent: () => import('../empresa/page/perfil/perfil').then(m => m.PerfilEmpresaComponent) },
       { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard').then(m => m.Dashboard) },
       { path: 'analytics', loadComponent: () => import('./page/analytics/analytics').then(m => m.Analytics) },
       { path: 'ecommerce', loadComponent: () => import('./page/ecommerce/ecommerce').then(m => m.Ecommerce) },
