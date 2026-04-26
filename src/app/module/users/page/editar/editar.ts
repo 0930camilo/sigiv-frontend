@@ -26,6 +26,7 @@ export class EditarUsuarioComponent implements OnChanges {
       nombres: ['', Validators.required],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       direccion: ['', Validators.required],
+      clave: [''],
       estado: ['Activo', Validators.required],
     });
   }
@@ -49,10 +50,17 @@ export class EditarUsuarioComponent implements OnChanges {
 
     this.loading = true;
 
-    const payload = {
-      ...this.formEdit.value,
+    const form = this.formEdit.value;
+    const payload: any = {
+      nombres: form.nombres,
+      telefono: form.telefono,
+      direccion: form.direccion,
+      estado: form.estado,
       empresaId: this.usuario.empresaId
     };
+    if (form.clave) {
+      payload.clave = form.clave;
+    }
 
     this.userService.updateUser(this.usuario.idUsuario, payload)
       .subscribe({
