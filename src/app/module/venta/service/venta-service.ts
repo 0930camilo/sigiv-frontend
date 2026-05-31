@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -55,5 +56,29 @@ export class VentaService {
       }
     );
   }
+
+  getVentasByUsuario(
+    usuarioId: number,
+    page: number = 0,
+    size: number = 10,
+    idVenta?: number | null
+  ): Observable<VentasResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (idVenta !== null && idVenta !== undefined) {
+      params = params.set('idVenta', idVenta.toString());
+    }
+
+    return this.http.get<VentasResponse>(
+      `${environment.ventasApi}/usuario/${usuarioId}/ventas`,
+      {
+        headers: this.headerUtil.getAuthHeaders(),
+        params
+      }
+    );
+  }
+
 
 }

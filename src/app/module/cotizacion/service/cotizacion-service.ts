@@ -60,6 +60,15 @@ export class CotizacionService {
     );
   }
 
+  getCotizacionesByUsuario(
+    empresaId: number,
+    usuarioId: number,
+    page = 0,
+    size = 10
+  ): Observable<CotizacionesResponse> {
+    return this.getCotizacionesByEmpresa(empresaId, page, size, { usuarioId });
+  }
+
   obtenerCotizacion(id: number): Observable<any> {
     return this.http.get(
       `${environment.cotizacionesApi}/${id}`,

@@ -48,6 +48,7 @@ export class Layout implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadUserData();
     this.setupInternalLoader();
+    this.openMenuForCurrentRoute(this.router.url);
     this.ventaNotificacion.onVentaRegistrada$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.cargarTotalDelDia());
@@ -100,6 +101,9 @@ export class Layout implements OnInit, OnDestroy {
           this.loadingTimeout = setTimeout(() => this.internalLoader.hide(), 100);
         } else if (event instanceof NavigationCancel || event instanceof NavigationError) {
           this.internalLoader.hide();
+        }
+        if (event instanceof NavigationEnd) {
+          this.openMenuForCurrentRoute(event.urlAfterRedirects);
         }
         this.cdr.detectChanges();
       });
@@ -183,5 +187,27 @@ export class Layout implements OnInit, OnDestroy {
 
   toggleMenu(section: string): void {
     this.menuOpen[section] = !this.menuOpen[section];
+  }
+
+  private openMenuForCurrentRoute(url: string): void {
+    this.menuOpen['ventas'] =
+      url.includes('/ventas') ||
+      url.includes('/mis-ventas') ||
+      url.includes('/registrar-venta');
+    this.menuOpen['cotizaciones'] =
+      url.includes('/cotizaciones') ||
+      url.includes('/mis-cotizaciones') ||
+      url.includes('/registrar-cotizacion');
+    this.menuOpen['devoluciones'] =
+      url.includes('/devoluciones') ||
+      url.includes('/mis-devoluciones') ||
+      url.includes('/registrar-devolucion');
+    this.menuOpen['inventario'] =
+      url.includes('/proveedores') ||
+      url.includes('/categorias') ||
+      url.includes('/productos');
+    this.menuOpen['nomina'] =
+      url.includes('/personas') ||
+      url.includes('/nominas');
   }
 }

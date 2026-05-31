@@ -23,12 +23,21 @@ export class DevolucionService {
     );
   }
 
-  listarPorEmpresa(empresaId: number, page: number = 0, size: number = 10, ventaId?: number | null): Observable<DevolucionApiResponse> {
+  listarPorEmpresa(
+    empresaId: number,
+    page: number = 0,
+    size: number = 10,
+    ventaId?: number | null,
+    usuarioId?: number | null
+  ): Observable<DevolucionApiResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
     if (ventaId !== null && ventaId !== undefined) {
       params = params.set('ventaId', ventaId.toString());
+    }
+    if (usuarioId !== null && usuarioId !== undefined) {
+      params = params.set('usuarioId', usuarioId.toString());
     }
     return this.http.get<DevolucionApiResponse>(
       `${environment.devolucionesApi}/empresa/${empresaId}`,
@@ -37,5 +46,15 @@ export class DevolucionService {
         params
       }
     );
+  }
+
+  listarPorUsuario(
+    empresaId: number,
+    usuarioId: number,
+    page: number = 0,
+    size: number = 10,
+    ventaId?: number | null
+  ): Observable<DevolucionApiResponse> {
+    return this.listarPorEmpresa(empresaId, page, size, ventaId, usuarioId);
   }
 }

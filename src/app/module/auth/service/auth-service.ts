@@ -123,7 +123,7 @@ export class AuthService {
 
   redirectToDashboard(): void {
     const role = this.getUserRole();
-    console.log('🔄 Redirigiendo al dashboard. Rol:', role);
-    this.router.navigate(['/home/dashboard'], { replaceUrl: true });
+    console.log('🔄 Redirigiendo a perfil. Rol:', role);
+    this.router.navigate(['/home/perfil'], { replaceUrl: true });
   }
 }
