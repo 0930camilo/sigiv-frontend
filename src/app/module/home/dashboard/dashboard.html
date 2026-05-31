@@ -46,7 +46,7 @@
     </div>
 
     <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-      <p class="text-gray-500">Ganancia total</p>
+      <p class="text-gray-500">Ganancia del rango seleccionado</p>
       <h2 class="text-3xl font-bold text-purple-600 mt-2">
         {{ gananciaTotal | currency:'COP':'symbol-narrow':'1.0-0' }}
       </h2>
@@ -87,6 +87,11 @@
       </h2>
     </div>
 
-
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <p class="text-gray-500">Ganancia del rango seleccionado</p>
+      <h2 class="text-3xl font-bold text-purple-600 mt-2">
+        {{ gananciaTotal | currency:'COP':'symbol-narrow':'1.0-0' }}
+      </h2>
+    </div>
   </div>
 </div>
