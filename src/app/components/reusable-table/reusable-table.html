@@ -1,4 +1,4 @@
-<div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
+<div class="table-shell bg-white dark:bg-gray-800 rounded-2xl shadow-md">
 
   <!-- Loader -->
   <div *ngIf="loading"
@@ -21,7 +21,8 @@
   </div>
 
   <!-- Tabla -->
-  <table *ngIf="!loading" class="min-w-full border-collapse">
+  <div *ngIf="!loading" class="table-scroll overflow-x-auto">
+    <table class="min-w-full border-collapse">
 
     <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
       <tr>
@@ -132,7 +133,8 @@
       </tr>
 
     </tbody>
-  </table>
+    </table>
+  </div>
 
 
 
