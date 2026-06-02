@@ -23,6 +23,7 @@ export class EditarUsuarioComponent implements OnChanges {
 
   constructor(private fb: FormBuilder, private userService: UserService, private cdr: ChangeDetectorRef) {
     this.formEdit = this.fb.group({
+      documento: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       nombres: ['', Validators.required],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       direccion: ['', Validators.required],
@@ -52,6 +53,7 @@ export class EditarUsuarioComponent implements OnChanges {
 
     const form = this.formEdit.value;
     const payload: any = {
+      documento: form.documento,
       nombres: form.nombres,
       telefono: form.telefono,
       direccion: form.direccion,

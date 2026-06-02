@@ -1,5 +1,6 @@
 export interface Usuario {
   idUsuario: number;
+  documento: string;
   nombres: string;
   direccion: string;
   telefono: number;
@@ -21,6 +22,7 @@ export interface UsuariosResponse {
 }
 
 export interface UsuarioCreateRequest {
+  documento: string;
   nombres: string;
   clave: string;
   telefono: number;
@@ -35,6 +37,7 @@ export interface UsuarioCreateResponse {
   message: string;
   data: {
     idUsuario: number;
+    documento: string;
     nombres: string;
     direccion: string;
     telefono: number;
@@ -45,6 +48,7 @@ export interface UsuarioCreateResponse {
 }
 
 export interface UsuarioUpdateRequest {
+  documento?: string;
   nombres?: string;
   clave?: string;
   telefono?: number;

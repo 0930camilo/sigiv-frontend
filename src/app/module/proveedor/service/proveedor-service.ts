@@ -6,6 +6,7 @@ import { HeaderTokenUtil } from '../../../shared/services/header-token-util';
 import {
   ProveedorCreateRequest,
   ProveedorCreateResponse,
+  ProveedorUpdateRequest,
   ProveedoresResponse
 } from '../model/proveedor.model';
 
@@ -69,7 +70,7 @@ getProveedoresByEmpresa(
       );
   }
 
-  updateProveedor(id: number, proveedor: any): Observable<any> {
+  updateProveedor(id: number, proveedor: ProveedorUpdateRequest): Observable<any> {
   const headers = this.headerUtil.getAuthHeaders();
   const url = `${environment.proveedoresApi}/update-proveedor/${id}`;
 

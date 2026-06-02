@@ -23,6 +23,7 @@ export class EditarProveedorComponent implements OnChanges {
 
   constructor(private fb: FormBuilder, private proveedorService: ProveedorService, private cdr: ChangeDetectorRef) {
     this.formEdit = this.fb.group({
+      documento: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       nombre: ['', Validators.required],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       direccion: ['', Validators.required],
@@ -49,7 +50,10 @@ export class EditarProveedorComponent implements OnChanges {
 
     this.loading = true;
 
-    const payload = this.formEdit.value;
+    const payload = {
+      ...this.formEdit.value,
+      telefono: Number(this.formEdit.value.telefono)
+    };
 
     this.proveedorService.updateProveedor(this.proveedor.idProveedor, payload)
       .subscribe({

@@ -30,6 +30,7 @@ export class RegisterProveedor {
 
   private initForm(): void {
     this.formProveedor = this.fb.group({
+      documento: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       nombre: ['', Validators.required],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       direccion: ['', Validators.required],
@@ -59,6 +60,7 @@ export class RegisterProveedor {
 
     const payload: ProveedorCreateRequest = {
       ...this.formProveedor.value,
+      telefono: Number(this.formProveedor.value.telefono),
       empresaId: this.empresaId
     };
 

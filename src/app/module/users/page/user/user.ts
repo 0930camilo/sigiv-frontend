@@ -33,7 +33,7 @@ export class User implements OnInit {
   usuarioSeleccionado: any = null;
 
   columns: TableColumn[] = [
-    { field: 'idUsuario', header: 'ID', type: 'text' },
+    { field: 'documento', header: 'Documento', type: 'text' },
     { field: 'nombres', header: 'Nombre', type: 'text' },
     { field: 'direccion', header: 'Dirección', type: 'text' },
     { field: 'telefono', header: 'Teléfono', type: 'text' },

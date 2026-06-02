@@ -211,9 +211,9 @@ export class NominaComponent implements OnInit {
     if (!this.nominaSeleccionada || !this.empresaId) return;
     this.asignarForm = { idNomina: this.nominaSeleccionada.idNomina, idPersona: 0, diasTrabajados: 0, valorDia: 0 };
 
-    this.personaService.listarPorEmpresa(this.empresaId).subscribe({
+    this.personaService.listarPorEmpresa(this.empresaId, 0, 100).subscribe({
       next: (res) => {
-        this.personasDisponibles = Array.isArray(res.data) ? res.data : [];
+        this.personasDisponibles = Array.isArray(res.data?.personas) ? res.data.personas : [];
         this.mostrarModalAsignar = true;
         this.cdr.detectChanges();
       },

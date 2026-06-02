@@ -29,6 +29,7 @@ export class Register {
 
   private initForm(): void {
     this.formUsuario = this.fb.group({
+      documento: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       nombres: ['', Validators.required],
       clave: ['', Validators.required],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
@@ -59,6 +60,7 @@ export class Register {
 
   const payload: UsuarioCreateRequest = {
     ...this.formUsuario.value,
+    telefono: Number(this.formUsuario.value.telefono),
     empresaId: this.empresaId
   };
 

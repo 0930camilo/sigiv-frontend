@@ -14,6 +14,9 @@
 
     <form [formGroup]="formProveedor" (ngSubmit)="crearProveedor()">
       <div class="space-y-4">
+        <input formControlName="documento" type="text" placeholder="Documento"
+          class="w-full border rounded-lg px-3 py-2" />
+
         <input formControlName="nombre" type="text" placeholder="Nombre del proveedor"
           class="w-full border rounded-lg px-3 py-2" />
 

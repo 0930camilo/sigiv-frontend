@@ -42,7 +42,7 @@ export class Proveedor implements OnInit {
   filtroEstado: string = '';
 
   columns: TableColumn[] = [
-    { field: 'idProveedor', header: 'ID', type: 'text' },
+    { field: 'documento', header: 'Documento', type: 'text' },
     { field: 'nombre', header: 'Nombre', type: 'text' },
     { field: 'telefono', header: 'Teléfono', type: 'text' },
     { field: 'direccion', header: 'Dirección', type: 'text' },
