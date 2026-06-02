@@ -25,7 +25,8 @@ getProveedoresByEmpresa(
   page = 0,
   size = 10,
   estado?: string,
-  nombre?: string
+  nombre?: string,
+  documento?: string
 ): Observable<ProveedoresResponse> {
 
   let params = new HttpParams()
@@ -38,6 +39,10 @@ getProveedoresByEmpresa(
 
   if (nombre && nombre.trim() !== '') {
     params = params.set('nombre', nombre);
+  }
+
+  if (documento && documento.trim() !== '') {
+    params = params.set('documento', documento);
   }
 
   const headers = this.headerUtil.getAuthHeaders();

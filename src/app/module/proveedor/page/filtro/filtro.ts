@@ -12,13 +12,19 @@ import { FormsModule } from '@angular/forms';
 export class FiltrosProveedorComponent {
 
   filtroNombre: string = '';
+  filtroDocumento: string = '';
   filtroEstado: string = '';
 
   @Output() filtrarNombre = new EventEmitter<string>();
+  @Output() filtrarDocumento = new EventEmitter<string>();
   @Output() filtrarEstado = new EventEmitter<string>();
 
   buscarPorNombre() {
     this.filtrarNombre.emit(this.filtroNombre);
+  }
+
+  buscarPorDocumento() {
+    this.filtrarDocumento.emit(this.filtroDocumento);
   }
 
   filtrarPorEstado() {

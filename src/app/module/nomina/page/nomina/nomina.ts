@@ -54,6 +54,7 @@ export class NominaComponent implements OnInit {
   // Modal asignar persona
   mostrarModalAsignar = false;
   personasDisponibles: Persona[] = [];
+  personaNombreById: Record<number, string> = {};
   asignarForm: PersonaNominaRequest = { idNomina: 0, idPersona: 0, diasTrabajados: 0, valorDia: 0 };
 
   constructor(
@@ -65,6 +66,7 @@ export class NominaComponent implements OnInit {
 
   ngOnInit(): void {
     this.empresaId = this.authService.getEmpresaId();
+    this.cargarPersonasEmpresa();
     this.cargarNominas();
   }
 
@@ -205,20 +207,34 @@ export class NominaComponent implements OnInit {
     });
   }
 
+  cargarPersonasEmpresa(): void {
+    if (!this.empresaId) return;
+    this.personaService.listarPorEmpresa(this.empresaId, 0, 200).subscribe({
+      next: (res) => {
+        this.personasDisponibles = Array.isArray(res.data?.personas) ? res.data.personas : [];
+        this.personaNombreById = this.personasDisponibles.reduce((acc, persona) => {
+          acc[persona.idpersona] = persona.nombre;
+          return acc;
+        }, {} as Record<number, string>);
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.personasDisponibles = [];
+        this.personaNombreById = {};
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   // --- Asignar persona a nómina ---
 
   abrirModalAsignar(): void {
     if (!this.nominaSeleccionada || !this.empresaId) return;
     this.asignarForm = { idNomina: this.nominaSeleccionada.idNomina, idPersona: 0, diasTrabajados: 0, valorDia: 0 };
-
-    this.personaService.listarPorEmpresa(this.empresaId, 0, 100).subscribe({
-      next: (res) => {
-        this.personasDisponibles = Array.isArray(res.data?.personas) ? res.data.personas : [];
-        this.mostrarModalAsignar = true;
-        this.cdr.detectChanges();
-      },
-      error: () => Swal.fire('Error', 'No se pudieron cargar las personas', 'error')
-    });
+    if (this.personasDisponibles.length === 0) {
+      this.cargarPersonasEmpresa();
+    }
+    this.mostrarModalAsignar = true;
   }
 
   cerrarModalAsignar(): void {
@@ -243,9 +259,11 @@ export class NominaComponent implements OnInit {
   }
 
   eliminarPersonaNomina(pn: PersonaNomina): void {
+    const personaNombre = this.personaNombreById[pn.idPersona];
+    const personaLabel = personaNombre ? personaNombre : `ID ${pn.idPersona}`;
     Swal.fire({
       title: '¿Eliminar asignación?',
-      text: `Se eliminará la persona ${pn.idPersona} de esta nómina`,
+      text: `Se eliminará la persona ${personaLabel} de esta nómina`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',

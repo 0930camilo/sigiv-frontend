@@ -26,6 +26,7 @@ export class User implements OnInit {
   pageSize = 10;
 
   filtroNombre: string = '';
+  filtroDocumento: string = '';
   filtroEstado: string = '';
 
   mostrarEditar = false;
@@ -59,7 +60,8 @@ export class User implements OnInit {
     this.userService.getUsersByEmpresa(
       this.empresaId, page, this.pageSize,
       this.filtroEstado || undefined,
-      this.filtroNombre || undefined
+      this.filtroNombre || undefined,
+      this.filtroDocumento || undefined
     )
       .pipe(finalize(() => { this.loading = false; this.cdr.markForCheck(); }))
       .subscribe({
@@ -77,6 +79,11 @@ export class User implements OnInit {
 
   onFiltrarNombre(nombre: string): void {
     this.filtroNombre = nombre;
+    this.getUsuarios(0);
+  }
+
+  onFiltrarDocumento(documento: string): void {
+    this.filtroDocumento = documento;
     this.getUsuarios(0);
   }
 

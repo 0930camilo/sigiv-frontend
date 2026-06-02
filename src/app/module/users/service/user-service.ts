@@ -16,7 +16,14 @@ export class UserService {
     private headerUtil: HeaderTokenUtil
   ) { }
 
-  getUsersByEmpresa(empresaId: number, page = 0, size = 10, estado?: string, nombres?: string): Observable<UsuariosResponse> {
+  getUsersByEmpresa(
+    empresaId: number,
+    page = 0,
+    size = 10,
+    estado?: string,
+    nombres?: string,
+    documento?: string
+  ): Observable<UsuariosResponse> {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
@@ -25,6 +32,9 @@ export class UserService {
     }
     if (nombres) {
       params = params.set('nombres', nombres);
+    }
+    if (documento) {
+      params = params.set('documento', documento);
     }
     const headers = this.headerUtil.getAuthHeaders();
     return this.http

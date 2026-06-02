@@ -8,6 +8,14 @@
     (input)="buscarPorNombre()"
   />
 
+  <input
+    type="text"
+    placeholder="Buscar por documento..."
+    class="border rounded px-3 py-2 w-60"
+    [(ngModel)]="filtroDocumento"
+    (input)="buscarPorDocumento()"
+  />
+
   <select
     class="border rounded px-3 py-2"
     [(ngModel)]="filtroEstado"

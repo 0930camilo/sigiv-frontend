@@ -39,6 +39,7 @@ export class Proveedor implements OnInit {
   proveedorAEliminar: any = null;
 
   filtroNombre: string = '';
+  filtroDocumento: string = '';
   filtroEstado: string = '';
 
   columns: TableColumn[] = [
@@ -71,7 +72,8 @@ export class Proveedor implements OnInit {
       page,
       this.pageSize,
       this.filtroEstado,
-      this.filtroNombre
+      this.filtroNombre,
+      this.filtroDocumento
     )
     .pipe(finalize(() => {
       this.loading = false;
@@ -90,6 +92,11 @@ export class Proveedor implements OnInit {
 
   filtrarPorNombre(nombre: string) {
     this.filtroNombre = nombre;
+    this.getProveedores(0);
+  }
+
+  filtrarPorDocumento(documento: string) {
+    this.filtroDocumento = documento;
     this.getProveedores(0);
   }
 
