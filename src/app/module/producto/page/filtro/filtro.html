@@ -9,6 +9,15 @@
     (input)="buscarPorNombre()"
   />
 
+  <!-- BUSCAR POR CODIGO DE BARRA -->
+  <input
+    type="text"
+    placeholder="Buscar por codigo de barra..."
+    class="border rounded px-3 py-2 w-60"
+    [(ngModel)]="filtroCodigoBarra"
+    (input)="buscarPorCodigoBarra()"
+  />
+
   <!-- ESTADO -->
   <select
     class="border rounded px-3 py-2"

@@ -39,6 +39,7 @@
     *ngIf="empresaId"
     [empresaId]="empresaId"
     (filtrarNombre)="filtrarPorNombre($event)"
+    (filtrarCodigoBarra)="filtrarPorCodigoBarra($event)"
     (filtrarEstado)="filtrarPorEstado($event)"
     (filtrarCategoria)="filtrarPorCategoria($event)"
     (filtrarProveedor)="filtrarPorProveedor($event)">

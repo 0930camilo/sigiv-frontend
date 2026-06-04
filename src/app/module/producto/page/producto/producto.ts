@@ -44,6 +44,7 @@ export class Producto implements OnInit {
 
   filtros: any = {
     nombre: '',
+    codigoBarra: '',
     estado: '',
     categoria: null,
     proveedor: null
@@ -190,6 +191,11 @@ export class Producto implements OnInit {
   // ===============================
   filtrarPorNombre(nombre: string) {
     this.filtros.nombre = nombre;
+    this.getProductos(0);
+  }
+
+  filtrarPorCodigoBarra(codigoBarra: string) {
+    this.filtros.codigoBarra = codigoBarra;
     this.getProductos(0);
   }
 

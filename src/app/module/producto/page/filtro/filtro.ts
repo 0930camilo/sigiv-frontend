@@ -17,6 +17,7 @@ export class FiltrosProductoComponent implements OnInit {
   @Input() empresaId!: number;
 
   filtroNombre: string = '';
+  filtroCodigoBarra: string = '';
   filtroEstado: string = '';
   categoriaNombre: string = '';
   proveedorNombre: string = '';
@@ -25,6 +26,7 @@ export class FiltrosProductoComponent implements OnInit {
   proveedores: any[] = [];
 
   @Output() filtrarNombre = new EventEmitter<string>();
+  @Output() filtrarCodigoBarra = new EventEmitter<string>();
   @Output() filtrarEstado = new EventEmitter<string>();
   @Output() filtrarCategoria = new EventEmitter<string | null>();
   @Output() filtrarProveedor = new EventEmitter<string | null>();
@@ -44,6 +46,10 @@ export class FiltrosProductoComponent implements OnInit {
 
   buscarPorNombre(): void {
     this.filtrarNombre.emit(this.filtroNombre);
+  }
+
+  buscarPorCodigoBarra(): void {
+    this.filtrarCodigoBarra.emit(this.filtroCodigoBarra);
   }
 
   filtrarPorEstado(): void {

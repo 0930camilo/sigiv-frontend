@@ -30,6 +30,7 @@ getProductosByEmpresa(
   size: number = 10,
   filtros?: {
     nombre?: string;
+    codigoBarra?: string;
     estado?: string;
     categoria?: string;
     proveedor?: string;
@@ -44,6 +45,10 @@ getProductosByEmpresa(
 
   if (filtros?.nombre) {
     params = params.set('nombre', filtros.nombre);
+  }
+
+  if (filtros?.codigoBarra) {
+    params = params.set('codigoBarra', filtros.codigoBarra);
   }
 
   if (filtros?.estado) {
