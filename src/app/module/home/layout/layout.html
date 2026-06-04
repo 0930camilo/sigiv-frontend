@@ -1,7 +1,7 @@
-<div class="flex h-screen overflow-hidden bg-gray-100">
+<div class="layout-root flex h-screen overflow-hidden bg-gray-100" [class.sidebar-open]="isSidebarOpen">
 
   <!-- Sidebar -->
-  <aside class="fixed left-0 top-0 h-screen w-64 bg-white shadow-md flex flex-col">
+  <aside class="sidebar fixed left-0 top-0 h-screen w-64 bg-white shadow-md flex flex-col">
     <div class="h-16 flex items-center justify-center border-b">
       <h1 class="text-xl font-bold text-blue-600">SIGIV</h1>
     </div>
@@ -138,10 +138,19 @@
   </aside>
 
   <!-- Main Content -->
-  <div class="ml-64 flex-1 flex flex-col">
+  <div class="ml-0 lg:ml-64 flex-1 flex flex-col">
     <!-- Topbar -->
-    <header class="fixed top-0 right-0 h-16 bg-white shadow-sm flex items-center justify-between px-6 z-40 left-64">
-      <h2 class="text-lg font-semibold">{{ getPanelTitle() }}</h2>
+    <header class="fixed top-0 right-0 h-16 bg-white shadow-sm flex items-center justify-between px-4 lg:px-6 z-40 left-0 lg:left-64">
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          class="lg:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
+          (click)="toggleSidebar()"
+          aria-label="Abrir menu">
+          ☰
+        </button>
+        <h2 class="text-lg font-semibold">{{ getPanelTitle() }}</h2>
+      </div>
       <div class="flex items-center space-x-3">
     <div class="flex flex-col items-end text-sm">
   <span class="text-gray-700 font-medium">{{ getUserName() }}</span>
@@ -157,7 +166,7 @@
     </header>
 
     <!-- Router outlet con loader -->
-    <main class="flex-1 p-4 pt-16 overflow-hidden relative">
+    <main class="flex-1 p-4 pt-16 overflow-auto relative">
       <div
         *ngIf="internalLoading"
         class="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn"
@@ -178,4 +187,10 @@
 
     </main>
   </div>
+</div>
+
+<div
+  *ngIf="isSidebarOpen"
+  class="sidebar-backdrop"
+  (click)="closeSidebar()">
 </div>

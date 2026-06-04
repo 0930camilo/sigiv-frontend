@@ -5,9 +5,34 @@
       Productos de la Empresa
     </h2>
 
-    <app-register-producto
-      (productoCreado)="onProductoCreado($event)">
-    </app-register-producto>
+    <div class="flex items-center gap-3">
+      <app-register-producto
+        (productoCreado)="onProductoCreado($event)">
+      </app-register-producto>
+
+      <input
+        #importInput
+        type="file"
+        accept=".xlsx,.xls"
+        class="hidden"
+        (change)="onArchivoSeleccionado($event)" />
+
+      <button
+        type="button"
+        (click)="downloadPlantilla()"
+        class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="!empresaId || downloadingPlantilla">
+        {{ downloadingPlantilla ? 'Descargando...' : 'Descargar plantilla' }}
+      </button>
+
+      <button
+        type="button"
+        (click)="abrirSelectorArchivo(importInput)"
+        class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow"
+        [disabled]="importando">
+        {{ importando ? 'Importando...' : 'Importar Excel' }}
+      </button>
+    </div>
   </div>
 
   <app-filtros-producto

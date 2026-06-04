@@ -77,28 +77,40 @@
 
 <!-- ACTIONS (Editar / Eliminar con iconos) -->
           <ng-container *ngIf="col.type === 'actions'">
+            <div class="flex items-center gap-2">
+
+          <!-- CODIGO DE BARRA -->
+              <button
+            *ngIf="item.codigoBarra"
+            title="Codigo de barra"
+            class="p-2 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900
+             transition-all duration-200 hover:scale-110 mr-2"
+                (click)="actionClick.emit({ action: 'barcode', row: item })">
+
+            <i class="fa-solid fa-barcode text-amber-600"></i>
+              </button>
 
   <!-- EDITAR -->
-            <button
-    title="Editar"
-    class="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900
-           transition-all duration-200 hover:scale-110 mr-2"
-              (click)="actionClick.emit({ action: 'edit', row: item })">
+                <button
+              title="Editar"
+              class="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900
+               transition-all duration-200 hover:scale-110"
+                  (click)="actionClick.emit({ action: 'edit', row: item })">
 
     <i class="fa-solid fa-pen text-blue-600"></i>
             </button>
 
   <!-- ELIMINAR -->
-            <button
-    title="Eliminar"
-    class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900
-           transition-all duration-200 hover:scale-110"
-              (click)="actionClick.emit({ action: 'delete', row: item })">
+                <button
+              title="Eliminar"
+              class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900
+               transition-all duration-200 hover:scale-110"
+                  (click)="actionClick.emit({ action: 'delete', row: item })">
 
     <i class="fa-solid fa-trash text-red-600"></i>
   </button>
-
-</ng-container>
+            </div>
+          </ng-container>
 
 
         <!-- BOTÓN PERSONALIZADO -->

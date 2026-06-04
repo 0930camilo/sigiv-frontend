@@ -38,3 +38,15 @@ export interface ProductoCreateRequest {
   proveedorId?: number;
   categoriaId: number;
 }
+
+export interface ProductoImportFilaError {
+  fila: number;
+  error: string;
+}
+
+export interface ProductoImportResultDto {
+  totalFilas: number;
+  exitosos: number;
+  fallidos: number;
+  errores: ProductoImportFilaError[];
+}

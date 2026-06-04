@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 
 import {
   ProductoCreateRequest,
+  ProductoImportResultDto,
   ProductosResponse
 } from '../model/productos.model';
 
@@ -106,6 +107,48 @@ getProductosByEmpresa(
         return throwError(() => err);
       })
     );
+  }
+
+  importarProductosExcel(archivo: File): Observable<ProductoImportResultDto> {
+    const headers = this.headerUtil.getAuthHeadersForFormData();
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+
+    return this.http
+      .post<ProductoImportResultDto>(`${environment.productosApi}/importar-excel`, formData, { headers })
+      .pipe(
+        catchError(err => {
+          console.error('Error al importar productos:', err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  getPlantillaProductosPorEmpresa(empresaId: number): Observable<any> {
+    const headers = this.headerUtil.getAuthHeaders();
+
+    return this.http
+      .get<any>(`${environment.productosApi}/plantilla/empresa/${empresaId}`, { headers })
+      .pipe(
+        catchError(err => {
+          console.error('Error al obtener plantilla de productos:', err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  getCodigoBarraImagen(codigoBarra: string): Observable<any> {
+    const headers = this.headerUtil.getAuthHeaders();
+
+    return this.http
+      .get<any>(`${environment.productosApi}/codigo-barra/${codigoBarra}/imagen-base64`, { headers })
+      .pipe(
+        map(res => res.data),
+        catchError(err => {
+          console.error('Error al obtener imagen de codigo de barra:', err);
+          return throwError(() => err);
+        })
+      );
   }
 
 }

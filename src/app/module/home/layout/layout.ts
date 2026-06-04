@@ -23,6 +23,7 @@ export class Layout implements OnInit, OnDestroy {
   isUsuario = false;
   internalLoading = false;
   totalDelDia = 0;
+  isSidebarOpen = false;
   menuOpen: Record<string, boolean> = {
     inventario: false,
     ventas: false,
@@ -104,6 +105,7 @@ export class Layout implements OnInit, OnDestroy {
         }
         if (event instanceof NavigationEnd) {
           this.openMenuForCurrentRoute(event.urlAfterRedirects);
+          this.isSidebarOpen = false;
         }
         this.cdr.detectChanges();
       });
@@ -187,6 +189,14 @@ export class Layout implements OnInit, OnDestroy {
 
   toggleMenu(section: string): void {
     this.menuOpen[section] = !this.menuOpen[section];
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen = false;
   }
 
   private openMenuForCurrentRoute(url: string): void {
