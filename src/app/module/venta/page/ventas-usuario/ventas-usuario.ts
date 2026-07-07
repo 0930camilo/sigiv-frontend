@@ -7,6 +7,7 @@ import { ReusableTable } from '../../../../components/reusable-table/reusable-ta
 import { AuthService } from '../../../auth/service/auth-service';
 import { VentaService } from '../../service/venta-service';
 import { Venta } from '../../model/venta.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-ventas-usuario',
@@ -52,6 +53,13 @@ export class VentasUsuarioComponent implements OnInit {
       type: 'button',
       icon: 'fa-solid fa-file-invoice text-blue-600',
       action: (row: Venta) => this.previewFactura(row.idventa)
+    },
+    {
+      field: 'correoFactura',
+      header: 'Correo',
+      type: 'button',
+      icon: 'fa-solid fa-envelope text-amber-600',
+      action: (row: Venta) => this.enviarFacturaPorCorreo(row)
     }
   ];
 
@@ -135,5 +143,41 @@ export class VentasUsuarioComponent implements OnInit {
     this.facturaBlob = null;
     this.facturaIdActual = null;
     this.cdr.markForCheck();
+  }
+
+  async enviarFacturaPorCorreo(venta: Venta): Promise<void> {
+    const resultado = await Swal.fire({
+      title: `Enviar factura #${venta.idventa}`,
+      input: 'email',
+      inputLabel: 'Correo del cliente',
+      inputValue: venta.correoCliente || '',
+      inputPlaceholder: 'cliente@correo.com',
+      showCancelButton: true,
+      confirmButtonText: 'Enviar',
+      cancelButtonText: 'Cancelar',
+      inputValidator: (value) => {
+        if (!value) return 'Ingresa el correo del cliente';
+        return null;
+      }
+    });
+
+    if (!resultado.value) return;
+
+    Swal.fire({
+      title: 'Enviando factura',
+      text: 'Estamos enviando la factura por correo.',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    this.ventaService.enviarFacturaPorCorreo(venta.idventa, resultado.value).subscribe({
+      next: () => {
+        Swal.fire('Factura enviada', 'La factura fue enviada correctamente por correo.', 'success');
+      },
+      error: (err) => {
+        const msg = err.error?.message || 'No se pudo enviar la factura por correo.';
+        Swal.fire('Error', msg, 'error');
+      }
+    });
   }
 }

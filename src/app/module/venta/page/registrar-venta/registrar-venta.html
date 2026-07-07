@@ -9,6 +9,30 @@
 
     <!-- Datos del cliente -->
     <div class="space-y-3 mb-4">
+      <div class="flex gap-2">
+        <input
+          type="text"
+          placeholder="Número de documento"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none"
+          [(ngModel)]="documentoCliente" />
+
+        <button
+          type="button"
+          class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition"
+          (click)="buscarCliente()">
+          Buscar
+        </button>
+      </div>
+
+      <div *ngIf="buscandoCliente" class="text-sm text-amber-700">
+        Buscando cliente...
+      </div>
+
+      <div *ngIf="clienteEncontrado" class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+        <p class="font-semibold">Cliente encontrado</p>
+        <p>{{ clienteEncontrado.nombre }} · {{ clienteEncontrado.correo || 'Sin correo' }}</p>
+      </div>
+
       <input
         type="text"
         placeholder="Nombre del cliente"
@@ -20,6 +44,32 @@
         placeholder="Teléfono del cliente"
         class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none"
         [(ngModel)]="telefonoCliente" />
+
+      <input
+        type="email"
+        placeholder="Correo del cliente"
+        class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none"
+        [(ngModel)]="correoCliente" />
+
+      <div class="rounded-lg border border-amber-200 bg-white p-3 text-sm">
+        <label class="flex items-center gap-2 text-amber-800 font-medium">
+          <input type="checkbox" [(ngModel)]="registrarClienteAutomaticamente" [disabled]="!!clienteEncontrado" />
+          Registrar cliente si no existe
+        </label>
+        <p class="text-xs text-gray-500 mt-1">Si no encuentra coincidencias, se creará el cliente automáticamente con los datos ingresados.</p>
+      </div>
+
+      <div class="rounded-lg border border-amber-200 bg-white p-3 text-sm">
+        <label class="block text-amber-800 font-medium mb-2">Enviar factura</label>
+        <select
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none"
+          [(ngModel)]="canalEnvioFactura">
+          <option value="ninguno">No enviar factura</option>
+          <option value="correo">Solo correo</option>
+          <option value="whatsapp">Solo WhatsApp</option>
+          <option value="correo-whatsapp">Correo y WhatsApp</option>
+        </select>
+      </div>
     </div>
 
     <!-- Tabla del carrito -->

@@ -16,4 +16,12 @@ export class EmpresaService {
   actualizarEmpresa(id: number, data: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/update-empresa/${id}`, data);
   }
+
+  obtenerCorreoFacturacion(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}/correo-facturacion`);
+  }
+
+  guardarCorreoFacturacion(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}/correo-facturacion`, data);
+  }
 }

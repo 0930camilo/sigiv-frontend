@@ -9,6 +9,8 @@ import { VentaService } from '../../service/venta-service';
 import { Producto } from '../../../producto/model/productos.model';
 import { Categoria } from '../../../categorias/model/categorias.model';
 import { ItemCarrito, VentaRequest } from '../../model/venta.model';
+import { PersonaService } from '../../../persona/service/persona-service';
+import { Persona } from '../../../persona/model/persona.model';
 import { VentaNotificacionService } from '../../../../shared/services/venta-notificacion.service';
 
 import Swal from 'sweetalert2';
@@ -26,7 +28,13 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
   // --- Datos del cliente ---
   nombreCliente = '';
   telefonoCliente = '';
+  correoCliente = '';
+  documentoCliente = '';
   efectivo: number | null = null;
+  clienteEncontrado: Persona | null = null;
+  buscandoCliente = false;
+  registrarClienteAutomaticamente = true;
+  canalEnvioFactura: 'ninguno' | 'correo' | 'whatsapp' | 'correo-whatsapp' = 'ninguno';
 
   // --- Carrito ---
   carrito: ItemCarrito[] = [];
@@ -59,6 +67,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
     private ventaService: VentaService,
+    private personaService: PersonaService,
     private ventaNotificacion: VentaNotificacionService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -254,6 +263,164 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
   }
 
   // ================================
+  // CLIENTE
+  // ================================
+  buscarCliente(): void {
+    const documento = this.documentoCliente.trim();
+
+    if (!documento) {
+      this.clienteEncontrado = null;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.buscandoCliente = true;
+    this.cdr.markForCheck();
+
+    this.personaService.listarPorEmpresa(this.empresaId, 0, 10, { documento }).subscribe({
+      next: (res) => {
+        const personas = Array.isArray(res.data?.personas) ? res.data.personas : [];
+        this.clienteEncontrado = personas[0] ?? null;
+
+        if (this.clienteEncontrado) {
+          this.nombreCliente = this.clienteEncontrado.nombre || '';
+          this.telefonoCliente = this.clienteEncontrado.telefono || '';
+          this.correoCliente = this.clienteEncontrado.correo || '';
+          this.registrarClienteAutomaticamente = false;
+        } else {
+          this.registrarClienteAutomaticamente = true;
+        }
+
+        this.buscandoCliente = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.clienteEncontrado = null;
+        this.buscandoCliente = false;
+        this.registrarClienteAutomaticamente = true;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  private crearClienteSiEsNecesario(): Promise<void> {
+    return new Promise((resolve) => {
+      const documento = this.documentoCliente.trim();
+      const nombre = this.nombreCliente.trim();
+
+      if (this.clienteEncontrado || !this.registrarClienteAutomaticamente) {
+        resolve();
+        return;
+      }
+
+      if (!documento && !nombre) {
+        resolve();
+        return;
+      }
+
+      const dto = {
+        documento,
+        nombre,
+        correo: this.correoCliente.trim(),
+        telefono: this.telefonoCliente.trim(),
+        direccion: '',
+        fechaNacimiento: '',
+        fechaIngreso: new Date().toISOString().slice(0, 10),
+        estado: 'Activo' as const,
+        empresaId: this.empresaId
+      };
+
+      this.personaService.crearPersona(dto).subscribe({
+        next: (res) => {
+          this.clienteEncontrado = res.data;
+          resolve();
+        },
+        error: () => {
+          resolve();
+        }
+      });
+    });
+  }
+
+  private requiereEnvioCorreo(): boolean {
+    return this.canalEnvioFactura === 'correo' || this.canalEnvioFactura === 'correo-whatsapp';
+  }
+
+  private requiereEnvioWhatsapp(): boolean {
+    return this.canalEnvioFactura === 'whatsapp' || this.canalEnvioFactura === 'correo-whatsapp';
+  }
+
+  private obtenerVentaId(response: any): number | null {
+    const id =
+      response?.idventa ??
+      response?.idVenta ??
+      response?.id ??
+      response?.data?.idventa ??
+      response?.data?.idVenta ??
+      response?.data?.id;
+    const idNumerico = Number(id);
+
+    return Number.isFinite(idNumerico) && idNumerico > 0 ? idNumerico : null;
+  }
+
+  private abrirWhatsappFactura(telefono: string): void {
+    const mensaje = encodeURIComponent('Hola, adjunto la factura de su compra.');
+    window.open(`https://wa.me/${telefono}?text=${mensaje}`, '_blank');
+  }
+
+  private finalizarRegistroVenta(): void {
+    this.ventaNotificacion.notificarVentaRegistrada();
+    this.limpiarFormulario();
+    this.cargarProductos(this.currentPage);
+    this.cdr.markForCheck();
+  }
+
+  private procesarEnvioFactura(response: any): void {
+    const correo = this.correoCliente.trim();
+    const telefono = this.telefonoCliente.trim().replace(/\D/g, '');
+    const ventaId = this.obtenerVentaId(response);
+
+    if (this.requiereEnvioWhatsapp() && telefono) {
+      this.abrirWhatsappFactura(telefono);
+    }
+
+    if (!this.requiereEnvioCorreo()) {
+      Swal.fire('Venta registrada', response.message || 'Venta creada exitosamente', 'success');
+      this.finalizarRegistroVenta();
+      return;
+    }
+
+    if (!ventaId) {
+      Swal.fire(
+        'Venta registrada',
+        'La venta se guardo, pero no se pudo identificar el ID para enviar la factura por correo.',
+        'warning'
+      );
+      this.finalizarRegistroVenta();
+      return;
+    }
+
+    Swal.fire({
+      title: 'Enviando factura',
+      text: 'La venta fue registrada. Estamos enviando la factura por correo.',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    this.ventaService.enviarFacturaPorCorreo(ventaId, correo).subscribe({
+      next: () => {
+        Swal.fire('Venta registrada', 'Venta creada y factura enviada por correo.', 'success');
+        this.finalizarRegistroVenta();
+      },
+      error: (err: any) => {
+        const msg = err.error?.message || 'La venta se guardo, pero no se pudo enviar la factura por correo.';
+        Swal.fire('Venta registrada', msg, 'warning');
+        this.finalizarRegistroVenta();
+      }
+    });
+  }
+
+  // ================================
   // REGISTRAR VENTA
   // ================================
   registrarVenta(): void {
@@ -272,30 +439,50 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const venta: VentaRequest = {
-      usuarioId: this.usuarioId,
-      nombreCliente: this.nombreCliente.trim(),
-      telefonoCliente: this.telefonoCliente.trim(),
-      efectivo: this.efectivo,
-      detalles: this.carrito.map(item => ({
-        productoId: item.productoId,
-        cantidad: item.cantidad
-      }))
-    };
+    if (this.requiereEnvioCorreo() && !this.correoCliente.trim()) {
+      Swal.fire('Error', 'Ingresa el correo del cliente para enviar la factura', 'warning');
+      return;
+    }
 
-    this.ventaService.crearVenta(venta).subscribe({
-      next: (res: any) => {
-        Swal.fire('Venta registrada', res.message || 'Venta creada exitosamente', 'success');
-        this.ventaNotificacion.notificarVentaRegistrada();
-        this.limpiarFormulario();
-        this.cargarProductos(this.currentPage);
-        this.cdr.markForCheck();
-      },
-      error: (err: any) => {
-        const msg = err.error?.message || 'Error al registrar la venta';
-        Swal.fire('Error', msg, 'error');
-        this.cdr.markForCheck();
-      }
+    if (this.requiereEnvioWhatsapp() && !this.telefonoCliente.trim().replace(/\D/g, '')) {
+      Swal.fire('Error', 'Ingresa el telefono del cliente para enviar la factura por WhatsApp', 'warning');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Registrando venta',
+      text: 'Estamos guardando la venta y preparando la información del cliente.',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    this.crearClienteSiEsNecesario().then(() => {
+      const venta: VentaRequest = {
+        usuarioId: this.usuarioId,
+        nombreCliente: this.nombreCliente.trim(),
+        telefonoCliente: this.telefonoCliente.trim(),
+        correoCliente: this.correoCliente.trim() || undefined,
+        documentoCliente: this.documentoCliente.trim() || undefined,
+        efectivo: this.efectivo!,
+        detalles: this.carrito.map(item => ({
+          productoId: item.productoId,
+          cantidad: item.cantidad
+        })),
+        registrarCliente: !!this.documentoCliente.trim() && !this.clienteEncontrado
+      };
+
+      this.ventaService.crearVenta(venta).subscribe({
+        next: (res: any) => {
+          Swal.close();
+          this.procesarEnvioFactura(res);
+        },
+        error: (err: any) => {
+          Swal.close();
+          const msg = err.error?.message || 'Error al registrar la venta';
+          Swal.fire('Error', msg, 'error');
+          this.cdr.markForCheck();
+        }
+      });
     });
   }
 
@@ -303,6 +490,11 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     this.carrito = [];
     this.nombreCliente = '';
     this.telefonoCliente = '';
+    this.correoCliente = '';
+    this.documentoCliente = '';
+    this.clienteEncontrado = null;
+    this.registrarClienteAutomaticamente = true;
+    this.canalEnvioFactura = 'ninguno';
     this.efectivo = null;
     this.cantidades = {};
   }
