@@ -139,8 +139,15 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     try {
       const zxing = await import('@zxing/browser');
       const reader = new zxing.BrowserMultiFormatReader(undefined, {
-        delayBetweenScanAttempts: 300
+        delayBetweenScanAttempts: 80
       });
+
+      const videoConstraints: MediaTrackConstraints = {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: { ideal: 30, max: 60 }
+      };
 
       this.scannerActivo = true;
       this.scannerError = '';
@@ -151,8 +158,8 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
         if (!video) return;
 
         reader
-          .decodeFromVideoDevice(
-            undefined,
+          .decodeFromConstraints(
+            { video: videoConstraints, audio: false },
             video,
             (result: { getText: () => string } | undefined) => {
               if (!result) return;

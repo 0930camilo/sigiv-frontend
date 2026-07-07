@@ -23,7 +23,7 @@
     </div>
 
     <!-- Tabla del carrito -->
-    <div class="flex-1 overflow-auto">
+    <div class="flex-1 min-h-0 overflow-y-auto">
       <table class="w-full text-sm" *ngIf="carrito.length > 0">
         <thead class="bg-blue-100 text-blue-900">
           <tr>
@@ -109,7 +109,7 @@
     </div>
 
     <!-- Tabla de productos -->
-    <div class="overflow-x-auto" *ngIf="!loadingProductos">
+    <div class="overflow-auto max-h-[55vh] lg:max-h-[60vh]" *ngIf="!loadingProductos">
       <table class="w-full text-sm border-collapse">
         <thead class="bg-green-600 text-white">
           <tr>
