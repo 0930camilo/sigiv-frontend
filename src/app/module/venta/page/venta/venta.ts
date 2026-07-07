@@ -9,6 +9,7 @@ import { ReusableTable } from '../../../../components/reusable-table/reusable-ta
 import { VentaService } from '../../service/venta-service';
 import { Venta } from '../../model/venta.model';
 import { FiltrosVentasComponent } from '../filtro/filtro';
+import { PosPrintService } from '../../../../shared/services/pos-print.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -45,6 +46,7 @@ export class VentaComponent implements OnInit {
   facturaPreviewUrl: SafeResourceUrl | null = null;
   facturaBlob: Blob | null = null;
   facturaIdActual: number | null = null;
+  facturaActual: Venta | null = null;
 
   columns: TableColumn[] = [
     { field: 'idventa', header: 'ID' },
@@ -56,31 +58,32 @@ export class VentaComponent implements OnInit {
     { field: 'cambio', header: 'Cambio', type: 'number' },
     { field: 'total', header: 'Total', type: 'number' },
     { field: 'nombreUsuario', header: 'Vendedor' },
-
-    // 👁 VER DETALLE
     {
-      field: 'acciones',
-      header: 'Detalle',
-      type: 'button',
-      icon: 'fa-solid fa-eye text-green-600',
-      action: (row: Venta) => this.verDetalle(row)
-    },
-
-    // 📄 VER FACTURA (preview)
-    {
-      field: 'factura',
-      header: 'Factura',
-      type: 'button',
-      icon: 'fa-solid fa-file-invoice text-blue-600',
-      action: (row: Venta) => this.previewFactura(row.idventa)
-    },
-
-    {
-      field: 'correoFactura',
-      header: 'Correo',
-      type: 'button',
-      icon: 'fa-solid fa-envelope text-amber-600',
-      action: (row: Venta) => this.enviarFacturaPorCorreo(row)
+      field: 'accionesVenta',
+      header: 'Acciones',
+      type: 'buttons',
+      buttons: [
+        {
+          title: 'Ver detalle',
+          icon: 'fa-solid fa-eye text-green-600',
+          action: (row: Venta) => this.verDetalle(row)
+        },
+        {
+          title: 'Enviar factura',
+          icon: 'fa-solid fa-envelope text-amber-600',
+          action: (row: Venta) => this.enviarFacturaPorCorreo(row)
+        },
+        {
+          title: 'Ver factura PDF',
+          icon: 'fa-solid fa-file-invoice text-blue-600',
+          action: (row: Venta) => this.previewFactura(row.idventa)
+        },
+        {
+          title: 'Imprimir POS',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Venta) => this.imprimirFacturaPos(row)
+        }
+      ]
     }
   ];
 
@@ -88,7 +91,8 @@ export class VentaComponent implements OnInit {
     private ventaService: VentaService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private posPrintService: PosPrintService
   ) {}
 
   // ===============================
@@ -162,6 +166,8 @@ export class VentaComponent implements OnInit {
   // PREVIEW FACTURA PDF
   // ===============================
   previewFactura(id: number): void {
+    this.facturaActual = this.ventas.find((venta) => venta.idventa === id) ?? null;
+
     this.ventaService.descargarFactura(id).subscribe({
       next: (blob) => {
         this.facturaBlob = blob;
@@ -192,6 +198,25 @@ export class VentaComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
+  imprimirFacturaPos(venta: Venta | null = this.facturaActual): void {
+    if (!venta) return;
+
+    this.posPrintService.imprimir({
+      tipo: 'FACTURA',
+      numero: venta.idventa,
+      fecha: venta.fecha,
+      empresaNombre: venta.empresaNombre,
+      nombreCliente: venta.nombreCliente,
+      telefonoCliente: venta.telefonoCliente,
+      documentoCliente: venta.documentoCliente,
+      nombreUsuario: venta.nombreUsuario,
+      total: venta.total,
+      efectivo: venta.efectivo,
+      cambio: venta.cambio,
+      detalles: venta.detalles ?? []
+    });
+  }
+
   // ===============================
   // CERRAR PREVIEW FACTURA
   // ===============================
@@ -200,6 +225,7 @@ export class VentaComponent implements OnInit {
     this.facturaPreviewUrl = null;
     this.facturaBlob = null;
     this.facturaIdActual = null;
+    this.facturaActual = null;
     this.cdr.markForCheck();
   }
 

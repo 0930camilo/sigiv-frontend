@@ -8,6 +8,7 @@ import { ReusableTable } from '../../../../components/reusable-table/reusable-ta
 import { AuthService } from '../../../auth/service/auth-service';
 import { CotizacionService } from '../../service/cotizacion-service';
 import { Cotizacion } from '../../model/cotizacion.model';
+import { PosPrintService } from '../../../../shared/services/pos-print.service';
 
 @Component({
   selector: 'app-cotizaciones-usuario',
@@ -32,6 +33,7 @@ export class CotizacionesUsuarioComponent implements OnInit {
   pdfPreviewUrl: SafeResourceUrl | null = null;
   pdfBlob: Blob | null = null;
   pdfIdActual: number | null = null;
+  cotizacionActual: Cotizacion | null = null;
 
   columns: TableColumn[] = [
     { field: 'idcotizacion', header: 'ID' },
@@ -52,6 +54,13 @@ export class CotizacionesUsuarioComponent implements OnInit {
       type: 'button',
       icon: 'fa-solid fa-file-pdf text-blue-600',
       action: (row: Cotizacion) => this.previewPdf(row.idcotizacion)
+    },
+    {
+      field: 'imprimirPos',
+      header: 'POS',
+      type: 'button',
+      icon: 'fa-solid fa-print text-purple-600',
+      action: (row: Cotizacion) => this.imprimirCotizacionPos(row)
     }
   ];
 
@@ -59,7 +68,8 @@ export class CotizacionesUsuarioComponent implements OnInit {
     private cotizacionService: CotizacionService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private posPrintService: PosPrintService
   ) {}
 
   ngOnInit(): void {
@@ -105,6 +115,9 @@ export class CotizacionesUsuarioComponent implements OnInit {
   }
 
   previewPdf(id: number): void {
+    this.cotizacionActual =
+      this.cotizaciones.find((cotizacion) => cotizacion.idcotizacion === id) ?? null;
+
     this.cotizacionService.descargarCotizacionPdf(id).subscribe({
       next: (blob) => {
         this.pdfBlob = blob;
@@ -132,11 +145,27 @@ export class CotizacionesUsuarioComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
+  imprimirCotizacionPos(cotizacion: Cotizacion | null = this.cotizacionActual): void {
+    if (!cotizacion) return;
+
+    this.posPrintService.imprimir({
+      tipo: 'COTIZACION',
+      numero: cotizacion.idcotizacion,
+      fecha: cotizacion.fecha,
+      nombreCliente: cotizacion.nombreCliente,
+      telefonoCliente: cotizacion.telefonoCliente,
+      nombreUsuario: cotizacion.nombreUsuario,
+      total: cotizacion.total,
+      detalles: cotizacion.detalles ?? []
+    });
+  }
+
   cerrarPreviewPdf(): void {
     this.mostrarPreviewPdf = false;
     this.pdfPreviewUrl = null;
     this.pdfBlob = null;
     this.pdfIdActual = null;
+    this.cotizacionActual = null;
     this.cdr.markForCheck();
   }
 }
