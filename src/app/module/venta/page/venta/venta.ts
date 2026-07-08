@@ -69,7 +69,7 @@ export class VentaComponent implements OnInit {
           action: (row: Venta) => this.verDetalle(row)
         },
         {
-          title: 'Enviar factura',
+          title: 'Enviar factura POS',
           icon: 'fa-solid fa-envelope text-amber-600',
           action: (row: Venta) => this.enviarFacturaPorCorreo(row)
         },
@@ -231,7 +231,7 @@ export class VentaComponent implements OnInit {
 
   async enviarFacturaPorCorreo(venta: Venta): Promise<void> {
     const resultado = await Swal.fire({
-      title: `Enviar factura #${venta.idventa}`,
+      title: `Enviar factura POS #${venta.idventa}`,
       input: 'email',
       inputLabel: 'Correo del cliente',
       inputValue: venta.correoCliente || '',
@@ -248,18 +248,18 @@ export class VentaComponent implements OnInit {
     if (!resultado.value) return;
 
     Swal.fire({
-      title: 'Enviando factura',
-      text: 'Estamos enviando la factura por correo.',
+      title: 'Enviando factura POS',
+      text: 'Estamos enviando la factura POS por correo.',
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading()
     });
 
     this.ventaService.enviarFacturaPorCorreo(venta.idventa, resultado.value).subscribe({
       next: () => {
-        Swal.fire('Factura enviada', 'La factura fue enviada correctamente por correo.', 'success');
+        Swal.fire('Factura enviada', 'La factura POS fue enviada correctamente por correo.', 'success');
       },
       error: (err) => {
-        const msg = err.error?.message || 'No se pudo enviar la factura por correo.';
+        const msg = err.error?.message || 'No se pudo enviar la factura POS por correo.';
         Swal.fire('Error', msg, 'error');
       }
     });

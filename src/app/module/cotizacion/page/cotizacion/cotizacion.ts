@@ -59,32 +59,31 @@ export class CotizacionComponent implements OnInit {
     { field: 'total', header: 'Total', type: 'number' },
     { field: 'nombreUsuario', header: 'Vendedor' },
     {
-      field: 'acciones',
-      header: 'Detalle',
-      type: 'button',
-      icon: 'fa-solid fa-eye text-green-600',
-      action: (row: Cotizacion) => this.verDetalle(row)
-    },
-    {
-      field: 'pdf',
-      header: 'PDF',
-      type: 'button',
-      icon: 'fa-solid fa-file-pdf text-blue-600',
-      action: (row: Cotizacion) => this.previewPdf(row.idcotizacion)
-    },
-    {
-      field: 'imprimirPos',
-      header: 'POS',
-      type: 'button',
-      icon: 'fa-solid fa-print text-purple-600',
-      action: (row: Cotizacion) => this.imprimirCotizacionPos(row)
-    },
-    {
-      field: 'eliminar',
-      header: 'Eliminar',
-      type: 'button',
-      icon: 'fa-solid fa-trash text-red-600',
-      action: (row: Cotizacion) => this.confirmarEliminar(row)
+      field: 'accionesCotizacion',
+      header: 'Acciones',
+      type: 'buttons',
+      buttons: [
+        {
+          title: 'Ver detalle',
+          icon: 'fa-solid fa-eye text-green-600',
+          action: (row: Cotizacion) => this.verDetalle(row)
+        },
+        {
+          title: 'Ver cotizacion PDF',
+          icon: 'fa-solid fa-file-invoice text-blue-600',
+          action: (row: Cotizacion) => this.previewPdf(row.idcotizacion)
+        },
+        {
+          title: 'Imprimir POS',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Cotizacion) => this.imprimirCotizacionPos(row)
+        },
+        {
+          title: 'Eliminar',
+          icon: 'fa-solid fa-trash text-red-600',
+          action: (row: Cotizacion) => this.confirmarEliminar(row)
+        }
+      ]
     }
   ];
 

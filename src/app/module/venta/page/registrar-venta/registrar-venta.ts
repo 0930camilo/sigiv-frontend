@@ -364,7 +364,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
   }
 
   private abrirWhatsappFactura(telefono: string): void {
-    const mensaje = encodeURIComponent('Hola, adjunto la factura de su compra.');
+    const mensaje = encodeURIComponent('Hola, adjunto la factura POS de su compra.');
     window.open(`https://wa.me/${telefono}?text=${mensaje}`, '_blank');
   }
 
@@ -393,7 +393,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     if (!ventaId) {
       Swal.fire(
         'Venta registrada',
-        'La venta se guardo, pero no se pudo identificar el ID para enviar la factura por correo.',
+        'La venta se guardo, pero no se pudo identificar el ID para enviar la factura POS por correo.',
         'warning'
       );
       this.finalizarRegistroVenta();
@@ -401,19 +401,19 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     }
 
     Swal.fire({
-      title: 'Enviando factura',
-      text: 'La venta fue registrada. Estamos enviando la factura por correo.',
+      title: 'Enviando factura POS',
+      text: 'La venta fue registrada. Estamos enviando la factura POS por correo.',
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading()
     });
 
     this.ventaService.enviarFacturaPorCorreo(ventaId, correo).subscribe({
       next: () => {
-        Swal.fire('Venta registrada', 'Venta creada y factura enviada por correo.', 'success');
+        Swal.fire('Venta registrada', 'Venta creada y factura POS enviada por correo.', 'success');
         this.finalizarRegistroVenta();
       },
       error: (err: any) => {
-        const msg = err.error?.message || 'La venta se guardo, pero no se pudo enviar la factura por correo.';
+        const msg = err.error?.message || 'La venta se guardo, pero no se pudo enviar la factura POS por correo.';
         Swal.fire('Venta registrada', msg, 'warning');
         this.finalizarRegistroVenta();
       }
@@ -440,12 +440,12 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     }
 
     if (this.requiereEnvioCorreo() && !this.correoCliente.trim()) {
-      Swal.fire('Error', 'Ingresa el correo del cliente para enviar la factura', 'warning');
+      Swal.fire('Error', 'Ingresa el correo del cliente para enviar la factura POS', 'warning');
       return;
     }
 
     if (this.requiereEnvioWhatsapp() && !this.telefonoCliente.trim().replace(/\D/g, '')) {
-      Swal.fire('Error', 'Ingresa el telefono del cliente para enviar la factura por WhatsApp', 'warning');
+      Swal.fire('Error', 'Ingresa el telefono del cliente para enviar la factura POS por WhatsApp', 'warning');
       return;
     }
 
@@ -468,6 +468,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
           productoId: item.productoId,
           cantidad: item.cantidad
         })),
+        formatoFactura: 'POS',
         registrarCliente: !!this.documentoCliente.trim() && !this.clienteEncontrado
       };
 

@@ -13,6 +13,10 @@
         class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
         👤 Perfil Empresa
       </a>
+      <a *ngIf="isEmpresa" routerLink="facturacion" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
+        class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">
+        <i class="fa-solid fa-envelope text-amber-600 mr-2"></i> Facturacion
+      </a>
       <!-- Perfil usuario -->
       <a *ngIf="isUsuario" routerLink="perfil-usuario" routerLinkActive="bg-blue-100 text-blue-600 font-semibold"
         class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-50 transition">

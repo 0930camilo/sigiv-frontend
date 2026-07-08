@@ -50,6 +50,7 @@ export interface VentaRequest {
   detalles: DetalleVentaRequest[];
   enviarFactura?: boolean;
   canalEnvioFactura?: 'ninguno' | 'correo' | 'whatsapp' | 'correo-whatsapp';
+  formatoFactura?: 'POS';
   registrarCliente?: boolean;
 }
 

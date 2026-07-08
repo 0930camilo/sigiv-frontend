@@ -60,7 +60,7 @@ export class VentaService {
   enviarFacturaPorCorreo(id: number, correoDestino: string): Observable<any> {
     return this.http.post(
       `${environment.ventasApi}/${id}/factura/enviar-correo`,
-      { correoDestino },
+      { correoDestino, formatoFactura: 'POS' },
       { headers: this.headerUtil.getAuthHeaders() }
     );
   }

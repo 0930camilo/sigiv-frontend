@@ -184,6 +184,10 @@ export class Layout implements OnInit, OnDestroy {
   }
 
   getPanelTitle(): string {
+    if (this.router.url.includes('/facturacion')) {
+      return 'Facturacion';
+    }
+
     return this.isEmpresa ? 'Panel de Empresa' : 'Panel de Usuario';
   }
 

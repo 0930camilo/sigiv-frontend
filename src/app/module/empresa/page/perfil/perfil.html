@@ -28,32 +28,6 @@
       </div>
     </div>
 
-    <div class="mt-8 border-t border-gray-200 pt-6">
-      <h3 class="text-lg font-semibold text-blue-700 mb-4">Correo de facturacion</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Correo remitente</label>
-          <input formControlName="correoFacturacion" type="email" class="w-full border rounded-lg px-4 py-2" />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Clave de aplicacion</label>
-          <input formControlName="claveAplicacion" type="password" class="w-full border rounded-lg px-4 py-2" />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Servidor SMTP</label>
-          <input formControlName="smtpHost" class="w-full border rounded-lg px-4 py-2" />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Puerto SMTP</label>
-          <input formControlName="smtpPort" type="number" class="w-full border rounded-lg px-4 py-2" />
-        </div>
-        <label class="md:col-span-2 flex items-center gap-2 text-gray-700 font-semibold">
-          <input type="checkbox" formControlName="startTls" />
-          Usar STARTTLS
-        </label>
-      </div>
-    </div>
-
     <div class="mt-6 flex gap-4">
       <button type="submit" [disabled]="loading || perfilForm.invalid" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Guardar Cambios</button>
       <span *ngIf="successMessage" class="text-green-600 font-semibold">{{ successMessage }}</span>

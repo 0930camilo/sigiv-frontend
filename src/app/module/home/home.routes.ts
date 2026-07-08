@@ -8,6 +8,7 @@ export const HOME_ROUTES: Routes = [
     children: [
       { path: '', redirectTo: 'perfil', pathMatch: 'full' },
       { path: 'perfil', loadComponent: () => import('../empresa/page/perfil/perfil').then(m => m.PerfilEmpresaComponent) },
+      { path: 'facturacion', loadComponent: () => import('../empresa/page/facturacion/facturacion').then(m => m.FacturacionEmpresaComponent) },
       { path: 'perfil-usuario', loadComponent: () => import('../users/page/perfil/perfil').then(m => m.PerfilUsuarioComponent) },
       { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard').then(m => m.Dashboard) },
       { path: 'users',      loadComponent: () => import('../users/page/user/user').then(m => m.User) },

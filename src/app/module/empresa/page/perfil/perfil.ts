@@ -28,11 +28,6 @@ export class PerfilEmpresaComponent {
       nit: ['', Validators.required],
       direccion: ['', Validators.required],
       telefono: ['', Validators.required],
-      correoFacturacion: ['', Validators.email],
-      claveAplicacion: [''],
-      smtpHost: ['smtp.gmail.com'],
-      smtpPort: [587],
-      startTls: [true],
       clave: ['']
     });
     this.cargarDatosEmpresa();
@@ -77,24 +72,6 @@ export class PerfilEmpresaComponent {
       }
     });
 
-    this.empresaService.obtenerCorreoFacturacion(empresaId).subscribe({
-      next: (response) => {
-        const configuracion = response?.data ?? response;
-        this.perfilForm.patchValue({
-          correoFacturacion: configuracion?.correo || '',
-          smtpHost: configuracion?.smtpHost || 'smtp.gmail.com',
-          smtpPort: configuracion?.smtpPort || 587,
-          startTls: configuracion?.startTls ?? true
-        });
-      },
-      error: () => {
-        this.perfilForm.patchValue({
-          smtpHost: 'smtp.gmail.com',
-          smtpPort: 587,
-          startTls: true
-        });
-      }
-    });
   }
 
   onSubmit() {
@@ -121,7 +98,9 @@ export class PerfilEmpresaComponent {
     }
     this.empresaService.actualizarEmpresa(empresaId, datos).subscribe({
       next: () => {
-        this.guardarCorreoFacturacion(empresaId, form);
+        this.successMessage = 'Perfil actualizado correctamente.';
+        this.loading = false;
+        this.perfilForm.patchValue({ clave: '' });
       },
       error: () => {
         this.errorMessage = 'Error al actualizar el perfil.';
@@ -130,40 +109,4 @@ export class PerfilEmpresaComponent {
     });
   }
 
-  private guardarCorreoFacturacion(empresaId: number, form: any): void {
-    const correoFacturacion = form.correoFacturacion?.trim();
-    const claveAplicacion = form.claveAplicacion?.trim();
-    const smtpHost = form.smtpHost?.trim();
-    const smtpPort = form.smtpPort ? Number(form.smtpPort) : undefined;
-    const tieneConfiguracionCorreo = !!correoFacturacion || !!claveAplicacion;
-
-    if (!tieneConfiguracionCorreo) {
-      this.successMessage = 'Perfil actualizado correctamente.';
-      this.loading = false;
-      return;
-    }
-
-    const datosCorreo: any = {
-      correo: correoFacturacion,
-      smtpHost: smtpHost || 'smtp.gmail.com',
-      smtpPort: smtpPort || 587,
-      startTls: form.startTls ?? true
-    };
-
-    if (claveAplicacion) {
-      datosCorreo.claveAplicacion = claveAplicacion;
-    }
-
-    this.empresaService.guardarCorreoFacturacion(empresaId, datosCorreo).subscribe({
-      next: () => {
-        this.successMessage = 'Perfil y correo de facturacion actualizados correctamente.';
-        this.loading = false;
-        this.perfilForm.patchValue({ claveAplicacion: '' });
-      },
-      error: () => {
-        this.errorMessage = 'El perfil se actualizo, pero no se pudo guardar el correo de facturacion.';
-        this.loading = false;
-      }
-    });
-  }
 }
