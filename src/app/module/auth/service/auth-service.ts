@@ -124,6 +124,7 @@ export class AuthService {
   redirectToDashboard(): void {
     const role = this.getUserRole();
     console.log('🔄 Redirigiendo a perfil. Rol:', role);
-    this.router.navigate(['/home/perfil'], { replaceUrl: true });
+    const target = role === 'ROLE_USUARIO' ? '/home/perfil-usuario' : '/home/perfil';
+    this.router.navigate([target], { replaceUrl: true });
   }
 }
