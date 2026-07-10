@@ -15,6 +15,11 @@ export const routes: Routes = [
     loadComponent: () => import('./module/auth/page/login/login').then(m => m.Login)
   },
   {
+    path: RoutesEnum.AUTH_REGISTER,
+    canActivate: [LoginGuard],
+    loadComponent: () => import('./module/auth/page/register/register').then(m => m.Register)
+  },
+  {
     path: RoutesEnum.HOME,
     canActivate: [AuthGuard],
     loadChildren: () =>
