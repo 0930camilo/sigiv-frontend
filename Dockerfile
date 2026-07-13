@@ -23,6 +23,7 @@ RUN npm install --omit=dev # Install only production dependencies
 # This should include both 'browser' and 'server' subdirectories
 COPY --from=builder /app/dist/sigiv-web-ui /app/dist/sigiv-web-ui
 
-EXPOSE 4000 # Default port for Angular SSR
+# Default port for Angular SSR
+EXPOSE 4000
 
 CMD ["npm", "run", "serve:ssr:sigiv-web-ui"]
