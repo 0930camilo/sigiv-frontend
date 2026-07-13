@@ -1,9 +1,21 @@
+# Stage 1: Build the Angular application
+FROM node:18-alpine as builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build -- --output-path=./dist/sigiv-web-ui/browser --configuration=production
+
+# Stage 2: Serve the application with Nginx
 FROM nginx:alpine
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# 👇 OJO AQUÍ (browser)
-COPY dist/sigiv-web-ui/browser /usr/share/nginx/html
+# Copy the built Angular app from the builder stage
+COPY --from=builder /app/dist/sigiv-web-ui/browser /usr/share/nginx/html
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
