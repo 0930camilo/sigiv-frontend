@@ -1,0 +1,165 @@
+/* ================================
+   📊 Dashboard Styles
+   ================================ */
+
+/* 🔹 Contenedor principal */
+.space-y-8 {
+  padding: 1rem;
+}
+
+/* 🔹 Ajustes para tarjetas */
+.card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  text-align: center;
+}
+
+/* 🔹 Tabla responsiva */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f9fafb;
+}
+
+td, th {
+  padding: 0.75rem;
+}/* 🔹 Contenedor del filtro de fechas */
+.filtro-fechas {
+  display: flex;
+  flex-direction: row; /* siempre en fila */
+  gap: 0rem; /* 🔹 espacio más reducido entre elementos */
+  align-items: center;
+}
+
+.filtro-fechas > div {
+  flex: 0 0 auto; /* cada input ocupa el mismo espacio */
+
+}
+
+.filtro-fechas input {
+  width: 85%; /* tamaño fijo */
+  height: 32px; /* altura cómoda */
+  padding: 0.2rem 0.4rem; /* menos padding interno */
+  margin: 0; /* elimina márgenes extra */
+
+}
+
+.filtro-fechas button {
+  flex-shrink: 0;
+  padding: 0.4rem 0.8rem; /* botón compacto */
+  margin-top: 13px;
+}
+
+/* ================================
+   📱 Responsividad
+   ================================ */
+
+/* Tablets grandes */
+@media (max-width: 1024px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Tablets y móviles medianos */
+@media (max-width: 768px) {
+  .grid-cols-3,
+  .grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .space-y-8 {
+    padding: 0.5rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+
+  /* 🔹 En móvil el botón ocupa todo el ancho */
+  .filtro-fechas button {
+    width: 100%;
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+  .card {
+    padding: 0.75rem;
+  }
+
+  h1 {
+    font-size: 1.25rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  td, th {
+    padding: 0.5rem;
+  }
+  .filtro-fechas input {
+    width: 78%;
+    height: 20px;
+    font-size: 12px; /* Tamaño del texto */
+  }
+  .filtro-fechas button {
+    flex-shrink: 0;
+
+    width: 45px;
+    height: 30px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;     /* Centra verticalmente */
+    margin-top: 12px;
+  }
+
+  .usu{
+    display: flex;
+
+  }
+
+
+  .usu h2{
+    margin-left: 10px;
+    margin-top: -8px;
+
+
+  }
+  .vent{
+    display: flex;
+
+  }
+
+
+  .vent h2{
+    margin-left: 10px;
+    margin-top: -8px;
+  }
+
+  .gan{
+    display: flex;
+
+  }
+
+
+  .gan h2{
+    margin-left: 10px;
+    margin-top: -8px;
+  }
+}

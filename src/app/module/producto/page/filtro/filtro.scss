@@ -1,0 +1,16 @@
+@media (max-width: 480px) {
+
+  .filtros {
+    display: flex;
+    gap: 6px;
+    width: 65%;
+  }
+
+  .filtro-input,
+  .estado {
+    flex: 1;
+    min-width: 0;
+    height: 32px;
+    font-size: 11px;
+  }
+}

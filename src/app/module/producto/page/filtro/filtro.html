@@ -1,10 +1,10 @@
-<div class="flex gap-4 mb-4 flex-wrap">
+<div class="flex gap-4 mb-4 flex-wrap filtros">
 
   <!-- BUSCAR POR NOMBRE -->
   <input
     type="text"
-    placeholder="Buscar por nombre..."
-    class="border rounded px-3 py-2 w-60"
+    placeholder="Nombre..."
+    class="border rounded px-3 py-2 w-60 filtro-input"
     [(ngModel)]="filtroNombre"
     (input)="buscarPorNombre()"
   />
@@ -12,26 +12,26 @@
   <!-- BUSCAR POR CODIGO DE BARRA -->
   <input
     type="text"
-    placeholder="Buscar por codigo de barra..."
-    class="border rounded px-3 py-2 w-60"
+    placeholder="codigo de barra..."
+    class="border rounded px-3 py-2 w-60 filtro-input"
     [(ngModel)]="filtroCodigoBarra"
     (input)="buscarPorCodigoBarra()"
   />
 
   <!-- ESTADO -->
   <select
-    class="border rounded px-3 py-2"
+    class="border rounded px-3 py-2 estado "
     [(ngModel)]="filtroEstado"
     (change)="filtrarPorEstado()"
   >
-    <option value="">Filtrar por estado</option>
+    <option value="">Estado</option>
     <option value="Activo">Activo</option>
     <option value="Inactivo">Inactivo</option>
   </select>
 
   <!-- CATEGORÍA (ENVÍA NOMBRE) -->
   <select
-    class="border rounded px-3 py-2"
+    class="border rounded px-3 py-2 filtro-input"
     [(ngModel)]="categoriaNombre"
     (change)="filtrarPorCategoria()"
   >
@@ -43,7 +43,7 @@
 
   <!-- PROVEEDOR (ENVÍA NOMBRE) -->
   <select
-    class="border rounded px-3 py-2"
+    class="border rounded px-3 py-2 filtro-input"
     [(ngModel)]="proveedorNombre"
     (change)="filtrarPorProveedor()"
   >

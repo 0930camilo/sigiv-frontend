@@ -1,27 +1,27 @@
-<div class="flex gap-4 mb-4">
+<div class="flex gap-4 mb-4 flex-wrap filtros">
 
   <input
     type="text"
-    placeholder="Buscar por nombre..."
-    class="border rounded px-3 py-2 w-60"
+    placeholder="Nombre..."
+    class="border rounded px-3 py-2 w-60 filtro-input"
     [(ngModel)]="filtroNombre"
     (input)="buscarPorNombre()"
   />
 
   <input
     type="text"
-    placeholder="Buscar por documento..."
-    class="border rounded px-3 py-2 w-60"
+    placeholder="Documento..."
+    class="border rounded px-3 py-2 w-60 filtro-input"
     [(ngModel)]="filtroDocumento"
     (input)="buscarPorDocumento()"
   />
 
   <select
-    class="border rounded px-3 py-2"
+    class="border rounded px-3 py-2 estado"
     [(ngModel)]="filtroEstado"
     (change)="filtrarPorEstado()"
   >
-    <option value="">Filtrar por estado</option>
+    <option value="">Estado</option>
     <option value="Activo">Activo</option>
     <option value="Inactivo">Inactivo</option>
   </select>

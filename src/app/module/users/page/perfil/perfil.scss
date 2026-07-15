@@ -1,5 +1,7 @@
+/* Estilos base */
 .max-w-2xl {
   max-width: 42rem;
+  margin: 0 auto; /* Centrado */
 }
 .bg-white {
   background: #fff;
@@ -58,13 +60,6 @@
   padding-left: 1.5rem;
   padding-right: 1.5rem;
 }
-.py-2 {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-.rounded-lg {
-  border-radius: 0.5rem;
-}
 .font-semibold {
   font-weight: 600;
 }
@@ -79,4 +74,52 @@
 }
 .text-red-600 {
   color: #dc2626;
+}
+
+/* --- Responsividad --- */
+@media (max-width: 768px) {
+  .max-w-2xl {
+    max-width: 100%; /* Ocupa todo el ancho en móvil */
+    padding: 1rem;
+  }
+
+  .p-8 {
+    padding: 1rem; /* Reduce padding en pantallas pequeñas */
+  }
+
+  .grid {
+    grid-template-columns: 1fr; /* Una sola columna en móvil */
+  }
+
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .text-blue-700, .text-green-600, .text-red-600 {
+    font-size: 0.9rem; /* Ajusta tamaño de texto */
+  }
+
+  button, input {
+    font-size: 1rem;
+    padding: 0.75rem; /* Botones más fáciles de tocar */
+  }
+}
+
+@media (max-width: 480px) {
+  .mt-8 {
+    margin-top: 1rem;
+  }
+
+  .mb-6 {
+    margin-bottom: 1rem;
+  }
+
+  .rounded-2xl, .rounded-lg {
+    border-radius: 0.75rem; /* Menos redondeado en pantallas pequeñas */
+  }
+
+  h1, h2, h3 {
+    font-size: 1.2rem; /* Encabezados más compactos */
+  }
 }
