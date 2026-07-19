@@ -3,7 +3,7 @@
 }
 
 .table-scroll {
-  max-height: calc(100vh - 320px);
+  max-height: calc(100vh - 235px);
   overflow-y: auto;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -69,6 +69,13 @@
   .table-shell > div:last-child p {
     font-size: 10px;
   }
+  .table-scroll{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 
+  .table-shell table{
+    min-width: 300px;
+  }
 
 }

@@ -1,0 +1,12 @@
+@media (max-width: 480px) {
+
+  h2{
+    font-size: 18px;
+  }
+
+  :host ::ng-deep app-filtros-ventas{
+    display:block;
+    margin-bottom:10px;
+  }
+
+}

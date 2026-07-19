@@ -4,7 +4,9 @@
     <h2 class="text-lg font-semibold text-gray-800">
       Productos
     </h2>
+
     <div class="flex flex-wrap items-center gap-2 botones-producto">
+
       <app-register-producto
         (productoCreado)="onProductoCreado($event)">
       </app-register-producto>
@@ -21,7 +23,9 @@
         (click)="downloadPlantilla()"
         class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow disabled:opacity-50 disabled:cursor-not-allowed"
         [disabled]="!empresaId || downloadingPlantilla">
+
         {{ downloadingPlantilla ? 'Descargando...' : 'Plantilla' }}
+
       </button>
 
       <button
@@ -29,9 +33,13 @@
         (click)="abrirSelectorArchivo(importInput)"
         class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow"
         [disabled]="importando">
+
         {{ importando ? 'Importando...' : 'Importar' }}
+
       </button>
+
     </div>
+
   </div>
 
   <app-filtros-producto
@@ -44,16 +52,20 @@
     (filtrarProveedor)="filtrarPorProveedor($event)">
   </app-filtros-producto>
 
-  <app-reusable-table
-    [data]="productos"
-    [columns]="columns"
-    [loading]="loading"
-    [currentPage]="currentPage"
-    [totalPages]="totalPages"
-    (next)="nextPage()"
-    (previous)="previousPage()"
-    (actionClick)="onAction($event)">
-  </app-reusable-table>
+  <div class="contenedor-tabla-productos">
+
+    <app-reusable-table
+      [data]="productos"
+      [columns]="columns"
+      [loading]="loading"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      (next)="nextPage()"
+      (previous)="previousPage()"
+      (actionClick)="onAction($event)">
+    </app-reusable-table>
+
+  </div>
 
   <app-edit-producto
     *ngIf="productoSeleccionado"

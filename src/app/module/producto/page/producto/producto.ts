@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TableColumn } from '../../../../shared/interface/TableColumn';
@@ -50,7 +50,9 @@ export class Producto implements OnInit {
     proveedor: null
   };
 
-  columns: TableColumn[] = [
+  columns: TableColumn[] = [];
+
+  columnsDesktop: TableColumn[] = [
     { field: 'idProducto', header: 'ID', type: 'text' },
     { field: 'nombre', header: 'Nombre', type: 'text' },
     { field: 'descripcion', header: 'Descripción', type: 'text' },
@@ -63,6 +65,13 @@ export class Producto implements OnInit {
     { field: 'acciones', header: 'Acciones', type: 'actions' }
   ];
 
+  columnsMobile: TableColumn[] = [
+    { field: 'nombre', header: 'Nombre', type: 'text' },
+    { field: 'cantidad', header: 'Cant.', type: 'number' },
+    { field: 'precio', header: 'Venta', type: 'currency' },
+    { field: 'estado', header: 'Estado', type: 'status' },
+    { field: 'acciones', header: 'Acciones', type: 'actions' }
+  ];
   constructor(
     private productoService: ProductoService,
     private authService: AuthService,
@@ -70,6 +79,9 @@ export class Producto implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
+    this.actualizarColumnas();
+
     this.empresaId = this.authService.getEmpresaId();
 
     if (this.empresaId) {
@@ -309,7 +321,6 @@ export class Producto implements OnInit {
     }
     return new Blob([bytes], { type: contentType });
   }
-
   private triggerDownload(blob: Blob, fileName: string): void {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -321,4 +332,19 @@ export class Producto implements OnInit {
       URL.revokeObjectURL(url);
     }, 0);
   }
+
+  private actualizarColumnas(): void {
+    if (window.innerWidth <= 480) {
+      this.columns = this.columnsMobile;
+    } else {
+      this.columns = this.columnsDesktop;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.actualizarColumnas();
+  }
+
+
 }
