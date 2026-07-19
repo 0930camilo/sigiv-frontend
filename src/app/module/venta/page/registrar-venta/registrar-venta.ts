@@ -14,6 +14,7 @@ import { Persona } from '../../../persona/model/persona.model';
 import { VentaNotificacionService } from '../../../../shared/services/venta-notificacion.service';
 
 import Swal from 'sweetalert2';
+import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-registrar-venta',
@@ -490,5 +491,20 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.detenerEscaner();
+  }
+
+  carritoVisible = window.innerWidth > 480;
+
+  toggleCarrito(): void {
+    this.carritoVisible = !this.carritoVisible;
+  }
+
+  @HostListener('window:resize')
+  onResize(){
+
+    if(window.innerWidth > 480){
+      this.carritoVisible = true;
+    }
+
   }
 }

@@ -539,9 +539,64 @@ width: 20%;
   cursor:not-allowed;
 }
 
+.btn-toggle-carrito{
+  display:none;
+}
 
 @media (max-width: 480px) {
 
+  .contenedor-venta {
+    flex-direction: column; /* apila los paneles */
+  }
+
+  .panel-productos {
+    order: 1; /* productos arriba */
+    width: 100%; /* ocupar todo el ancho */
+  }
+  .btn-toggle-carrito{
+    display:flex;
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:55px;
+    height:55px;
+    border:none;
+    border-radius:50%;
+    background:#16a34a;
+    color:#fff;
+    font-size:24px;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+    box-shadow:0 5px 15px rgba(0,0,0,.3);
+  }
+
+  .panel-carrito{
+
+    position:fixed;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    width:100%;
+    height:100vh;
+
+    margin:0;
+
+    z-index:9998;
+
+    border-radius:20px 20px 0 0;
+
+    overflow:auto;
+
+  }
+
+  .panel-carrito {
+    order: 2; /* carrito abajo */
+    width: 100%; /* ocupar todo el ancho */
+    margin-top: 50px; /* espacio entre productos y carrito */
+  }
   .titulo-carrito{
     font-size: 15px;
 
@@ -586,7 +641,58 @@ width: 20%;
 
 
   .fila-total{
-    font-size: 15px;
+    font-size: 10px;
+  }
+
+
+  .input-filtro{
+    width:100%;
+    height: 35px;
+  }
+
+  .tabla-productos th {
+    text-align: left !important;
+    font-size: 12px;   /* opcional: más compacto en móvil */
+    padding: 8px;      /* opcional: menos espacio */
+  }
+
+  .tabla-productos td {
+    font-size: 12px;   /* opcional: texto más pequeño */
+    padding: 8px;
+  }
+
+  .nombre-producto {
+    max-width: 150px;  /* opcional: limitar ancho en móvil */
+    white-space: normal; /* permitir salto de línea */
+  }
+  .paginacion {
+    flex-direction: row;       /* mantener en fila */
+    justify-content: center;   /* centrar todo */
+    gap: 8px;                  /* espacio entre elementos */
+    flex-wrap: wrap;           /* permite que se acomoden si no caben */
+    text-align: center;
+  }
+
+  .paginacion span {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .btn-pagina {
+    flex: 1;                   /* que los botones se adapten al ancho */
+    min-width: 90px;           /* ancho mínimo para que no se achiquen demasiado */
+    font-size: 13px;
+  }
+  .overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    z-index:9997;
+
   }
 }
 

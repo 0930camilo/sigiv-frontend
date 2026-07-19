@@ -1,9 +1,19 @@
 <div class="contenedor-venta">
 
-  <!-- ============================= -->
-  <!-- CARRITO DE VENTA (izquierda) -->
-  <!-- ============================= -->
-  <div class="panel-carrito">
+
+  <!-- Botón para mostrar/ocultar carrito en móvil -->
+  <button
+    class="btn-toggle-carrito"
+    (click)="toggleCarrito()">
+
+    {{ carritoVisible ? '✖' : '🛒' }}
+
+  </button>
+
+  <!-- Panel del carrito -->
+  <div
+    class="panel-carrito"
+    *ngIf="carritoVisible">
 
     <h2 class="titulo-carrito">🛒 Carrito de Venta</h2>
 
@@ -177,8 +187,13 @@
         Registrar Venta
 
       </button>
+      <!-- ... aquí va todo tu contenido del carrito ... -->
+  </div>
 
-    </div>
+  <!-- ============================= -->
+  <!-- CARRITO DE VENTA (izquierda) -->
+  <!-- ============================= -->
+
 
   </div>
   <div class="panel-productos">
@@ -321,7 +336,7 @@
 
           <th>Precio</th>
 
-          <th>Disponibles</th>
+          <th>Stock</th>
 
           <th>Cantidad</th>
 
@@ -432,5 +447,11 @@
 
     </div>
 
+  </div>
+
+  <div
+    class="overlay"
+    *ngIf="carritoVisible"
+    (click)="toggleCarrito()">
   </div>
 </div>
