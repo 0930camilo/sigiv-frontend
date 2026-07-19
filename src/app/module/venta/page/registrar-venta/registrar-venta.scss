@@ -144,6 +144,7 @@ width: 20%;
   gap:8px;
   font-weight:600;
   color:#92400e;
+  font-size: 10px;
 }
 
 .descripcion{
@@ -159,6 +160,24 @@ width: 20%;
   color:#92400e;
 }
 
+.check{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:600;
+  color:#92400e;
+  cursor:pointer;
+}
+
+.check input[type="checkbox"]{
+  width:18px;
+  height:18px;
+  margin:0;
+  accent-color:#16a34a;
+  cursor:pointer;
+  appearance:auto;
+  -webkit-appearance:checkbox;
+}
 /*==========================*/
 
 .tabla-carrito{
@@ -530,6 +549,7 @@ width: 20%;
 
   .busc{
     width: 85%;
+    font-size: 15px;
   }
 
   .btn-buscar{
@@ -558,6 +578,15 @@ width: 20%;
 
   .select{
     font-size: 12px;
+  }
+  .carrito-vacio{
+    font-size: 10px;
+  }
+
+
+
+  .fila-total{
+    font-size: 15px;
   }
 }
 

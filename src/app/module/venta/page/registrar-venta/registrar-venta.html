@@ -14,7 +14,7 @@
         <input
           type="text"
           placeholder="Documento"
-          class="input "
+          class="input"
           [(ngModel)]="documentoCliente" />
 
         <button
@@ -62,29 +62,17 @@
           Registrar cliente si no existe
         </label>
 
-        <p class="descripcion">
-          Si no encuentra coincidencias, se creará el cliente automáticamente con los datos ingresados.
-        </p>
-      </div>
+        <label class="check">
+          <input
+            type="checkbox"
+            [(ngModel)]="enviarFacturaCorreo">
 
-      <div class="opcion">
-
-        <label class="label-select">
-          Enviar factura
+          Enviar factura por correo
         </label>
 
-        <select
-          class="select"
-          [(ngModel)]="canalEnvioFactura">
-
-          <option value="ninguno">No enviar factura</option>
-          <option value="correo">Solo correo</option>
-          <option value="whatsapp">Solo WhatsApp</option>
-          <option value="correo-whatsapp">Correo y WhatsApp</option>
-
-        </select>
-
       </div>
+
+
 
     </div>
 
