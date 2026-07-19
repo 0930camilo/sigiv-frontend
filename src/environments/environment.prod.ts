@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
 
 
   authApi: 'https://sigiv2.onrender.com/auth',
