@@ -9,4 +9,9 @@
     margin-bottom:10px;
   }
 
+  .table-responsive {
+    overflow-x: auto; /* Permite el desplazamiento horizontal si el contenido es más ancho */
+    -webkit-overflow-scrolling: touch; /* Mejora el desplazamiento en dispositivos táctiles */
+  }
+
 }
