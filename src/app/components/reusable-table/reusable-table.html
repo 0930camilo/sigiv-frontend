@@ -24,16 +24,16 @@
   <div *ngIf="!loading" class="table-scroll overflow-x-auto">
     <table class="min-w-full border-collapse">
 
-    <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+      <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
       <tr>
         <th *ngFor="let col of columns"
             class="px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700 dark:text-gray-200">
           {{ col.header }}
         </th>
       </tr>
-    </thead>
+      </thead>
 
-    <tbody>
+      <tbody>
 
       <tr *ngFor="let item of data"
           class="border-b border-gray-200 dark:border-gray-600
@@ -47,20 +47,20 @@
             {{ item[col.field] }}
           </ng-container>
 
-           <!-- NUMBER -->
-  <ng-container *ngIf="col.type === 'number'">
-    {{ item[col.field] | number:'1.0-0':'es-CO' }}
-  </ng-container>
+          <!-- NUMBER -->
+          <ng-container *ngIf="col.type === 'number'">
+            {{ item[col.field] | number:'1.0-0':'es-CO' }}
+          </ng-container>
 
-  <!-- CURRENCY -->
-  <ng-container *ngIf="col.type === 'currency'">
-    {{ item[col.field] | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}
-  </ng-container>
+          <!-- CURRENCY -->
+          <ng-container *ngIf="col.type === 'currency'">
+            {{ item[col.field] | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}
+          </ng-container>
 
-  <!-- DATE -->
-<ng-container *ngIf="col.type === 'date'">
-  {{ item[col.field] | date:'dd-MM-yyyy' }}
-</ng-container>
+          <!-- DATE -->
+          <ng-container *ngIf="col.type === 'date'">
+            {{ item[col.field] | date:'dd-MM-yyyy' }}
+          </ng-container>
 
           <!-- STATUS -->
           <ng-container *ngIf="col.type === 'status'">
@@ -75,58 +75,58 @@
           </ng-container>
 
 
-<!-- ACTIONS (Editar / Eliminar con iconos) -->
+          <!-- ACTIONS (Editar / Eliminar con iconos) -->
           <ng-container *ngIf="col.type === 'actions'">
             <div class="flex items-center gap-2">
 
-          <!-- CODIGO DE BARRA -->
+              <!-- CODIGO DE BARRA -->
               <button
-            *ngIf="item.codigoBarra"
-            title="Codigo de barra"
-            class="p-2 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900
+                *ngIf="item.codigoBarra"
+                title="Codigo de barra"
+                class="p-2 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900
              transition-all duration-200 hover:scale-110 mr-2"
                 (click)="actionClick.emit({ action: 'barcode', row: item })">
 
-            <i class="fa-solid fa-barcode text-amber-600"></i>
+                <i class="fa-solid fa-barcode text-amber-600"></i>
               </button>
 
-  <!-- EDITAR -->
-                <button
-              title="Editar"
-              class="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900
+              <!-- EDITAR -->
+              <button
+                title="Editar"
+                class="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900
                transition-all duration-200 hover:scale-110"
-                  (click)="actionClick.emit({ action: 'edit', row: item })">
+                (click)="actionClick.emit({ action: 'edit', row: item })">
 
-    <i class="fa-solid fa-pen text-blue-600"></i>
-            </button>
+                <i class="fa-solid fa-pen text-blue-600"></i>
+              </button>
 
-  <!-- ELIMINAR -->
-                <button
-              title="Eliminar"
-              class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900
+              <!-- ELIMINAR -->
+              <button
+                title="Eliminar"
+                class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900
                transition-all duration-200 hover:scale-110"
-                  (click)="actionClick.emit({ action: 'delete', row: item })">
+                (click)="actionClick.emit({ action: 'delete', row: item })">
 
-    <i class="fa-solid fa-trash text-red-600"></i>
-  </button>
+                <i class="fa-solid fa-trash text-red-600"></i>
+              </button>
             </div>
           </ng-container>
 
 
-        <!-- BOTÓN PERSONALIZADO -->
-<ng-container *ngIf="col.type === 'button'">
-  <button
-    [title]="col.label || col.header"
-    class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700
+          <!-- BOTÓN PERSONALIZADO -->
+          <ng-container *ngIf="col.type === 'button'">
+            <button
+              [title]="col.label || col.header"
+              class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700
            transition-all duration-200 hover:scale-110"
-    (click)="col.action?.(item)">
+              (click)="col.action?.(item)">
 
-    <i *ngIf="col.icon"
-       [class]="col.icon"
-       class="text-lg">
-    </i>
+              <i *ngIf="col.icon"
+                 [class]="col.icon"
+                 class="text-lg">
+              </i>
 
-    <span *ngIf="!col.icon">
+              <span *ngIf="!col.icon">
       {{ col.label }}
     </span>
 
@@ -168,7 +168,7 @@
         </td>
       </tr>
 
-    </tbody>
+      </tbody>
     </table>
   </div>
 

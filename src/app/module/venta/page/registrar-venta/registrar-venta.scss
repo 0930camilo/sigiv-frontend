@@ -703,12 +703,12 @@ width: 20%;
 
   .tabla-productos th {
     text-align: left !important;
-    font-size: 12px;   /* opcional: más compacto en móvil */
+    font-size: 10px;   /* opcional: más compacto en móvil */
     padding: 8px;      /* opcional: menos espacio */
   }
 
   .tabla-productos td {
-    font-size: 12px;   /* opcional: texto más pequeño */
+    font-size: 10px;   /* opcional: texto más pequeño */
     padding: 8px;
   }
 
@@ -732,7 +732,7 @@ width: 20%;
   .btn-pagina {
     flex: 1;                   /* que los botones se adapten al ancho */
     min-width: 90px;           /* ancho mínimo para que no se achiquen demasiado */
-    font-size: 13px;
+    font-size: 10px;
   }
   .overlay{
 

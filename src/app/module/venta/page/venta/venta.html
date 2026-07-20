@@ -6,9 +6,11 @@
     </h2>
   </div>
 
+<div class="idven">
   <app-filtros-ventas
     (filtrarId)="filtrarPorId($event)">
   </app-filtros-ventas>
+</div>
 
   <app-reusable-table
     [data]="ventas"
