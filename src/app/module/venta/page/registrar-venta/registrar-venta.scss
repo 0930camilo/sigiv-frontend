@@ -303,14 +303,25 @@ width: 20%;
 }
 
 /*==========================*/
-
-.titulo-productos{
-  margin:0 0 20px;
-  font-size:24px;
-  font-weight:bold;
-  color:#15803d;
+.titul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
+.titulo-productos {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: #15803d;
+}
+
+.btn-escanear {
+  white-space: nowrap;
+  height: 30px;
+  width: 80px;
+}
 /*==========================*/
 
 .filtros{
@@ -557,6 +568,11 @@ width: 20%;
     flex-direction: column; /* apila los paneles */
   }
 
+  .titulo-productos{
+   font-size: 15px;
+  }
+
+
   .panel-productos {
     width: 100%;              /* ocupar todo el ancho */
     margin: 0 auto;           /* centrar horizontalmente */
@@ -675,8 +691,13 @@ width: 20%;
   .btn-registrar{
 
   }
+  .filtros{
+    width: 130%;
+    margin: 0 auto;
+  }
+
   .input-filtro{
-    width:100%;
+    width: 100%;
     height: 35px;
   }
 

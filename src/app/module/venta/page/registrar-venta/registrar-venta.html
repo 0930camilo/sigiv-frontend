@@ -198,8 +198,18 @@
   </div>
   <div class="panel-productos">
 
+    <div class="titul">
     <h2 class="titulo-productos">📦 Productos Disponibles</h2>
+      <button
+        type="button"
+        class="btn-escanear"
+        [disabled]="scannerActivo"
+        (click)="iniciarEscaner()">
 
+        Escanear
+
+      </button>
+  </div>
     <!-- Filtros -->
     <div class="filtros">
 
@@ -233,16 +243,6 @@
         </option>
 
       </select>
-
-      <button
-        type="button"
-        class="btn-escanear"
-        [disabled]="scannerActivo"
-        (click)="iniciarEscaner()">
-
-        Escanear
-
-      </button>
 
     </div>
 
