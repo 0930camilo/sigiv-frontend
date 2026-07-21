@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -42,6 +42,10 @@ export class RegistrarDevolucionComponent implements OnInit {
   currentPageProductos = 0;
   totalPagesProductos = 0;
 
+  // Estado movil
+  isMobile = false;
+  mostrarProductosMobile = false;
+
   constructor(
     private authService: AuthService,
     private ventaService: VentaService,
@@ -56,6 +60,21 @@ export class RegistrarDevolucionComponent implements OnInit {
       this.empresaId = Number(empresa);
       this.cargarProductos();
     }
+    this.actualizarEstadoMovil();
+  }
+
+  private actualizarEstadoMovil(): void {
+    this.isMobile = window.innerWidth <= 768; // Tailwind lg es 1024, pero para el layout col/row 768 suele ser el corte
+    if (!this.isMobile) {
+      this.mostrarProductosMobile = true;
+    }
+  }
+
+  // ===============================
+  // TOGGLE PRODUCTOS MOBILE
+  // ===============================
+  toggleProductos(): void {
+    this.mostrarProductosMobile = !this.mostrarProductosMobile;
   }
 
   // ===============================
@@ -167,6 +186,8 @@ export class RegistrarDevolucionComponent implements OnInit {
   // LIMPIAR FORMULARIO
   // ===============================
   limpiarFormulario(): void {
+    this.ventaIdBuscar = null;
+    this.ventaEncontrada = null;
     this.productoSeleccionado = null;
     this.cantidad = null;
     this.motivo = '';

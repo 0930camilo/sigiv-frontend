@@ -1,20 +1,29 @@
-<div class="p-4 sm:p-6">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Proveedores de la Empresa</h2>
+<div class="p-3 md:p-6">
+
+  <!-- Encabezado -->
+  <div class="flex items-center justify-between mb-3 md:mb-4 encabezado">
+
+    <h2 class="text-lg md:text-2xl font-semibold text-gray-800 dark:text-gray-100 titulo">
+      Proveedores
+    </h2>
 
     <app-register-proveedor
       [empresaId]="empresaId"
       (proveedorCreado)="onProveedorCreado($event)">
     </app-register-proveedor>
+
   </div>
 
-  <!-- FILTROS -->
+
+
+  <!-- Filtros -->
   <app-filtros-proveedor
     (filtrarNombre)="filtrarPorNombre($event)"
     (filtrarDocumento)="filtrarPorDocumento($event)"
     (filtrarEstado)="filtrarPorEstado($event)">
   </app-filtros-proveedor>
 
+  <!-- Tabla -->
   <app-reusable-table
     [data]="proveedores"
     [columns]="columns"
@@ -26,7 +35,7 @@
     (actionClick)="onAction($event)">
   </app-reusable-table>
 
-  <!-- MODAL EDITAR -->
+  <!-- Modal Editar -->
   <app-edit-proveedor
     *ngIf="proveedorSeleccionado"
     [proveedor]="proveedorSeleccionado"
@@ -34,11 +43,12 @@
     (cerrar)="proveedorSeleccionado = null">
   </app-edit-proveedor>
 
-  <!-- MODAL ELIMINAR -->
+  <!-- Modal Eliminar -->
   <app-delete-proveedor
     *ngIf="proveedorAEliminar"
     [proveedor]="proveedorAEliminar"
     (eliminado)="onProveedorEliminado($event)"
     (cerrar)="proveedorAEliminar = null">
   </app-delete-proveedor>
+
 </div>

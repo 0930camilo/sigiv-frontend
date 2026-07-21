@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -41,6 +41,9 @@ export class VentaComponent implements OnInit {
   ventaSeleccionada: Venta | null = null;
   mostrarDetalle = false;
 
+  // Estado movil
+  isMobile = false;
+
   // 📄 preview factura
   mostrarPreviewFactura = false;
   facturaPreviewUrl: SafeResourceUrl | null = null;
@@ -48,12 +51,14 @@ export class VentaComponent implements OnInit {
   facturaIdActual: number | null = null;
   facturaActual: Venta | null = null;
 
-  columns: TableColumn[] = [
+// ===============================
+// COLUMNAS ESCRITORIO
+// ===============================
+  columnsDesktop: TableColumn[] = [
     { field: 'idventa', header: 'ID' },
     { field: 'fecha', header: 'Fecha', type: 'date' },
     { field: 'nombreCliente', header: 'Cliente' },
     { field: 'telefonoCliente', header: 'Teléfono' },
-    { field: 'empresaNombre', header: 'Empresa' },
     { field: 'efectivo', header: 'Efectivo', type: 'number' },
     { field: 'cambio', header: 'Cambio', type: 'number' },
     { field: 'total', header: 'Total', type: 'number' },
@@ -87,6 +92,52 @@ export class VentaComponent implements OnInit {
     }
   ];
 
+// ===============================
+// COLUMNAS MÓVIL
+// ===============================
+  columnsMobile: TableColumn[] = [
+    { field: 'idventa', header: 'ID' },
+    { field: 'fecha', header: 'Fecha', type: 'date' },
+    { field: 'nombreCliente', header: 'Cliente' },
+
+
+
+    // 👇 Se elimina Cambio
+
+    { field: 'total', header: 'Total', type: 'number' },
+    { field: 'nombreUsuario', header: 'Vendedor' },
+    {
+      field: 'accionesVenta',
+      header: 'Acciones',
+      type: 'buttons',
+      buttons: [
+        {
+          title: 'Ver detalle',
+          icon: 'fa-solid fa-eye text-green-600',
+          action: (row: Venta) => this.verDetalle(row)
+        },
+        {
+          title: 'Enviar factura POS',
+          icon: 'fa-solid fa-envelope text-amber-600',
+          action: (row: Venta) => this.enviarFacturaPorCorreo(row)
+        },
+        {
+          title: 'Ver factura PDF',
+          icon: 'fa-solid fa-file-invoice text-blue-600',
+          action: (row: Venta) => this.previewFactura(row.idventa)
+        },
+        {
+          title: 'Imprimir POS',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Venta) => this.imprimirFacturaPos(row)
+        }
+      ]
+    }
+  ];
+
+// Columnas que usa la tabla
+  columns: TableColumn[] = [];
+
   constructor(
     private ventaService: VentaService,
     private authService: AuthService,
@@ -99,6 +150,7 @@ export class VentaComponent implements OnInit {
   // INIT
   // ===============================
   ngOnInit(): void {
+
     const empresa = this.authService.getEmpresaId();
 
     if (!empresa) {
@@ -107,7 +159,11 @@ export class VentaComponent implements OnInit {
     }
 
     this.empresaId = Number(empresa);
+
+    this.actualizarColumnas();
+
     this.getVentas(0);
+
   }
 
   // ===============================
@@ -265,4 +321,17 @@ export class VentaComponent implements OnInit {
     });
   }
 
+  private actualizarColumnas(): void {
+    this.isMobile = window.innerWidth <= 480;
+    if (this.isMobile) {
+      this.columns = this.columnsMobile;
+    } else {
+      this.columns = this.columnsDesktop;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.actualizarColumnas();
+  }
 }

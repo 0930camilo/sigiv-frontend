@@ -6,21 +6,24 @@
     </h2>
   </div>
 
+<div class="idven">
   <app-filtros-ventas
     (filtrarId)="filtrarPorId($event)">
   </app-filtros-ventas>
+</div>
 
   <app-reusable-table
     [data]="ventas"
     [columns]="columns"
+    [isMobile]="isMobile"
     [loading]="loading"
     [currentPage]="currentPage"
     [totalPages]="totalPages"
     (next)="getVentas(currentPage + 1)"
     (previous)="getVentas(currentPage - 1)">
-  </app-reusable-table>
+   </app-reusable-table>
 
-</div>
+     </div>
 
 <!-- MODAL DETALLE -->
 <div

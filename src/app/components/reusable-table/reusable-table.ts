@@ -30,6 +30,9 @@ export class ReusableTable {
   @Output() next = new EventEmitter<void>();
   @Output() previous = new EventEmitter<void>();
   @Output() actionClick = new EventEmitter<{ action: string; row: any }>();
+
+  /** Indica si el dispositivo es movil */
+  @Input() isMobile: boolean = false;
 }
 
 

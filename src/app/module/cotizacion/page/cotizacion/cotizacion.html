@@ -6,60 +6,56 @@
     </h2>
   </div>
 
+
   <!-- FILTROS -->
-  <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-    <div class="flex flex-wrap gap-3 items-end">
-      <div class="flex flex-col">
-        <label class="text-xs text-gray-500 mb-1">Cliente</label>
-        <input
-          type="text"
-          placeholder="Nombre del cliente..."
-          class="border rounded-lg px-3 py-2 text-sm w-52 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-          [(ngModel)]="filtroCliente" />
-      </div>
+  <div class="contenedor-filtros">
+    <div class="campo">
+      <label>Cliente</label>
+      <input
+        type="text"
+        placeholder="Nombre"
+        [(ngModel)]="filtroCliente" />
+    </div>
 
-      <div class="flex flex-col">
-        <label class="text-xs text-gray-500 mb-1">Fecha inicio</label>
-        <input
-          type="date"
-          class="border rounded-lg px-3 py-2 text-sm w-44 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-          [(ngModel)]="filtroFechaInicio" />
-      </div>
+    <div class="campo">
+      <label>Fecha inicio</label>
+      <input
+        type="date"
+        [(ngModel)]="filtroFechaInicio" />
+    </div>
 
-      <div class="flex flex-col">
-        <label class="text-xs text-gray-500 mb-1">Fecha fin</label>
-        <input
-          type="date"
-          class="border rounded-lg px-3 py-2 text-sm w-44 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-          [(ngModel)]="filtroFechaFin" />
-      </div>
+    <div class="campo">
+      <label>Fecha fin</label>
+      <input
+        type="date"
+        [(ngModel)]="filtroFechaFin" />
+    </div>
 
-      <button
-        type="button"
-        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-        (click)="buscar()">
-        <i class="fa-solid fa-search mr-1"></i> Buscar
+    <div class="botones">
+      <button type="button" class="btn-buscar" (click)="buscar()">
+        <i class="fa-solid fa-search"></i> Buscar
       </button>
 
-      <button
-        type="button"
-        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition"
-        (click)="limpiarFiltros()">
-        <i class="fa-solid fa-eraser mr-1"></i> Limpiar
+      <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">
+        <i class="fa-solid fa-eraser"></i> Limpiar
       </button>
     </div>
+
+    <!-- TABLA -->
+    <app-reusable-table
+      [data]="cotizaciones"
+      [columns]="columns"
+      [isMobile]="isMobile"
+      [loading]="loading"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      (next)="getCotizaciones(currentPage + 1)"
+      (previous)="getCotizaciones(currentPage - 1)">
+    </app-reusable-table>
   </div>
 
-  <!-- TABLA -->
-  <app-reusable-table
-    [data]="cotizaciones"
-    [columns]="columns"
-    [loading]="loading"
-    [currentPage]="currentPage"
-    [totalPages]="totalPages"
-    (next)="getCotizaciones(currentPage + 1)"
-    (previous)="getCotizaciones(currentPage - 1)">
-  </app-reusable-table>
+
+
 
 </div>
 

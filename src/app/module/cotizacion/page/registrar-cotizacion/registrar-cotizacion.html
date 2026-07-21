@@ -1,9 +1,18 @@
-<div class="flex flex-col lg:flex-row gap-6 p-4 sm:p-6">
+<div class="contenedor-venta flex flex-col lg:flex-row gap-6">
+  <!-- Botón flotante móvil -->
+  <button
+    class="btn-toggle-carrito"
+    (click)="toggleCarrito()">
 
+    {{ carritoVisible ? '✖' : '📋' }}
+
+  </button>
   <!-- ============================= -->
   <!-- CARRITO DE COTIZACIÓN (izquierda) -->
   <!-- ============================= -->
-  <div class="w-full lg:w-2/5 bg-blue-50 border border-blue-200 rounded-2xl shadow-md p-5 flex flex-col">
+  <div
+    class="w-full lg:w-2/5 bg-blue-50 border border-blue-200 rounded-2xl shadow-md p-5 flex flex-col panel-carrito"
+    [class.mostrar]="carritoVisible">
 
     <h2 class="text-lg font-bold text-blue-800 mb-4">📋 Cotización</h2>
 
@@ -82,21 +91,29 @@
     <h2 class="text-lg font-bold text-green-700 mb-4">📦 Productos Disponibles</h2>
 
     <!-- Filtros -->
-    <div class="flex flex-wrap gap-3 mb-4">
+    <div class="flex flex-wrap gap-2 mb-4 filt">
+
+      <div class="filtr">
       <input
         type="text"
         placeholder="Buscar por nombre..."
-        class="border rounded-lg px-3 py-2 text-sm w-60 focus:ring-2 focus:ring-green-400 focus:outline-none"
+        class="flex-1 border rounded-lg px-2 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-green-400 focus:outline-none"
         [(ngModel)]="filtroNombre"
         (input)="buscar()" />
 
       <select
-        class="border rounded-lg px-3 py-2 text-sm w-52 focus:ring-2 focus:ring-green-400 focus:outline-none"
+        class="flex-1 border rounded-lg px-2 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-green-400 focus:outline-none"
         [(ngModel)]="filtroCategoria"
         (change)="buscar()">
+
         <option value="">Todas las categorías</option>
-        <option *ngFor="let cat of categorias" [value]="cat.nombre">{{ cat.nombre }}</option>
+
+        <option *ngFor="let cat of categorias" [value]="cat.nombre">
+          {{ cat.nombre }}
+        </option>
+
       </select>
+      </div>
     </div>
 
     <!-- Loader -->
@@ -113,48 +130,66 @@
       <table class="w-full text-sm border-collapse">
         <thead class="bg-green-600 text-white">
           <tr>
-            <th class="px-4 py-3 text-left">ID</th>
-            <th class="px-4 py-3 text-left">Nombre</th>
-            <th class="px-4 py-3 text-left">Descripción</th>
-            <th class="px-4 py-3 text-right">Precio</th>
-            <th class="px-4 py-3 text-center">Disponibles</th>
-            <th class="px-4 py-3 text-center">Cantidad</th>
-            <th class="px-4 py-3 text-center">Agregar</th>
+            <th class="px-2 py-2 text-xs sm:text-sm text-left">ID</th>
+            <th class="px-2 py-2 text-xs sm:text-sm text-left">Nombre</th>
+            <th class="px-2 py-2 text-xs sm:text-sm text-left">Precio</th>
+            <th class="px-2 py-2 text-xs sm:text-sm text-left">Stock</th>
+            <th class="px-2 py-2 text-xs sm:text-sm text-left">Cantidad</th>
+            <th class="px-2 py-2 text-xs sm:text-sm text-left">Agregar</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of productos"
-              class="border-b border-gray-200 hover:bg-green-50 transition">
-            <td class="px-4 py-3">{{ p.idProducto }}</td>
-            <td class="px-4 py-3">{{ p.nombre }}</td>
-            <td class="px-4 py-3 max-w-[200px] truncate">{{ p.descripcion }}</td>
-            <td class="px-4 py-3 text-right">{{ p.precio | number:'1.0-0':'es-CO' }}</td>
-            <td class="px-4 py-3 text-center">{{ p.cantidad }}</td>
-            <td class="px-4 py-3 text-center">
-              <input
-                type="number"
-                min="1"
-                [max]="p.cantidad"
-                class="w-16 border rounded px-2 py-1 text-center text-sm"
-                [(ngModel)]="cantidades[p.idProducto]"
-                [placeholder]="'1'" />
-            </td>
-            <td class="px-4 py-3 text-center">
-              <button
-                type="button"
-                class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg transition text-sm disabled:opacity-50"
-                [disabled]="p.cantidad <= 0"
-                (click)="agregarAlCarrito(p)">
-                <i class="fa-solid fa-cart-plus"></i>
-              </button>
-            </td>
-          </tr>
 
-          <tr *ngIf="productos.length === 0">
-            <td colspan="7" class="text-center py-6 text-gray-500">
-              No hay productos disponibles
-            </td>
-          </tr>
+        <tr
+          *ngFor="let p of productos"
+          class="border-b border-gray-200 hover:bg-green-50 transition">
+
+          <td class="px-2 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+            {{ p.idProducto }}
+          </td>
+
+          <td class="px-2 py-2 text-xs sm:px-4 sm:py-3 sm:text-sm">
+            {{ p.nombre }}
+          </td>
+
+          <td class="px-2 py-2 text-xs text-right sm:px-4 sm:py-3 sm:text-sm">
+            {{ p.precio | number:'1.0-0':'es-CO' }}
+          </td>
+
+          <td class="px-2 py-2 text-xs text-center sm:px-4 sm:py-3 sm:text-sm">
+            {{ p.cantidad }}
+          </td>
+
+          <td class="px-2 py-2 text-center sm:px-4 sm:py-3">
+            <input
+              type="number"
+              min="1"
+              [max]="p.cantidad"
+              class="w-10 sm:w-16 border rounded px-1 py-1 text-xs sm:px-2 sm:py-1 sm:text-sm text-center"
+              [(ngModel)]="cantidades[p.idProducto]"
+              [placeholder]="'1'" />
+          </td>
+
+          <td class="px-2 py-2 text-center sm:px-4 sm:py-3">
+            <button
+              type="button"
+              class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition text-xs sm:text-sm disabled:opacity-50"
+              [disabled]="p.cantidad <= 0"
+              (click)="agregarAlCarrito(p)">
+
+              <i class="fa-solid fa-cart-plus"></i>
+
+            </button>
+          </td>
+
+        </tr>
+
+        <tr *ngIf="productos.length === 0">
+          <td colspan="6" class="text-center py-4 text-xs sm:text-sm text-gray-500">
+            No hay productos disponibles
+          </td>
+        </tr>
+
         </tbody>
       </table>
     </div>
@@ -178,5 +213,14 @@
       </button>
     </div>
 
+  </div>
+
+
+
+
+  <div
+    class="overlay"
+    *ngIf="carritoVisible"
+    (click)="toggleCarrito()">
   </div>
 </div>

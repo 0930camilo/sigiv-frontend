@@ -5,6 +5,7 @@ export interface Producto {
   cantidad: number;
   precioCompra: number;
   precio: number;
+  codigoBarra?: string;
   fecha: string;
   estado: 'Activo' | 'Inactivo';
 
@@ -34,6 +35,7 @@ export interface ProductoCreateRequest {
   cantidad: number;
   precioCompra: number;
   precio: number;
+  codigoBarra?: string;
   estado: 'Activo' | 'Inactivo';
   proveedorId?: number;
   categoriaId: number;

@@ -14,6 +14,7 @@ import { Persona } from '../../../persona/model/persona.model';
 import { VentaNotificacionService } from '../../../../shared/services/venta-notificacion.service';
 
 import Swal from 'sweetalert2';
+import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-registrar-venta',
@@ -34,7 +35,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
   clienteEncontrado: Persona | null = null;
   buscandoCliente = false;
   registrarClienteAutomaticamente = true;
-  canalEnvioFactura: 'ninguno' | 'correo' | 'whatsapp' | 'correo-whatsapp' = 'ninguno';
+  enviarFacturaCorreo = false;
 
   // --- Carrito ---
   carrito: ItemCarrito[] = [];
@@ -343,11 +344,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
   }
 
   private requiereEnvioCorreo(): boolean {
-    return this.canalEnvioFactura === 'correo' || this.canalEnvioFactura === 'correo-whatsapp';
-  }
-
-  private requiereEnvioWhatsapp(): boolean {
-    return this.canalEnvioFactura === 'whatsapp' || this.canalEnvioFactura === 'correo-whatsapp';
+    return this.enviarFacturaCorreo;
   }
 
   private obtenerVentaId(response: any): number | null {
@@ -363,10 +360,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     return Number.isFinite(idNumerico) && idNumerico > 0 ? idNumerico : null;
   }
 
-  private abrirWhatsappFactura(telefono: string): void {
-    const mensaje = encodeURIComponent('Hola, adjunto la factura POS de su compra.');
-    window.open(`https://wa.me/${telefono}?text=${mensaje}`, '_blank');
-  }
+
 
   private finalizarRegistroVenta(): void {
     this.ventaNotificacion.notificarVentaRegistrada();
@@ -377,12 +371,10 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
 
   private procesarEnvioFactura(response: any): void {
     const correo = this.correoCliente.trim();
-    const telefono = this.telefonoCliente.trim().replace(/\D/g, '');
+
     const ventaId = this.obtenerVentaId(response);
 
-    if (this.requiereEnvioWhatsapp() && telefono) {
-      this.abrirWhatsappFactura(telefono);
-    }
+
 
     if (!this.requiereEnvioCorreo()) {
       Swal.fire('Venta registrada', response.message || 'Venta creada exitosamente', 'success');
@@ -444,10 +436,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.requiereEnvioWhatsapp() && !this.telefonoCliente.trim().replace(/\D/g, '')) {
-      Swal.fire('Error', 'Ingresa el telefono del cliente para enviar la factura POS por WhatsApp', 'warning');
-      return;
-    }
+
 
     Swal.fire({
       title: 'Registrando venta',
@@ -495,12 +484,27 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     this.documentoCliente = '';
     this.clienteEncontrado = null;
     this.registrarClienteAutomaticamente = true;
-    this.canalEnvioFactura = 'ninguno';
+    this.enviarFacturaCorreo = false;
     this.efectivo = null;
     this.cantidades = {};
   }
 
   ngOnDestroy(): void {
     this.detenerEscaner();
+  }
+
+  carritoVisible = window.innerWidth > 480;
+
+  toggleCarrito(): void {
+    this.carritoVisible = !this.carritoVisible;
+  }
+
+  @HostListener('window:resize')
+  onResize(){
+
+    if(window.innerWidth > 480){
+      this.carritoVisible = true;
+    }
+
   }
 }

@@ -1,9 +1,29 @@
-FROM nginx:alpine
+# Stage 1: Build the Angular application (including SSR)
+FROM node:20-alpine as builder
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# 👇 OJO AQUÍ (browser)
-COPY dist/sigiv-web-ui/browser /usr/share/nginx/html
+COPY package.json package-lock.json ./
+RUN npm install
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+COPY . .
+# Run the build command as defined in package.json, which should handle SSR
+RUN npm run build --configuration=production
+
+# Stage 2: Serve the application with Node.js (SSR)
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json for runtime dependencies
+COPY package.json package-lock.json ./
+RUN npm install --omit=dev # Install only production dependencies
+
+# Copy the entire built application directory from the builder stage
+# This should include both 'browser' and 'server' subdirectories
+COPY --from=builder /app/dist/sigiv-web-ui /app/dist/sigiv-web-ui
+
+# Default port for Angular SSR
+EXPOSE 4000
+
+CMD ["npm", "run", "serve:ssr:sigiv-web-ui"]
