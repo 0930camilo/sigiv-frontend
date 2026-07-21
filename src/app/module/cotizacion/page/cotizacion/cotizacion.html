@@ -6,7 +6,7 @@
     </h2>
   </div>
 
-  
+
   <!-- FILTROS -->
   <div class="contenedor-filtros">
     <div class="campo">
@@ -45,6 +45,7 @@
     <app-reusable-table
       [data]="cotizaciones"
       [columns]="columns"
+      [isMobile]="isMobile"
       [loading]="loading"
       [currentPage]="currentPage"
       [totalPages]="totalPages"

@@ -77,39 +77,60 @@
 
           <!-- ACTIONS (Editar / Eliminar con iconos) -->
           <ng-container *ngIf="col.type === 'actions'">
-            <div class="flex items-center gap-2">
+            <ng-container *ngIf="isMobile; else desktopActions">
+              <!-- Mobile -->
+              <div class="relative">
+                <button (click)="item.showMenu = !item.showMenu" class="p-2 text-gray-600">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div *ngIf="item.showMenu" class="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-gray-700 shadow-xl p-2 flex flex-col gap-2 border border-gray-200 dark:border-gray-600 rounded-lg z-50">
+                  <button
+                    *ngIf="item.codigoBarra"
+                    class="flex items-center gap-2 p-2 text-sm text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900 rounded"
+                    (click)="item.showMenu = false; actionClick.emit({ action: 'barcode', row: item })">
+                    <i class="fa-solid fa-barcode"></i> Código
+                  </button>
+                  <button
+                    class="flex items-center gap-2 p-2 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 rounded"
+                    (click)="item.showMenu = false; actionClick.emit({ action: 'edit', row: item })">
+                    <i class="fa-solid fa-pen"></i> Editar
+                  </button>
+                  <button
+                    class="flex items-center gap-2 p-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded"
+                    (click)="item.showMenu = false; actionClick.emit({ action: 'delete', row: item })">
+                    <i class="fa-solid fa-trash"></i> Eliminar
+                  </button>
+                </div>
+              </div>
+            </ng-container>
 
-              <!-- CODIGO DE BARRA -->
-              <button
-                *ngIf="item.codigoBarra"
-                title="Codigo de barra"
-                class="p-2 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900
-             transition-all duration-200 hover:scale-110 mr-2"
-                (click)="actionClick.emit({ action: 'barcode', row: item })">
-
-                <i class="fa-solid fa-barcode text-amber-600"></i>
-              </button>
-
-              <!-- EDITAR -->
-              <button
-                title="Editar"
-                class="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900
-               transition-all duration-200 hover:scale-110"
-                (click)="actionClick.emit({ action: 'edit', row: item })">
-
-                <i class="fa-solid fa-pen text-blue-600"></i>
-              </button>
-
-              <!-- ELIMINAR -->
-              <button
-                title="Eliminar"
-                class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900
-               transition-all duration-200 hover:scale-110"
-                (click)="actionClick.emit({ action: 'delete', row: item })">
-
-                <i class="fa-solid fa-trash text-red-600"></i>
-              </button>
-            </div>
+            <ng-template #desktopActions>
+              <!-- Desktop -->
+              <div class="flex items-center gap-2">
+                <button
+                  *ngIf="item.codigoBarra"
+                  title="Codigo de barra"
+                  class="p-2 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900
+                 transition-all duration-200 hover:scale-110 mr-2"
+                  (click)="actionClick.emit({ action: 'barcode', row: item })">
+                  <i class="fa-solid fa-barcode text-amber-600"></i>
+                </button>
+                <button
+                  title="Editar"
+                  class="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900
+                 transition-all duration-200 hover:scale-110"
+                  (click)="actionClick.emit({ action: 'edit', row: item })">
+                  <i class="fa-solid fa-pen text-blue-600"></i>
+                </button>
+                <button
+                  title="Eliminar"
+                  class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900
+                 transition-all duration-200 hover:scale-110"
+                  (click)="actionClick.emit({ action: 'delete', row: item })">
+                  <i class="fa-solid fa-trash text-red-600"></i>
+                </button>
+              </div>
+            </ng-template>
           </ng-container>
 
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -44,6 +44,9 @@ export class CotizacionComponent implements OnInit {
   cotizacionSeleccionada: Cotizacion | null = null;
   mostrarDetalle = false;
 
+  // Estado movil
+  isMobile = false;
+
   // Preview PDF
   mostrarPreviewPdf = false;
   pdfPreviewUrl: SafeResourceUrl | null = null;
@@ -51,7 +54,8 @@ export class CotizacionComponent implements OnInit {
   pdfIdActual: number | null = null;
   cotizacionActual: Cotizacion | null = null;
 
-  columns: TableColumn[] = [
+  columns: TableColumn[] = [];
+  columnsDesktop: TableColumn[] = [
     { field: 'idcotizacion', header: 'ID' },
     { field: 'fecha', header: 'Fecha', type: 'date' },
     { field: 'nombreCliente', header: 'Cliente' },
@@ -87,6 +91,55 @@ export class CotizacionComponent implements OnInit {
     }
   ];
 
+  columnsMobile: TableColumn[] = [
+    { field: 'idcotizacion', header: 'ID' },
+    { field: 'fecha', header: 'Fecha', type: 'date' },
+    { field: 'nombreCliente', header: 'Cliente' },
+    { field: 'total', header: 'Total', type: 'number' },
+    { field: 'nombreUsuario', header: 'Vendedor' },
+    {
+      field: 'accionesCotizacion',
+      header: 'Acciones',
+      type: 'buttons',
+      buttons: [
+        {
+          title: 'Ver detalle',
+          icon: 'fa-solid fa-eye text-green-600',
+          action: (row: Cotizacion) => this.verDetalle(row)
+        },
+        {
+          title: 'Ver cotizacion PDF',
+          icon: 'fa-solid fa-file-invoice text-blue-600',
+          action: (row: Cotizacion) => this.previewPdf(row.idcotizacion)
+        },
+        {
+          title: 'Imprimir POS',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Cotizacion) => this.imprimirCotizacionPos(row)
+        },
+        {
+          title: 'Eliminar',
+          icon: 'fa-solid fa-trash text-red-600',
+          action: (row: Cotizacion) => this.confirmarEliminar(row)
+        }
+      ]
+    }
+  ];
+
+  private actualizarColumnas(): void {
+    this.isMobile = window.innerWidth <= 480;
+    if (this.isMobile) {
+      this.columns = this.columnsMobile;
+    } else {
+      this.columns = this.columnsDesktop;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.actualizarColumnas();
+  }
+
   constructor(
     private cotizacionService: CotizacionService,
     private authService: AuthService,
@@ -96,6 +149,7 @@ export class CotizacionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.actualizarColumnas();
     const empresa = this.authService.getEmpresaId();
     if (!empresa) {
       console.error('Empresa no encontrada');
