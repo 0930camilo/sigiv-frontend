@@ -12,36 +12,38 @@
   <div class="bg-gray-50 border rounded-lg p-4 mb-2">
     <div class="filtros">
 
-      <div class="filtro">
-        <label class="block text-xs font-medium text-gray-600 mb-1 md:text-sm">Estado</label>
-        <select
-          [(ngModel)]="filtroEstado"
-          (change)="filtrar()"
-          class="w-full border rounded px-2 py-1 text-xs md:px-3 md:py-2 md:text-sm">
-          <option value="">Todos</option>
-          <option value="Activo">Activo</option>
-          <option value="Inactivo">Inactivo</option>
-        </select>
-      </div>
 
-      <div class="filtro">
-        <label class="block text-xs font-medium text-gray-600 mb-1 md:text-sm">Documento</label>
+
+      <div class="filtrosUni">
+        <label class="block text-xs font-medium text-gray-600 mb-1 md:text-sm filtro">Documento</label>
         <input
           type="text"
           [(ngModel)]="filtroDocumento"
           (input)="filtrar()"
-          placeholder="Buscar por documento..."
-          class="w-full border rounded px-2 py-1 text-xs md:px-3 md:py-2 md:text-sm">
+          placeholder="Documento..."
+          class="w-full border rounded px-2 py-1 text-xs md:px-3 md:py-2 md:text-sm filtro">
       </div>
 
-      <div class="filtro">
+      <div class="filtrosUni">
         <label class="block text-xs font-medium text-gray-600 mb-1 md:text-sm">Nombre</label>
         <input
           type="text"
           [(ngModel)]="filtroNombre"
           (input)="filtrar()"
-          placeholder="Buscar por nombre..."
-          class="w-full border rounded px-2 py-1 text-xs md:px-3 md:py-2 md:text-sm">
+          placeholder="Nombre..."
+          class="w-full border rounded px-2 py-1 text-xs md:px-3 md:py-2 md:text-sm filtro">
+      </div>
+
+      <div class="filtrosUni">
+        <label class="block text-xs font-medium text-gray-600 mb-1 md:text-sm">Estado</label>
+        <select
+          [(ngModel)]="filtroEstado"
+          (change)="filtrar()"
+          class="w-full border rounded px-2 py-1 text-xs md:px-3 md:py-2 md:text-sm filtro">
+          <option value="">Todos</option>
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
       </div>
 
 

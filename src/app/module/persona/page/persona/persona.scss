@@ -2,7 +2,7 @@
   display:flex;
   gap:8px;
   width: 100%;
-
+  margin-bottom: 10px;
 
   @media (min-width: 768px) {
     width: 90%;
@@ -18,7 +18,19 @@
 
 @media (max-width: 480px) {
 
-  .filtro{
+  .filtros{
     width: 140%;
+    margin-bottom: 5px;
+    gap:2px;
   }
+  .filtro{
+    width: 80%;
+
+
+      gap:6px;   /* antes 16px */
+
+  }
+
+
+
 }
