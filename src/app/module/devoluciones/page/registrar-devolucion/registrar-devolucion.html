@@ -12,12 +12,12 @@
           type="number"
           [(ngModel)]="ventaIdBuscar"
           placeholder="Ej: 1"
-          class="border rounded px-3 py-2 text-sm flex-1"
+          class="border rounded px-2 py-1 text-xs lg:px-3 lg:py-2 lg:text-sm flex-1"
           (keyup.enter)="buscarVenta()" />
         <button
           (click)="buscarVenta()"
           [disabled]="buscandoVenta"
-          class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition disabled:opacity-50">
+          class="bg-blue-600 text-white px-3 py-1 rounded text-xs lg:px-4 lg:py-2 lg:text-sm hover:bg-blue-700 transition disabled:opacity-50">
           {{ buscandoVenta ? 'Buscando...' : '🔍 Buscar' }}
         </button>
       </div>
@@ -100,19 +100,27 @@
     <div class="flex gap-3">
       <button
         (click)="registrarDevolucion()"
-        class="bg-orange-600 text-white px-6 py-2 rounded text-sm hover:bg-orange-700 transition font-medium">
+        class="bg-orange-600 text-white px-4 py-1.5 rounded text-xs lg:px-6 lg:py-2 lg:text-sm hover:bg-orange-700 transition font-medium">
         🔄 Registrar Devolución
       </button>
       <button
         (click)="limpiarFormulario()"
-        class="bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-400 transition">
+        class="bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-xs lg:px-4 lg:py-2 lg:text-sm hover:bg-gray-400 transition">
         🧹 Limpiar
       </button>
     </div>
   </div>
 
   <!-- ========== DERECHA: Catálogo de Productos ========== -->
-  <div class="w-full lg:w-1/2 bg-white rounded-lg shadow p-6">
+  <button
+    class="btn-toggle-productos"
+    (click)="toggleProductos()">
+    {{ mostrarProductosMobile ? '✖' : '📦' }}
+  </button>
+
+  <div class="overlay" *ngIf="mostrarProductosMobile" (click)="toggleProductos()"></div>
+
+  <div class="w-full lg:w-1/2 bg-white rounded-lg shadow p-6 panel-productos" [class.mostrar]="mostrarProductosMobile">
     <h2 class="text-lg font-semibold mb-4 text-green-700">📦 Catálogo de Productos</h2>
 
     <!-- Buscador -->
@@ -163,17 +171,17 @@
     </div>
 
     <!-- Sin resultados -->
-    <div *ngIf="!loadingProductos && productos.length === 0" class="text-center text-gray-500 py-4 text-sm">
+    <div *ngIf="mostrarProductosMobile && !loadingProductos && productos.length === 0" class="text-center text-gray-500 py-4 text-sm">
       No se encontraron productos
     </div>
 
     <!-- Loading -->
-    <div *ngIf="loadingProductos" class="text-center text-gray-500 py-4 text-sm">
+    <div *ngIf="mostrarProductosMobile && loadingProductos" class="text-center text-gray-500 py-4 text-sm">
       Cargando productos...
     </div>
 
     <!-- Paginación -->
-    <div *ngIf="totalPagesProductos > 1" class="flex justify-between items-center mt-4 text-sm">
+    <div *ngIf="mostrarProductosMobile && totalPagesProductos > 1" class="flex justify-between items-center mt-4 text-sm">
       <button
         [disabled]="currentPageProductos <= 0"
         (click)="cargarProductos(currentPageProductos - 1)"
