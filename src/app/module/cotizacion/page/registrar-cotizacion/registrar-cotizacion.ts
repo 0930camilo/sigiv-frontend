@@ -203,4 +203,11 @@ export class RegistrarCotizacionComponent implements OnInit {
     this.telefonoCliente = '';
     this.cantidades = {};
   }
+// Mostrar carrito en móvil
+  carritoVisible = false;
+
+  toggleCarrito(): void {
+    this.carritoVisible = !this.carritoVisible;
+  }
+
 }
