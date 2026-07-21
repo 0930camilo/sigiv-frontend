@@ -154,30 +154,6 @@
             </button>
           </ng-container>
 
-          <!-- BOTONES PERSONALIZADOS AGRUPADOS -->
-          <ng-container *ngIf="col.type === 'buttons'">
-            <div class="flex items-center gap-2 whitespace-nowrap">
-              <button
-                *ngFor="let button of col.buttons"
-                type="button"
-                [title]="button.title || button.label || col.header"
-                class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700
-                       transition-all duration-200 hover:scale-110"
-                (click)="button.action(item)">
-
-                <i *ngIf="button.icon"
-                   [class]="button.icon"
-                   class="text-lg">
-                </i>
-
-                <span *ngIf="!button.icon">
-                  {{ button.label }}
-                </span>
-              </button>
-            </div>
-          </ng-container>
-
-
         </td>
       </tr>
 
