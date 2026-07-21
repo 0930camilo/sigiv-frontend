@@ -1,0 +1,108 @@
+/*=========================
+    FILTRO
+==========================*/
+
+.filtro-devoluciones{
+  margin-bottom:16px;
+  max-width:520px;
+}
+
+.fila-filtro{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.input-filtro{
+  flex:1;
+  height:40px;
+  border:1px solid #d1d5db;
+  border-radius:6px;
+  padding:0 12px;
+  font-size:14px;
+}
+
+.input-filtro:focus{
+  outline:none;
+  border-color:#2563eb;
+  box-shadow:0 0 0 2px rgba(37,99,235,.15);
+}
+
+.btn-buscar,
+.btn-limpiar{
+
+  width:42px;
+  height:40px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  border:none;
+  border-radius:6px;
+
+  cursor:pointer;
+
+  font-size:16px;
+
+  transition:.2s;
+}
+
+.btn-buscar{
+  background:#2563eb;
+  color:#fff;
+}
+
+.btn-buscar:hover{
+  background:#1d4ed8;
+}
+
+.btn-limpiar{
+  background:#d1d5db;
+  color:#374151;
+}
+
+.btn-limpiar:hover{
+  background:#9ca3af;
+}
+
+
+/*=========================
+      RESPONSIVE
+==========================*/
+
+@media (max-width:480px){
+
+  .filtro-devoluciones{
+    max-width:100%;
+  }
+
+  .fila-filtro{
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+
+  .input-filtro{
+
+    flex:1;
+
+    height:34px;
+
+    font-size:12px;
+
+    padding:0 8px;
+  }
+
+  .btn-buscar,
+  .btn-limpiar{
+
+    width:34px;
+    height:34px;
+
+    font-size:13px;
+
+    flex-shrink:0;
+  }
+
+}

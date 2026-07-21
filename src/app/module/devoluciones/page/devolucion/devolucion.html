@@ -4,44 +4,61 @@
     <h2 class="text-lg font-semibold">🔄 Devoluciones</h2>
   </div>
 
-  <!-- Filtro por Venta ID -->
   <div class="bg-white rounded-lg shadow p-4 mb-4">
-    <div class="flex flex-wrap items-end gap-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por ID de Venta</label>
+
+    <div class="filtro-devoluciones">
+
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Filtrar por ID de Venta
+      </label>
+
+      <div class="fila-filtro">
+
         <input
           type="number"
           [(ngModel)]="ventaIdBuscar"
           placeholder="Ej: 1"
-          class="border rounded px-3 py-2 text-sm w-48"
-          (keyup.enter)="buscar()" />
+          class="input-filtro"
+          (keyup.enter)="buscar()">
+
+        <button
+          type="button"
+          (click)="buscar()"
+          class="btn-buscar"
+          title="Buscar">
+          🔍
+        </button>
+
+        <button
+          type="button"
+          (click)="limpiar()"
+          class="btn-limpiar"
+          title="Limpiar">
+          🧹
+        </button>
+
       </div>
-      <button
-        (click)="buscar()"
-        class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition">
-        🔍 Buscar
-      </button>
-      <button
-        (click)="limpiar()"
-        class="bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-400 transition">
-        🧹 Limpiar
-      </button>
+
     </div>
-  </div>
 
-  <!-- Tabla de devoluciones -->
-  <app-reusable-table
-    [data]="devoluciones"
-    [columns]="columns"
-    [loading]="loading"
-    [currentPage]="currentPage"
-    [totalPages]="totalPages"
-    (next)="cargarDevoluciones(currentPage + 1)"
-    (previous)="cargarDevoluciones(currentPage - 1)">
-  </app-reusable-table>
+    <app-reusable-table
+      [data]="devoluciones"
+      [columns]="columns"
+      [loading]="loading"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      (next)="cargarDevoluciones(currentPage + 1)"
+      (previous)="cargarDevoluciones(currentPage - 1)">
+    </app-reusable-table>
 
-  <div *ngIf="!loading && ventaBuscada && devoluciones.length === 0" class="text-center text-gray-500 py-6">
-    No se encontraron devoluciones.
+    <div
+      *ngIf="!loading && ventaBuscada && devoluciones.length === 0"
+      class="text-center text-gray-500 py-6">
+
+      No se encontraron devoluciones.
+
+    </div>
+
   </div>
 
 </div>
