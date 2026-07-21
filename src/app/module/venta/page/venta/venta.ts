@@ -41,6 +41,9 @@ export class VentaComponent implements OnInit {
   ventaSeleccionada: Venta | null = null;
   mostrarDetalle = false;
 
+  // Estado movil
+  isMobile = false;
+
   // 📄 preview factura
   mostrarPreviewFactura = false;
   facturaPreviewUrl: SafeResourceUrl | null = null;
@@ -319,13 +322,12 @@ export class VentaComponent implements OnInit {
   }
 
   private actualizarColumnas(): void {
-
-    if (window.innerWidth <= 480) {
+    this.isMobile = window.innerWidth <= 480;
+    if (this.isMobile) {
       this.columns = this.columnsMobile;
     } else {
       this.columns = this.columnsDesktop;
     }
-
   }
 
   @HostListener('window:resize')
