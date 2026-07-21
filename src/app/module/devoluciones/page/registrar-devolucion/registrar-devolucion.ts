@@ -186,6 +186,8 @@ export class RegistrarDevolucionComponent implements OnInit {
   // LIMPIAR FORMULARIO
   // ===============================
   limpiarFormulario(): void {
+    this.ventaIdBuscar = null;
+    this.ventaEncontrada = null;
     this.productoSeleccionado = null;
     this.cantidad = null;
     this.motivo = '';

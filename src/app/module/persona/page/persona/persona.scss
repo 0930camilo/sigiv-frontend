@@ -1,0 +1,12 @@
+.filtros{
+  display:flex;
+  gap:8px;
+  width: 100%;
+  @media (min-width: 768px) {
+    width: 90%;
+  }
+}
+
+.filtro{
+  flex: 1;
+}

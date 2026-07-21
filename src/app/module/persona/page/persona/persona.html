@@ -9,39 +9,57 @@
   </div>
 
   <!-- Filtros -->
-  <div class="bg-gray-50 border rounded-lg p-4 mb-4">
-    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
-      <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">Estado</label>
-        <select [(ngModel)]="filtroEstado" (change)="filtrar()" class="w-full border rounded px-3 py-2 text-sm">
+  <div class="bg-gray-50 border rounded-lg p-4 mb-2">
+    <div class="filtros">
+
+      <div class="filtro">
+        <label class="block text-xs font-medium text-gray-600 mb-1 md:text-sm">Estado</label>
+        <select
+          [(ngModel)]="filtroEstado"
+          (change)="filtrar()"
+          class="w-full border rounded px-2 py-1 text-xs md:px-3 md:py-2 md:text-sm">
           <option value="">Todos</option>
           <option value="Activo">Activo</option>
           <option value="Inactivo">Inactivo</option>
         </select>
       </div>
-      <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">Documento</label>
-        <input type="text" [(ngModel)]="filtroDocumento" (input)="filtrar()" placeholder="Buscar por documento..."
-          class="w-full border rounded px-3 py-2 text-sm" />
+
+      <div class="filtro">
+        <label class="block text-xs font-medium text-gray-600 mb-1 md:text-sm">Documento</label>
+        <input
+          type="text"
+          [(ngModel)]="filtroDocumento"
+          (input)="filtrar()"
+          placeholder="Buscar por documento..."
+          class="w-full border rounded px-2 py-1 text-xs md:px-3 md:py-2 md:text-sm">
       </div>
-      <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">Nombre</label>
-        <input type="text" [(ngModel)]="filtroNombre" (input)="filtrar()" placeholder="Buscar por nombre..."
-          class="w-full border rounded px-3 py-2 text-sm" />
+
+      <div class="filtro">
+        <label class="block text-xs font-medium text-gray-600 mb-1 md:text-sm">Nombre</label>
+        <input
+          type="text"
+          [(ngModel)]="filtroNombre"
+          (input)="filtrar()"
+          placeholder="Buscar por nombre..."
+          class="w-full border rounded px-2 py-1 text-xs md:px-3 md:py-2 md:text-sm">
       </div>
+
+
     </div>
+    <app-reusable-table
+      [data]="personas"
+      [columns]="columns"
+      [isMobile]="isMobile"
+      [loading]="loading"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      (next)="cargarPersonas(currentPage + 1)"
+      (previous)="cargarPersonas(currentPage - 1)"
+      (actionClick)="onAction($event)">
+    </app-reusable-table>
   </div>
 
-  <app-reusable-table
-    [data]="personas"
-    [columns]="columns"
-    [loading]="loading"
-    [currentPage]="currentPage"
-    [totalPages]="totalPages"
-    (next)="cargarPersonas(currentPage + 1)"
-    (previous)="cargarPersonas(currentPage - 1)"
-    (actionClick)="onAction($event)">
-  </app-reusable-table>
+
 
   <div *ngIf="!loading && personas.length === 0" class="text-center text-gray-500 py-6">
     No hay personas registradas en esta empresa.
