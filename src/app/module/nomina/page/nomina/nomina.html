@@ -42,7 +42,7 @@
 
   <!-- Vista detalle: Personas asignadas a nómina -->
   <div *ngIf="mostrarDetalle && nominaSeleccionada">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-4 asig">
       <div>
         <button (click)="cerrarDetalle()"
           class="text-blue-600 hover:underline text-sm mb-1">&larr; Volver a nóminas</button>
@@ -55,7 +55,7 @@
         </p>
       </div>
       <button (click)="abrirModalAsignar()"
-        class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition">
+        class="bg-green-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded text-xs md:text-sm hover:bg-green-700 transition btnAsi">
         + Asignar Persona
       </button>
     </div>

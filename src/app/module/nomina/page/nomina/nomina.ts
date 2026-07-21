@@ -91,7 +91,7 @@ export class NominaComponent implements OnInit {
   actualizarColumnas() {
     this.isMobile = window.innerWidth < 768;
     this.columns = this.isMobile ? this.columnsMobile : this.columnsDesktop;
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   cargarNominas(page: number = 0): void {
@@ -105,13 +105,13 @@ export class NominaComponent implements OnInit {
         this.currentPage = res.data?.currentPage ?? 0;
         this.totalPages = res.data?.totalPages ?? 0;
         this.loading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error cargando nóminas:', err);
         this.nominas = [];
         this.loading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       }
     });
   }
@@ -154,18 +154,20 @@ export class NominaComponent implements OnInit {
     if (this.editando && this.nominaEditandoId) {
       this.nominaService.actualizarNomina(this.nominaEditandoId, this.form).subscribe({
         next: () => {
-          Swal.fire('Actualizado', 'Nómina actualizada correctamente', 'success');
-          this.cerrarModal();
-          this.cargarNominas();
+          Swal.fire('Actualizado', 'Nómina actualizada correctamente', 'success').then(() => {
+            this.cerrarModal();
+            this.cargarNominas();
+          });
         },
         error: () => Swal.fire('Error', 'No se pudo actualizar la nómina', 'error')
       });
     } else {
       this.nominaService.crearNomina(this.form).subscribe({
         next: () => {
-          Swal.fire('Creado', 'Nómina creada correctamente', 'success');
-          this.cerrarModal();
-          this.cargarNominas();
+          Swal.fire('Creado', 'Nómina creada correctamente', 'success').then(() => {
+            this.cerrarModal();
+            this.cargarNominas();
+          });
         },
         error: () => Swal.fire('Error', 'No se pudo crear la nómina', 'error')
       });
@@ -221,12 +223,12 @@ export class NominaComponent implements OnInit {
       next: (res) => {
         this.personasNomina = Array.isArray(res.data) ? res.data : [];
         this.loadingDetalle = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: () => {
         this.personasNomina = [];
         this.loadingDetalle = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       }
     });
   }
@@ -240,12 +242,12 @@ export class NominaComponent implements OnInit {
           acc[persona.idpersona] = persona.nombre;
           return acc;
         }, {} as Record<number, string>);
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: () => {
         this.personasDisponibles = [];
         this.personaNombreById = {};
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       }
     });
   }
