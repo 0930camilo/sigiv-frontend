@@ -2,10 +2,10 @@
 
   <!-- Vista principal: Lista de Nóminas -->
   <div *ngIf="!mostrarDetalle">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold text-gray-800">💼 Nóminas</h2>
+    <div class="flex items-center justify-between mb-4  tit">
+      <h2 class="text-lg font-semibold text-gray-800 ">💼 Nóminas</h2>
       <button (click)="abrirModalCrear()"
-        class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition">
+        class="bg-blue-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded text-xs md:text-sm hover:bg-blue-700 transition ti">
         + Nueva Nómina
       </button>
     </div>
@@ -13,6 +13,7 @@
     <app-reusable-table
       [data]="nominas"
       [columns]="columns"
+      [isMobile]="isMobile"
       [loading]="loading"
       [currentPage]="currentPage"
       [totalPages]="totalPages"

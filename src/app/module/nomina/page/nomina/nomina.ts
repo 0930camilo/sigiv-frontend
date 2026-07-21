@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -35,8 +35,20 @@ export class NominaComponent implements OnInit {
 
   form: NominaRequest = this.formVacio();
 
-  columns: TableColumn[] = [
+  columns: TableColumn[] = [];
+  isMobile = false;
+
+  columnsDesktop: TableColumn[] = [
     { field: 'idNomina', header: 'ID' },
+    { field: 'descripcion', header: 'Descripción' },
+    { field: 'fechaInicio', header: 'Fecha Inicio', type: 'date' },
+    { field: 'fechaFin', header: 'Fecha Fin', type: 'date' },
+    { field: 'estado', header: 'Estado', type: 'status' },
+    { field: 'totalPago', header: 'Total Pago', type: 'currency' },
+    { field: 'acciones', header: 'Acciones', type: 'actions' }
+  ];
+
+  columnsMobile: TableColumn[] = [
     { field: 'descripcion', header: 'Descripción' },
     { field: 'fechaInicio', header: 'Fecha Inicio', type: 'date' },
     { field: 'fechaFin', header: 'Fecha Fin', type: 'date' },
@@ -66,8 +78,20 @@ export class NominaComponent implements OnInit {
 
   ngOnInit(): void {
     this.empresaId = this.authService.getEmpresaId();
+    this.actualizarColumnas();
     this.cargarPersonasEmpresa();
     this.cargarNominas();
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.actualizarColumnas();
+  }
+
+  actualizarColumnas() {
+    this.isMobile = window.innerWidth < 768;
+    this.columns = this.isMobile ? this.columnsMobile : this.columnsDesktop;
+    this.cdr.detectChanges();
   }
 
   cargarNominas(page: number = 0): void {
