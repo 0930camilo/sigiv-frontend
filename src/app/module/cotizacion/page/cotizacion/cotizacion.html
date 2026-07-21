@@ -6,6 +6,7 @@
     </h2>
   </div>
 
+  
   <!-- FILTROS -->
   <div class="contenedor-filtros">
     <div class="campo">
@@ -39,19 +40,21 @@
         <i class="fa-solid fa-eraser"></i> Limpiar
       </button>
     </div>
+
+    <!-- TABLA -->
+    <app-reusable-table
+      [data]="cotizaciones"
+      [columns]="columns"
+      [loading]="loading"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      (next)="getCotizaciones(currentPage + 1)"
+      (previous)="getCotizaciones(currentPage - 1)">
+    </app-reusable-table>
   </div>
 
 
-  <!-- TABLA -->
-  <app-reusable-table
-    [data]="cotizaciones"
-    [columns]="columns"
-    [loading]="loading"
-    [currentPage]="currentPage"
-    [totalPages]="totalPages"
-    (next)="getCotizaciones(currentPage + 1)"
-    (previous)="getCotizaciones(currentPage - 1)">
-  </app-reusable-table>
+
 
 </div>
 

@@ -63,50 +63,63 @@
 .btn-limpiar:hover {
   background: #d1d5db;
 }
-
-/* Responsividad: en móvil se apilan */
+/* Responsividad: en móvil */
 @media (max-width: 480px) {
+
   .contenedor-filtros {
     display: flex;
-    flex-direction: row;       /* mantener en fila */
-    flex-wrap: wrap;           /* si no caben, bajan */
-    justify-content: space-between;
-    gap: 8px;                  /* espacio uniforme */
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-end;
+
+    width: 160%;
+    gap: 4px;
+    padding: 8px;
   }
 
   .campo {
-    flex: 1;                   /* que cada campo se adapte */
-    min-width: 100px;          /* ancho mínimo más cómodo */
-  }
-
-  .campo input {
-    width: 100%;
-    font-size: 12px;   /* más pequeño en móvil */
-    padding: 6px 8px;  /* padding reducido para que se vea compacto */
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;      /* evita que se estiren */
+    min-width: 75px;
+    margin: 0;
   }
 
   .campo label {
-    font-size: 11px;   /* opcional: también más pequeño el label */
+    display: block;
+    margin-bottom: 2px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .campo input {
+    width: 78px;
+    height: 30px;
+    padding: 0 6px;
+    font-size: 11px;
+    box-sizing: border-box;
+  }
+
+  .campo input[type="date"] {
+    width: 88px;
+    font-size: 10px;
   }
 
   .botones {
     display: flex;
-    flex: 1 1 100%;            /* que ocupen toda la fila si bajan */
-    justify-content: center;
-    gap: 8px;
+    gap: 4px;
+    margin: 0;
+    align-self: flex-end;
   }
 
   .btn-buscar,
   .btn-limpiar {
-    flex: none;                /* no se estiran demasiado */
-    min-width: 100px;          /* ancho mínimo legible */
-    font-size: 12px;   /* botones más compactos */
-    padding: 6px 10px;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 11px;
+    white-space: nowrap;
   }
-
-
-
-
-
 
 }
