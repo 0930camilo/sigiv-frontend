@@ -14,35 +14,53 @@ export interface FiltrosCotizacion {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+
+      <!-- ID -->
       <input
         type="number"
         placeholder="ID"
-        class="border rounded px-3 py-2 w-full"
+        class="border rounded-lg px-3 py-2 w-full"
         [(ngModel)]="filtros.idCotizacion"
       />
+
+      <!-- Cliente -->
       <input
         type="text"
         placeholder="Cliente"
-        class="border rounded px-3 py-2 w-full"
+        class="border rounded-lg px-3 py-2 w-full"
         [(ngModel)]="filtros.nombreCliente"
       />
+
+      <!-- Fecha Inicio -->
       <input
         type="date"
-        placeholder="Fecha Inicio"
-        class="border rounded px-3 py-2 w-full"
+        class="border rounded-lg px-3 py-2 w-full"
         [(ngModel)]="filtros.fechaInicio"
       />
+
+      <!-- Fecha Fin -->
       <input
         type="date"
-        placeholder="Fecha Fin"
-        class="border rounded px-3 py-2 w-full"
+        class="border rounded-lg px-3 py-2 w-full"
         [(ngModel)]="filtros.fechaFin"
       />
-      <div class="flex gap-2 sm:col-span-2 lg:col-span-3 xl:col-span-1">
-        <button class="bg-blue-600 text-white px-4 py-2 rounded flex-1" (click)="buscar()">Buscar</button>
-        <button class="bg-gray-300 text-black px-4 py-2 rounded flex-1" (click)="limpiar()">Limpiar</button>
+
+      <!-- Botones -->
+      <div class="grid grid-cols-2 gap-2 col-span-2 lg:col-span-1">
+        <button
+          class="bg-blue-600 text-white rounded-lg py-2 hover:bg-blue-700"
+          (click)="buscar()">
+          Buscar
+        </button>
+
+        <button
+          class="bg-gray-300 rounded-lg py-2 hover:bg-gray-400"
+          (click)="limpiar()">
+          Limpiar
+        </button>
       </div>
+
     </div>
   `
 })
