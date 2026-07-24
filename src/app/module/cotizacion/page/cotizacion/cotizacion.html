@@ -8,51 +8,19 @@
 
 
   <!-- FILTROS -->
-  <div class="contenedor-filtros">
-    <div class="campo">
-      <label>Cliente</label>
-      <input
-        type="text"
-        placeholder="Nombre"
-        [(ngModel)]="filtroCliente" />
-    </div>
+  <app-filtros-cotizaciones (filtrar)="filtrar($event)"></app-filtros-cotizaciones>
 
-    <div class="campo">
-      <label>Fecha inicio</label>
-      <input
-        type="date"
-        [(ngModel)]="filtroFechaInicio" />
-    </div>
-
-    <div class="campo">
-      <label>Fecha fin</label>
-      <input
-        type="date"
-        [(ngModel)]="filtroFechaFin" />
-    </div>
-
-    <div class="botones">
-      <button type="button" class="btn-buscar" (click)="buscar()">
-        <i class="fa-solid fa-search"></i> Buscar
-      </button>
-
-      <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">
-        <i class="fa-solid fa-eraser"></i> Limpiar
-      </button>
-    </div>
-
-    <!-- TABLA -->
-    <app-reusable-table
-      [data]="cotizaciones"
-      [columns]="columns"
-      [isMobile]="isMobile"
-      [loading]="loading"
-      [currentPage]="currentPage"
-      [totalPages]="totalPages"
-      (next)="getCotizaciones(currentPage + 1)"
-      (previous)="getCotizaciones(currentPage - 1)">
-    </app-reusable-table>
-  </div>
+  <!-- TABLA -->
+  <app-reusable-table
+    [data]="cotizaciones"
+    [columns]="columns"
+    [isMobile]="isMobile"
+    [loading]="loading"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (next)="getCotizaciones(currentPage + 1)"
+    (previous)="getCotizaciones(currentPage - 1)">
+  </app-reusable-table>
 
 
 

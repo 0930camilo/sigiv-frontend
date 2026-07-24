@@ -8,12 +8,13 @@ import { AuthService } from '../../../auth/service/auth-service';
 import { VentaService } from '../../service/venta-service';
 import { Venta } from '../../model/venta.model';
 import { PosPrintService } from '../../../../shared/services/pos-print.service';
+import { FiltrosVentasComponent } from '../filtro/filtro';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-ventas-usuario',
   standalone: true,
-  imports: [RouterModule, CommonModule, ReusableTable],
+  imports: [RouterModule, CommonModule, ReusableTable, FiltrosVentasComponent],
   templateUrl: './ventas-usuario.html',
   styleUrls: ['./ventas-usuario.scss']
 })
@@ -24,6 +25,7 @@ export class VentasUsuarioComponent implements OnInit {
   loading = false;
   usuarioId!: number;
   pageSize = 10;
+  filtroId: number | null = null;
 
   ventaSeleccionada: Venta | null = null;
   mostrarDetalle = false;
@@ -95,7 +97,7 @@ export class VentasUsuarioComponent implements OnInit {
     }
     this.loading = true;
     this.ventaService
-      .getVentasByUsuario(this.usuarioId, page, this.pageSize)
+      .getVentasByUsuario(this.usuarioId, page, this.pageSize, this.filtroId)
       .subscribe({
         next: (res: any) => {
           this.ventas = res.data?.ventas ?? [];
@@ -110,6 +112,11 @@ export class VentasUsuarioComponent implements OnInit {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  filtrarPorId(id: number | null) {
+    this.filtroId = id;
+    this.getVentas(0);
   }
 
   verDetalle(venta: Venta): void {

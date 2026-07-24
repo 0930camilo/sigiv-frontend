@@ -3,6 +3,12 @@
     <h2 class="text-lg font-semibold">Mis Cotizaciones</h2>
   </div>
 
+  <div class="idven">
+    <app-filtros-cotizaciones
+      (filtrar)="filtrar($event)">
+    </app-filtros-cotizaciones>
+  </div>
+
   <app-reusable-table
     [data]="cotizaciones"
     [columns]="columns"

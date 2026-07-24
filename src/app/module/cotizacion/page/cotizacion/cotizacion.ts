@@ -11,6 +11,7 @@ import { CotizacionService } from '../../service/cotizacion-service';
 import { Cotizacion } from '../../model/cotizacion.model';
 import { PosPrintService } from '../../../../shared/services/pos-print.service';
 
+import { FiltrosCotizacionesComponent, FiltrosCotizacion } from '../filtro/filtro';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -20,7 +21,8 @@ import Swal from 'sweetalert2';
     RouterModule,
     CommonModule,
     FormsModule,
-    ReusableTable
+    ReusableTable,
+    FiltrosCotizacionesComponent
   ],
   templateUrl: './cotizacion.html',
   styleUrls: ['./cotizacion.scss']
@@ -36,9 +38,7 @@ export class CotizacionComponent implements OnInit {
   pageSize = 10;
 
   // Filtros
-  filtroCliente = '';
-  filtroFechaInicio = '';
-  filtroFechaFin = '';
+  filtros: FiltrosCotizacion = {};
 
   // Detalle
   cotizacionSeleccionada: Cotizacion | null = null;
@@ -164,13 +164,8 @@ export class CotizacionComponent implements OnInit {
 
     this.loading = true;
 
-    const filtros: any = {};
-    if (this.filtroCliente.trim()) filtros.nombreCliente = this.filtroCliente.trim();
-    if (this.filtroFechaInicio) filtros.fechaInicio = this.formatDateToDDMMYYYY(this.filtroFechaInicio);
-    if (this.filtroFechaFin) filtros.fechaFin = this.formatDateToDDMMYYYY(this.filtroFechaFin);
-
     this.cotizacionService
-      .getCotizacionesByEmpresa(this.empresaId, page, this.pageSize, filtros)
+      .getCotizacionesByEmpresa(this.empresaId, page, this.pageSize, this.filtros)
       .subscribe({
         next: (res) => {
           this.cotizaciones = res.data?.cotizaciones ?? [];
@@ -187,14 +182,15 @@ export class CotizacionComponent implements OnInit {
       });
   }
 
-  buscar(): void {
+  filtrar(filtros: FiltrosCotizacion): void {
+    this.filtros = { ...filtros };
+    if (this.filtros.fechaInicio) this.filtros.fechaInicio = this.formatDateToDDMMYYYY(this.filtros.fechaInicio);
+    if (this.filtros.fechaFin) this.filtros.fechaFin = this.formatDateToDDMMYYYY(this.filtros.fechaFin);
     this.getCotizaciones(0);
   }
 
   limpiarFiltros(): void {
-    this.filtroCliente = '';
-    this.filtroFechaInicio = '';
-    this.filtroFechaFin = '';
+    this.filtros = {};
     this.getCotizaciones(0);
   }
 

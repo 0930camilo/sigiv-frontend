@@ -10,10 +10,13 @@ import { CotizacionService } from '../../service/cotizacion-service';
 import { Cotizacion } from '../../model/cotizacion.model';
 import { PosPrintService } from '../../../../shared/services/pos-print.service';
 
+import { FiltrosCotizacionesComponent, FiltrosCotizacion } from '../filtro/filtro';
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-cotizaciones-usuario',
   standalone: true,
-  imports: [RouterModule, CommonModule, ReusableTable],
+  imports: [RouterModule, CommonModule, ReusableTable, FiltrosCotizacionesComponent],
   templateUrl: './cotizaciones-usuario.html',
   styleUrls: ['./cotizaciones-usuario.scss']
 })
@@ -25,6 +28,7 @@ export class CotizacionesUsuarioComponent implements OnInit {
   empresaId!: number;
   usuarioId!: number;
   pageSize = 10;
+  filtros: FiltrosCotizacion = {};
 
   cotizacionSeleccionada: Cotizacion | null = null;
   mostrarDetalle = false;
@@ -92,7 +96,7 @@ export class CotizacionesUsuarioComponent implements OnInit {
 
     this.loading = true;
     this.cotizacionService
-      .getCotizacionesByUsuario(this.empresaId, this.usuarioId, page, this.pageSize)
+      .getCotizacionesByUsuario(this.empresaId, this.usuarioId, page, this.pageSize, this.filtros)
       .subscribe({
         next: (res) => {
           this.cotizaciones = res.data?.cotizaciones ?? [];
@@ -107,6 +111,11 @@ export class CotizacionesUsuarioComponent implements OnInit {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  filtrar(filtros: FiltrosCotizacion) {
+    this.filtros = filtros;
+    this.getCotizaciones(0);
   }
 
   verDetalle(cotizacion: Cotizacion): void {
