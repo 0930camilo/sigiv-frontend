@@ -19,18 +19,21 @@
 @media (max-width: 480px) {
 
   .filtros{
-    width: 140%;
+    width: 150%;
     margin-bottom: 5px;
     gap:2px;
   }
   .filtro{
-    width: 80%;
+    width: 50%;
 
 
       gap:6px;   /* antes 16px */
 
   }
 
-
+.filtrosUni{
+  width: 200px;
+  margin-right: -100px;
+}
 
 }
