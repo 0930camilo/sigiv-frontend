@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -36,7 +36,10 @@ export class VentasUsuarioComponent implements OnInit {
   facturaIdActual: number | null = null;
   facturaActual: Venta | null = null;
 
-  columns: TableColumn[] = [
+  // Estado movil
+  isMobile = false;
+
+  columnsDesktop: TableColumn[] = [
     { field: 'idventa', header: 'ID' },
     { field: 'fecha', header: 'Fecha', type: 'date' },
     { field: 'nombreCliente', header: 'Cliente' },
@@ -73,6 +76,42 @@ export class VentasUsuarioComponent implements OnInit {
     }
   ];
 
+  columnsMobile: TableColumn[] = [
+    { field: 'idventa', header: 'ID' },
+    { field: 'fecha', header: 'Fecha', type: 'date' },
+    { field: 'nombreCliente', header: 'Cliente' },
+    { field: 'total', header: 'Total', type: 'number' },
+    {
+      field: 'accionesVenta',
+      header: 'Acciones',
+      type: 'buttons',
+      buttons: [
+        {
+          title: 'Ver detalle',
+          icon: 'fa-solid fa-eye text-green-600',
+          action: (row: Venta) => this.verDetalle(row)
+        },
+        {
+          title: 'Enviar factura POS',
+          icon: 'fa-solid fa-envelope text-amber-600',
+          action: (row: Venta) => this.enviarFacturaPorCorreo(row)
+        },
+        {
+          title: 'Ver factura PDF',
+          icon: 'fa-solid fa-file-invoice text-blue-600',
+          action: (row: Venta) => this.previewFactura(row.idventa)
+        },
+        {
+          title: 'Imprimir POS',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Venta) => this.imprimirFacturaPos(row)
+        }
+      ]
+    }
+  ];
+
+  columns: TableColumn[] = [];
+
   constructor(
     private ventaService: VentaService,
     private authService: AuthService,
@@ -88,7 +127,22 @@ export class VentasUsuarioComponent implements OnInit {
       return;
     }
     this.usuarioId = Number(usuario);
+    this.actualizarColumnas();
     this.getVentas(0);
+  }
+
+  private actualizarColumnas(): void {
+    this.isMobile = window.innerWidth <= 480;
+    if (this.isMobile) {
+      this.columns = this.columnsMobile;
+    } else {
+      this.columns = this.columnsDesktop;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.actualizarColumnas();
   }
 
   getVentas(page: number = 0): void {
