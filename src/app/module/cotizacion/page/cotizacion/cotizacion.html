@@ -8,8 +8,16 @@
 
 
   <!-- FILTROS -->
+
+  <div class="filtros">
+
+    <div class="filtro">
+
+
   <app-filtros-cotizaciones (filtrar)="filtrar($event)"></app-filtros-cotizaciones>
 
+    </div>
+  </div>
   <!-- TABLA -->
   <app-reusable-table
     [data]="cotizaciones"

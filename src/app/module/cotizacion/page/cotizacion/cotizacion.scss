@@ -66,6 +66,9 @@
 /* Responsividad: en móvil */
 @media (max-width: 480px) {
 
+
+
+
   .contenedor-filtros {
     display: flex;
     flex-direction: row;
@@ -76,6 +79,15 @@
     width: 150%;
     gap: 4px;
     padding: 8px;
+  }
+
+  .filtros {
+    width: 130%;
+  }
+
+
+  .filtro{
+    width: 77%;
   }
 
   .campo {

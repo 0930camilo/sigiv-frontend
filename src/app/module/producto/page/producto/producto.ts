@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, HostListener } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TableColumn } from '../../../../shared/interface/TableColumn';
@@ -87,6 +87,88 @@ export class Producto implements OnInit {
     if (this.empresaId) {
       this.getProductos();
     }
+  }
+
+  @ViewChild('scannerVideo') scannerVideo?: ElementRef;
+  scannerActivo = false;
+  scannerError = '';
+  private scannerControls: any = null;
+
+  async iniciarEscaner(): Promise<void> {
+    if (this.scannerActivo) return;
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.scannerError = 'Este navegador no permite acceder a la camara para escanear.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    try {
+      const zxing = await import('@zxing/browser');
+      const reader = new zxing.BrowserMultiFormatReader(undefined, {
+        delayBetweenScanAttempts: 80
+      });
+
+      const videoConstraints: MediaTrackConstraints = {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: { ideal: 30, max: 60 }
+      };
+
+      this.scannerActivo = true;
+      this.scannerError = '';
+      this.cdr.markForCheck();
+
+      setTimeout(() => {
+        const video = this.scannerVideo?.nativeElement;
+        if (!video) return;
+
+        reader
+          .decodeFromConstraints(
+            { video: videoConstraints, audio: false },
+            video,
+            (result: { getText: () => string } | undefined) => {
+              if (!result) return;
+
+              const valor = result.getText()?.trim();
+              if (!valor) return;
+
+              this.filtros.codigoBarra = valor;
+              this.getProductos();
+              this.detenerEscaner();
+              Swal.fire('Codigo detectado', `Se busco: ${valor}`, 'success');
+            }
+          )
+          .then((controls: { stop: () => void }) => {
+            this.scannerControls = controls;
+          })
+          .catch(() => {
+            this.scannerError = 'No se pudo iniciar el escaner. Revisa permisos de camara.';
+            this.detenerEscaner();
+          });
+      }, 350);
+    } catch {
+      this.scannerError = 'No se pudo cargar el escaner en este navegador.';
+      this.detenerEscaner();
+      this.cdr.markForCheck();
+    }
+  }
+
+  detenerEscaner(): void {
+    if (this.scannerControls) {
+      this.scannerControls.stop();
+      this.scannerControls = null;
+    }
+
+    const video = this.scannerVideo?.nativeElement;
+    if (video) {
+      video.pause();
+      video.srcObject = null;
+    }
+
+    this.scannerActivo = false;
+    this.cdr.markForCheck();
   }
 
   // ===============================
