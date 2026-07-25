@@ -4,8 +4,18 @@
     <h2 class="text-lg font-semibold text-gray-800">
       Productos
     </h2>
-
     <div class="flex flex-wrap items-center gap-2 botones-producto">
+
+      <!-- BOTÓN ESCÁNER -->
+      <button
+        type="button"
+        class="btn-escanear"
+        [disabled]="scannerActivo"
+        (click)="iniciarEscaner()">
+
+        📷
+
+      </button>
 
       <app-register-producto
         (productoCreado)="onProductoCreado($event)">
@@ -53,9 +63,54 @@
     (filtrarCategoria)="filtrarPorCategoria($event)"
     (filtrarProveedor)="filtrarPorProveedor($event)">
   </app-filtros-producto>
+
+
     </div>
+
   </div>
 
+  <!-- ERROR DEL ESCÁNER -->
+  <div
+    *ngIf="scannerError"
+    class="scanner-error">
+
+    {{ scannerError }}
+
+  </div>
+
+  <!-- ESCÁNER -->
+  <div
+    *ngIf="scannerActivo"
+    class="scanner">
+
+    <p class="scanner-texto">
+
+      Apunta la cámara al código de barras para buscar el producto.
+
+    </p>
+
+    <video
+      #scannerVideo
+      autoplay
+      muted
+      playsinline>
+
+    </video>
+
+    <div class="scanner-botones">
+
+      <button
+        type="button"
+        class="btn-cerrar-scanner"
+        (click)="detenerEscaner()">
+
+        Cerrar cámara
+
+      </button>
+
+    </div>
+
+  </div>
 
   <div class="contenedor-tabla-productos">
 

@@ -318,9 +318,16 @@ width: 20%;
 }
 
 .btn-escanear {
-  white-space: nowrap;
-  height: 30px;
-  width: 80px;
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px; /* Tamaño del ícono */
 }
 /*==========================*/
 
@@ -360,14 +367,14 @@ width: 20%;
 .btn-escanear{
   border:none;
   border-radius:10px;
-  background:#059669;
+
   color:#fff;
   cursor:pointer;
   font-weight:600;
 }
 
 .btn-escanear:hover{
-  background:#047857;
+  font-size: 38px;
 }
 
 /*==========================*/

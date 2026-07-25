@@ -1,51 +1,240 @@
-filtros {
+.filtros {
   width: 140%;
 }
 
-
-.filtro{
+.filtro {
   width: 77%;
 }
 
+/* =========================
+   CONTENEDOR DE BOTONES
+========================= */
 
-@media (max-width:480px){
+.botones-producto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
-  .encabezado-producto{
+/* =========================
+   BOTÓN ESCÁNER
+========================= */
+
+.btn-escanear {
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 14px;
+
+  color: #fff;
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, .25);
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease, opacity .2s ease;
+  flex: 0 0 auto;
+}
+
+.btn-escanear:hover {
+  transform: translateY(-1px);
+  font-size: 34px;
+}
+
+.btn-escanear:active {
+  transform: translateY(0);
+}
+
+.btn-escanear:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* =========================
+   BOTONES NORMALES
+========================= */
+
+/* Botones directos del contenedor */
+.botones-producto > button:not(.btn-escanear) {
+  height: 46px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .10);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, opacity .2s ease;
+  flex: 0 0 auto;
+}
+
+.botones-producto > button:not(.btn-escanear):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .14);
+  filter: brightness(1.03);
+}
+
+.botones-producto > button:not(.btn-escanear):active {
+  transform: translateY(0);
+}
+
+.botones-producto > button:not(.btn-escanear):disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Si app-register-producto renderiza un botón interno */
+app-register-producto button {
+  height: 46px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .10);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, opacity .2s ease;
+}
+
+app-register-producto button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .14);
+  filter: brightness(1.03);
+}
+
+app-register-producto button:active {
+  transform: translateY(0);
+}
+
+app-register-producto button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* =========================
+   ESCÁNER
+========================= */
+
+.scanner {
+  width: 100%;
+  margin-top: 15px;
+  padding: 15px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
+}
+
+.scanner video {
+  display: block;
+  width: 60%;
+  max-height: 120px;
+  margin: 0 auto;
+  border-radius: 8px;
+  background: #000;
+}
+
+.scanner-texto {
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.scanner-botones {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.btn-cerrar-scanner {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.btn-cerrar-scanner:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.scanner-error {
+  color: #dc2626;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 480px) {
+
+  .encabezado-producto {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
 
-  .botones-producto{
+  .botones-producto {
     display: flex;
+    align-items: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
     gap: 6px;
     width: 100%;
-    height: 30px;
-
   }
 
   .filtros {
     width: 130%;
   }
 
-
-  .filtro{
+  .filtro {
     width: 77%;
   }
 
-  .botones-producto > *{
-    flex: 1 1 30%;
+  /* Botón del escáner */
+  .btn-escanear {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 8px;
   }
 
-  .botones-producto button{
-    height: 30px;
-    min-width: 80px;
+  .btn-escanear:hover {
+    font-size: 28px;
+  }
+
+  /* Plantilla e Importar */
+  .botones-producto > button:not(.btn-escanear),
+  app-register-producto button {
+    height: 32px;
     padding: 0 10px;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-    margin-left: 2px;
+    font-size: 10px;
+    border-radius: 8px;
   }
 
+  /* Escáner */
+  .scanner {
+    padding: 10px;
+  }
+
+  .scanner video {
+    width: 100%;
+    max-height: 200px;
+  }
+
+  .btn-cerrar-scanner {
+    width: 100%;
+    height: 36px;
+    font-size: 12px;
+  }
 }

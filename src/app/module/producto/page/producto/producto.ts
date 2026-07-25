@@ -1,4 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  OnDestroy,
+  HostListener,
+  ViewChild,
+  ElementRef
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TableColumn } from '../../../../shared/interface/TableColumn';
@@ -27,7 +35,7 @@ import { finalize } from 'rxjs';
   templateUrl: './producto.html',
   styleUrls: ['./producto.scss']
 })
-export class Producto implements OnInit {
+export class Producto implements OnInit, OnDestroy {
 
   productos: any[] = [];
   loading = false;
@@ -72,6 +80,7 @@ export class Producto implements OnInit {
     { field: 'estado', header: 'Estado', type: 'status' },
     { field: 'acciones', header: 'Acciones', type: 'actions' }
   ];
+
   constructor(
     private productoService: ProductoService,
     private authService: AuthService,
@@ -79,7 +88,6 @@ export class Producto implements OnInit {
   ) {}
 
   ngOnInit(): void {
-
     this.actualizarColumnas();
 
     this.empresaId = this.authService.getEmpresaId();
@@ -89,7 +97,12 @@ export class Producto implements OnInit {
     }
   }
 
-  @ViewChild('scannerVideo') scannerVideo?: ElementRef;
+  @ViewChild('scannerVideo')
+  scannerVideo?: ElementRef<HTMLVideoElement>;
+
+  @ViewChild(FiltrosProductoComponent)
+  filtrosComponent?: FiltrosProductoComponent;
+
   scannerActivo = false;
   scannerError = '';
   private scannerControls: any = null;
@@ -98,13 +111,14 @@ export class Producto implements OnInit {
     if (this.scannerActivo) return;
 
     if (!navigator.mediaDevices?.getUserMedia) {
-      this.scannerError = 'Este navegador no permite acceder a la camara para escanear.';
+      this.scannerError = 'Este navegador no permite acceder a la cámara para escanear.';
       this.cdr.markForCheck();
       return;
     }
 
     try {
       const zxing = await import('@zxing/browser');
+
       const reader = new zxing.BrowserMultiFormatReader(undefined, {
         delayBetweenScanAttempts: 80
       });
@@ -128,28 +142,38 @@ export class Producto implements OnInit {
           .decodeFromConstraints(
             { video: videoConstraints, audio: false },
             video,
-            (result: { getText: () => string } | undefined) => {
+            (result: any) => {
               if (!result) return;
 
               const valor = result.getText()?.trim();
               if (!valor) return;
 
+              this.filtrosComponent?.establecerCodigoBarra(valor);
               this.filtros.codigoBarra = valor;
-              this.getProductos();
+
+
               this.detenerEscaner();
-              Swal.fire('Codigo detectado', `Se busco: ${valor}`, 'success');
+
+              Swal.fire({
+                icon: 'success',
+                title: 'Código detectado',
+                text: `Se buscó: ${valor}`,
+                timer: 1200,
+                showConfirmButton: false
+              });
             }
           )
-          .then((controls: { stop: () => void }) => {
+          .then((controls: any) => {
             this.scannerControls = controls;
           })
           .catch(() => {
-            this.scannerError = 'No se pudo iniciar el escaner. Revisa permisos de camara.';
+            this.scannerError = 'No se pudo iniciar el escáner. Revisa permisos de cámara.';
             this.detenerEscaner();
           });
-      }, 350);
+
+      }, 300);
     } catch {
-      this.scannerError = 'No se pudo cargar el escaner en este navegador.';
+      this.scannerError = 'No se pudo cargar el escáner en este navegador.';
       this.detenerEscaner();
       this.cdr.markForCheck();
     }
@@ -162,13 +186,24 @@ export class Producto implements OnInit {
     }
 
     const video = this.scannerVideo?.nativeElement;
+
     if (video) {
+      const stream = video.srcObject as MediaStream | null;
+
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+
       video.pause();
       video.srcObject = null;
     }
 
     this.scannerActivo = false;
     this.cdr.markForCheck();
+  }
+
+  ngOnDestroy(): void {
+    this.detenerEscaner();
   }
 
   // ===============================
@@ -178,8 +213,7 @@ export class Producto implements OnInit {
     if (!this.empresaId) return;
 
     this.loading = true;
-
-    console.log("FILTROS ENVIADOS:", this.filtros);
+    console.log('FILTROS ENVIADOS:', this.filtros);
 
     this.productoService
       .getProductosByEmpresa(
@@ -197,7 +231,7 @@ export class Producto implements OnInit {
           this.cdr.markForCheck();
         },
         error: (err) => {
-          console.error("Error cargando productos:", err);
+          console.error('Error cargando productos:', err);
           this.loading = false;
           this.cdr.markForCheck();
         }
@@ -207,13 +241,13 @@ export class Producto implements OnInit {
   // ===============================
   // PAGINACIÓN
   // ===============================
-  nextPage() {
+  nextPage(): void {
     if (this.currentPage < this.totalPages - 1) {
       this.getProductos(this.currentPage + 1);
     }
   }
 
-  previousPage() {
+  previousPage(): void {
     if (this.currentPage > 0) {
       this.getProductos(this.currentPage - 1);
     }
@@ -236,7 +270,7 @@ export class Producto implements OnInit {
     this.productoAEliminar = null;
   }
 
-  onAction(event: { action: string; row: any }) {
+  onAction(event: { action: string; row: any }): void {
     if (event.action === 'edit') {
       this.productoSeleccionado = { ...event.row };
     } else if (event.action === 'delete') {
@@ -281,29 +315,29 @@ export class Producto implements OnInit {
   }
 
   // ===============================
-  // FILTROS 🔥
+  // FILTROS
   // ===============================
-  filtrarPorNombre(nombre: string) {
+  filtrarPorNombre(nombre: string): void {
     this.filtros.nombre = nombre;
     this.getProductos(0);
   }
 
-  filtrarPorCodigoBarra(codigoBarra: string) {
+  filtrarPorCodigoBarra(codigoBarra: string): void {
     this.filtros.codigoBarra = codigoBarra;
     this.getProductos(0);
   }
 
-  filtrarPorEstado(estado: string) {
+  filtrarPorEstado(estado: string): void {
     this.filtros.estado = estado;
     this.getProductos(0);
   }
 
-  filtrarPorCategoria(nombre: string | null) {
+  filtrarPorCategoria(nombre: string | null): void {
     this.filtros.categoria = nombre || '';
     this.getProductos(0);
   }
 
-  filtrarPorProveedor(nombre: string | null) {
+  filtrarPorProveedor(nombre: string | null): void {
     this.filtros.proveedor = nombre || '';
     this.getProductos(0);
   }
@@ -370,7 +404,8 @@ export class Producto implements OnInit {
         Swal.fire({
           icon: errores.length > 0 ? 'warning' : 'success',
           title: 'Importacion finalizada',
-          html: `Total filas: <b>${res.totalFilas}</b><br/>` +
+          html:
+            `Total filas: <b>${res.totalFilas}</b><br/>` +
             `Exitosos: <b>${res.exitosos}</b><br/>` +
             `Fallidos: <b>${res.fallidos}</b>` +
             (detalleErrores ? `<br/><br/>${detalleErrores}` : ''),
@@ -403,6 +438,7 @@ export class Producto implements OnInit {
     }
     return new Blob([bytes], { type: contentType });
   }
+
   private triggerDownload(blob: Blob, fileName: string): void {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -427,6 +463,4 @@ export class Producto implements OnInit {
   onResize(): void {
     this.actualizarColumnas();
   }
-
-
 }
