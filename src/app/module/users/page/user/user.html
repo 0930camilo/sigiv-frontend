@@ -4,11 +4,15 @@
     <app-register [empresaId]="empresaId" (usuarioCreado)="getUsuarios()"></app-register>
   </div>
 
+  <div class=" filtros">
+    <div class="filtro">
   <app-filtros-usuario
     (filtrarNombre)="onFiltrarNombre($event)"
     (filtrarDocumento)="onFiltrarDocumento($event)"
     (filtrarEstado)="onFiltrarEstado($event)">
   </app-filtros-usuario>
+  </div>
+  </div>
 
   <app-reusable-table
     [data]="usuarios"

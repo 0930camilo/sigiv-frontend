@@ -42,6 +42,8 @@
 
   </div>
 
+  <div class="filtros">
+    <div class="filtro">
   <app-filtros-producto
     *ngIf="empresaId"
     [empresaId]="empresaId"
@@ -51,6 +53,9 @@
     (filtrarCategoria)="filtrarPorCategoria($event)"
     (filtrarProveedor)="filtrarPorProveedor($event)">
   </app-filtros-producto>
+    </div>
+  </div>
+
 
   <div class="contenedor-tabla-productos">
 

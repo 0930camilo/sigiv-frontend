@@ -15,7 +15,8 @@
   </div>
 
 
-
+<div class="filtros">
+  <div class="filtro">
   <!-- Filtros -->
   <app-filtros-proveedor
     (filtrarNombre)="filtrarPorNombre($event)"
@@ -23,6 +24,8 @@
     (filtrarEstado)="filtrarPorEstado($event)">
   </app-filtros-proveedor>
 
+  </div>
+</div>
   <!-- Tabla -->
   <app-reusable-table
     [data]="proveedores"
