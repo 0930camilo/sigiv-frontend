@@ -278,7 +278,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     this.buscandoCliente = true;
     this.cdr.markForCheck();
 
-    this.personaService.listarPorEmpresa(this.empresaId, 0, 10, { documento }).subscribe({
+    this.personaService.listarPorEmpresa(this.empresaId, 0, 10, { documento, exacto: true }).subscribe({
       next: (res) => {
         const personas = Array.isArray(res.data?.personas) ? res.data.personas : [];
         this.clienteEncontrado = personas[0] ?? null;

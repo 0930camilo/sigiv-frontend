@@ -2,7 +2,7 @@ export const environment = {
   production: true,
 
 
-  authApi: 'https://sigiv2.onrender.com/auth',
+ authApi: 'https://sigiv2.onrender.com/auth',
   usersApi: 'https://sigiv2.onrender.com/usuarios',
   empresasApi: 'https://sigiv2.onrender.com/empresas',
   proveedoresApi: 'https://sigiv2.onrender.com/proveedores',
@@ -16,19 +16,21 @@ export const environment = {
   nominasApi: 'https://sigiv2.onrender.com/nominas',
   personaNominaApi: 'https://sigiv2.onrender.com/persona-nomina',
 
- /* authApi: 'http://localhost:8080/auth',
-  usersApi: 'http://localhost:8080/usuarios',
-  empresasApi: 'http://localhost:8080/empresas',
-  proveedoresApi: 'http://localhost:8080/proveedores',
-  categoriasApi: 'http://localhost:8080/categorias',
-  productosApi: 'http://localhost:8080/productos',
-  ventasApi: 'http://localhost:8080/ventas',
-  cotizacionesApi: 'http://localhost:8080/cotizaciones',
-  detalleCotizacionApi: 'http://localhost:8080/api/detallecotizacion',
-  devolucionesApi: 'http://localhost:8080/devoluciones',
-  personasApi: 'http://localhost:8080/personas',
-  nominasApi: 'http://localhost:8080/nominas',
-  personaNominaApi: 'http://localhost:8080/persona-nomina',
 
-  */
+  /*
+   authApi: 'http://localhost:8080/auth',
+   usersApi: 'http://localhost:8080/usuarios',
+   empresasApi: 'http://localhost:8080/empresas',
+   proveedoresApi: 'http://localhost:8080/proveedores',
+   categoriasApi: 'http://localhost:8080/categorias',
+   productosApi: 'http://localhost:8080/productos',
+   ventasApi: 'http://localhost:8080/ventas',
+   cotizacionesApi: 'http://localhost:8080/cotizaciones',
+   detalleCotizacionApi: 'http://localhost:8080/api/detallecotizacion',
+   devolucionesApi: 'http://localhost:8080/devoluciones',
+   personasApi: 'http://localhost:8080/personas',
+   nominasApi: 'http://localhost:8080/nominas',
+   personaNominaApi: 'http://localhost:8080/persona-nomina',
+
+ */
 };

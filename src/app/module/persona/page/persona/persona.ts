@@ -174,7 +174,10 @@ export class PersonaComponent implements OnInit {
           this.cargarPersonas();
           this.cdr.markForCheck();
         },
-        error: () => Swal.fire('Error', 'No se pudo actualizar la persona', 'error')
+        error: (err) => {
+          const mensajeError = err.error?.message || err.error || 'No se pudo actualizar la persona';
+          Swal.fire('Error', mensajeError, 'error');
+        }
       });
     } else {
       this.personaService.crearPersona(this.form).subscribe({
@@ -184,7 +187,10 @@ export class PersonaComponent implements OnInit {
           this.cargarPersonas();
           this.cdr.markForCheck();
         },
-        error: () => Swal.fire('Error', 'No se pudo crear la persona', 'error')
+        error: (err) => {
+          const mensajeError = err.error?.message || err.error || 'No se pudo crear la persona';
+          Swal.fire('Error', mensajeError, 'error');
+        }
       });
     }
   }
