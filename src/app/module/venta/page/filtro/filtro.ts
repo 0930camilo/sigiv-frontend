@@ -19,7 +19,7 @@ export interface FiltrosVenta {
       <!-- ID -->
       <input
         type="number"
-        placeholder="ID Venta"
+        placeholder="ID"
         class="border rounded-lg px-2 py-1 text-sm w-full h-9"
         [(ngModel)]="filtros.idVenta"
       />

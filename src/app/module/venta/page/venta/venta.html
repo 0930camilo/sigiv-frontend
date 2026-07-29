@@ -6,11 +6,13 @@
     </h2>
   </div>
 
-<div class="filtros">
-  <app-filtros-ventas
-    (filtrar)="filtrar($event)">
-  </app-filtros-ventas>
-</div>
+  <div class="filtros">
+    <div class="filtro">
+      <app-filtros-ventas
+        (filtrar)="filtrar($event)">
+      </app-filtros-ventas>
+    </div>
+  </div>
 
   <app-reusable-table
     [data]="ventas"
