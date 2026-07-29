@@ -26,6 +26,9 @@ export class VentasUsuarioComponent implements OnInit {
   usuarioId!: number;
   pageSize = 10;
   filtroId: number | null = null;
+  filtroCliente: string = '';
+  fechaInicio: string = '';
+  fechaFin: string = '';
 
   ventaSeleccionada: Venta | null = null;
   mostrarDetalle = false;
@@ -151,7 +154,15 @@ export class VentasUsuarioComponent implements OnInit {
     }
     this.loading = true;
     this.ventaService
-      .getVentasByUsuario(this.usuarioId, page, this.pageSize, this.filtroId)
+      .getVentasByUsuario(
+        this.usuarioId,
+        page,
+        this.pageSize,
+        this.filtroId,
+        this.fechaInicio,
+        this.fechaFin,
+        this.filtroCliente
+      )
       .subscribe({
         next: (res: any) => {
           this.ventas = res.data?.ventas ?? [];
@@ -168,8 +179,11 @@ export class VentasUsuarioComponent implements OnInit {
       });
   }
 
-  filtrarPorId(id: number | null) {
-    this.filtroId = id;
+  filtrar(filtros: any): void {
+    this.filtroId = filtros.idVenta;
+    this.filtroCliente = filtros.cliente;
+    this.fechaInicio = filtros.fechaInicio;
+    this.fechaFin = filtros.fechaFin;
     this.getVentas(0);
   }
 

@@ -7,13 +7,7 @@
 
 
   <div class="filtros">
-    <div class="filtro">
-<div class="idven">
-  <app-filtros-ventas
-    (filtrarId)="filtrarPorId($event)">
-  </app-filtros-ventas>
-</div>
-    </div>
+    <app-filtros-ventas (filtrar)="filtrar($event)"></app-filtros-ventas>
   </div>
 
   <app-reusable-table

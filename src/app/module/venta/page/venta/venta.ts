@@ -36,6 +36,9 @@ export class VentaComponent implements OnInit {
 
   // 🔥 filtro
   filtroId: number | null = null;
+  filtroCliente: string = '';
+  fechaInicio: string = '';
+  fechaFin: string = '';
 
   // 🔥 detalle
   ventaSeleccionada: Venta | null = null;
@@ -183,7 +186,10 @@ export class VentaComponent implements OnInit {
         this.empresaId,
         page,
         this.pageSize,
-        this.filtroId
+        this.filtroId,
+        this.fechaInicio,
+        this.fechaFin,
+        this.filtroCliente
       )
       .subscribe({
         next: (res) => {
@@ -202,10 +208,13 @@ export class VentaComponent implements OnInit {
   }
 
   // ===============================
-  // FILTRO POR ID 🔥
+  // FILTRO 🔥
   // ===============================
-  filtrarPorId(id: number | null): void {
-    this.filtroId = id;
+  filtrar(filtros: any): void {
+    this.filtroId = filtros.idVenta;
+    this.filtroCliente = filtros.cliente;
+    this.fechaInicio = filtros.fechaInicio;
+    this.fechaFin = filtros.fechaFin;
     this.getVentas(0); // 🔥 reinicia paginación
   }
 
