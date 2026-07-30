@@ -129,6 +129,7 @@ export class Dashboard implements OnInit {
     }
 
     if (this.idEntidad) {
+      console.log('🚀 Iniciando carga de Dashboard con idEntidad:', this.idEntidad);
       // Establecer fechas por defecto (mes actual)
       const hoy = new Date();
       const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
@@ -136,6 +137,7 @@ export class Dashboard implements OnInit {
       this.fechaInicio = `${inicioMes.getFullYear()}-${String(inicioMes.getMonth() + 1).padStart(2, '0')}-${String(inicioMes.getDate()).padStart(2, '0')}`;
       this.fechaFin = `${finMes.getFullYear()}-${String(finMes.getMonth() + 1).padStart(2, '0')}-${String(finMes.getDate()).padStart(2, '0')}`;
 
+      console.log('📅 Fechas por defecto:', { inicio: this.fechaInicio, fin: this.fechaFin });
       this.cargarDatos();
       this.loadChartsData();
     } else {
@@ -217,49 +219,149 @@ export class Dashboard implements OnInit {
   /** 🔹 Cargar datos para las gráficas */
   private loadChartsData(): void {
     const empresaId = this.authService.getEmpresaId();
-    if (!empresaId) return;
+    const tokenData = this.authService.getUserData();
+    const idEntidadReal = tokenData?.id ?? this.idEntidad;
+
+    console.log('🔍 Preparando carga de gráficas:', {
+      isEmpresa: this.isEmpresa,
+      isUsuario: this.isUsuario,
+      empresaId,
+      idEntidad: this.idEntidad,
+      idEntidadReal,
+      fechaInicio: this.fechaInicio,
+      fechaFin: this.fechaFin
+    });
+
+    if (!empresaId && this.isEmpresa) {
+      console.warn('⚠️ No hay empresaId para cargar gráficas de empresa');
+      return;
+    }
 
     const obs = this.isEmpresa
-      ? this.ventaService.getVentasByEmpresa(empresaId, 0, 100, null, this.fechaInicio, this.fechaFin)
-      : this.ventaService.getVentasByUsuario(this.idEntidad, 0, 100, null, this.fechaInicio, this.fechaFin);
+      ? this.ventaService.getVentasByEmpresa(empresaId!, 0, 500, null, this.fechaInicio, this.fechaFin)
+      : this.ventaService.getVentasByUsuario(idEntidadReal, 0, 500, null, this.fechaInicio, this.fechaFin);
+
+    console.log('📡 URL de consulta tentativa:', this.isEmpresa
+      ? `ventas/empresa/${empresaId}/ventas?page=0&size=500&fechaInicio=${this.fechaInicio}&fechaFin=${this.fechaFin}`
+      : `ventas/usuario/${idEntidadReal}/ventas?page=0&size=500&fechaInicio=${this.fechaInicio}&fechaFin=${this.fechaFin}`
+    );
+
+    console.log('📡 Ejecutando consulta de ventas...');
 
     obs.subscribe({
       next: (response: VentasResponse) => {
-        if (response.success && response.data.ventas) {
-          this.processVentasForCharts(response.data.ventas);
-        }
+      console.log('📡 Respuesta de ventas completa:', response);
+      // Validar si la data está en un nivel diferente o si el campo se llama distinto
+      let listaVentas: any[] = [];
+      if (response && response.data && Array.isArray(response.data.ventas)) {
+        listaVentas = response.data.ventas;
+      } else if (response && Array.isArray((response as any).ventas)) {
+        listaVentas = (response as any).ventas;
+      } else if (response && Array.isArray(response.data)) {
+        listaVentas = response.data as any;
+      } else if (response && Array.isArray(response)) {
+        listaVentas = response as any;
+      }
+
+      if (listaVentas.length > 0) {
+        console.log('✅ Ventas encontradas:', listaVentas.length);
+        this.processVentasForCharts(listaVentas);
+      } else {
+        console.warn('⚠️ No se encontró un array de ventas válido en la respuesta:', response);
+        this.processVentasForCharts([]);
+      }
       },
-      error: (err: any) => console.error('Error cargando ventas para gráficas', err)
+      error: (err: any) => {
+        console.error('❌ Error cargando ventas para gráficas', err);
+        this.processVentasForCharts([]);
+      }
     });
   }
 
   private processVentasForCharts(ventas: any[]): void {
     // 0. Métricas básicas
     this.totalPedidos = ventas.length;
-    const totalSuma = ventas.reduce((acc, v) => acc + v.total, 0);
+    const totalSuma = ventas.reduce((acc, v) => acc + (v.total || 0), 0);
 
-    // 1. Procesar Ventas Mensuales
-    const ventasPorMes: { [key: string]: number } = {};
+    console.log('📊 Procesando ventas para gráficas:', this.totalPedidos);
+
+    // 1. Procesar Ventas Mensuales o Diarias
+    const ventasAgrupadas: { [key: string]: number } = {};
     const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
+    // Determinar si el rango es del mismo mes para agrupar por días
+    let agruparPorDia = false;
+    if (this.fechaInicio && this.fechaFin) {
+      const inicio = new Date(this.fechaInicio + 'T00:00:00');
+      const fin = new Date(this.fechaFin + 'T23:59:59');
+      // Si el rango es menor o igual a 31 días, agrupamos por día para mayor detalle
+      const diffTime = Math.abs(fin.getTime() - inicio.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      agruparPorDia = diffDays <= 31;
+    }
+
     ventas.forEach(venta => {
-      const fecha = new Date(venta.fecha);
-      const mes = meses[fecha.getMonth()];
-      ventasPorMes[mes] = (ventasPorMes[mes] || 0) + venta.total;
+      // Intentar forzar el parseo de la fecha si viene en formato extraño
+      let fechaStr = venta.fecha;
+      if (fechaStr && typeof fechaStr === 'string' && fechaStr.includes(' ')) {
+        fechaStr = fechaStr.split(' ')[0]; // Quedarse solo con la parte YYYY-MM-DD
+      }
+
+      const fecha = new Date(fechaStr);
+      if (isNaN(fecha.getTime())) {
+        console.warn('📅 Fecha inválida en venta (original):', venta.fecha, 'intentado:', fechaStr);
+        return;
+      }
+
+      // IMPORTANTE: Para evitar problemas de zona horaria, usamos UTC o ajustamos
+      // para que el día sea el correcto según el string
+      const dia = fecha.getUTCDate();
+      const mes = fecha.getUTCMonth();
+
+      let label = '';
+      if (agruparPorDia) {
+        label = `${dia} ${meses[mes]}`;
+      } else {
+        label = meses[mes];
+      }
+
+      ventasAgrupadas[label] = (ventasAgrupadas[label] || 0) + (venta.total || 0);
     });
 
-    // Si el rango es del mismo mes, tal vez sería mejor mostrar por días,
-    // pero por ahora mantenemos meses o los que tengan datos.
-    const mesesOrdenados = Object.keys(ventasPorMes).sort((a, b) => meses.indexOf(a) - meses.indexOf(b));
-    this.lineChartData.labels = mesesOrdenados;
-    this.lineChartData.datasets[0].data = mesesOrdenados.map(m => ventasPorMes[m]);
+    // Ordenar las etiquetas cronológicamente
+    let labelsOrdenadas: string[] = [];
+    if (agruparPorDia) {
+      // Ordenar por fecha real si es por día
+      labelsOrdenadas = Object.keys(ventasAgrupadas).sort((a, b) => {
+        const numA = parseInt(a.split(' ')[0]);
+        const numB = parseInt(b.split(' ')[0]);
+        return numA - numB;
+      });
+    } else {
+      labelsOrdenadas = Object.keys(ventasAgrupadas).sort((a, b) => meses.indexOf(a) - meses.indexOf(b));
+    }
+
+    console.log('📊 Ventas agrupadas calculadas:', ventasAgrupadas);
+    console.log('📊 Labels ordenadas:', labelsOrdenadas);
+
+    this.lineChartData = {
+      labels: labelsOrdenadas,
+      datasets: [
+        {
+          ...this.lineChartData.datasets[0],
+          data: labelsOrdenadas.map(l => ventasAgrupadas[l])
+        }
+      ]
+    };
 
     // 2. Productos Más Vendidos
     const productosContador: { [key: string]: number } = {};
     ventas.forEach(venta => {
-      venta.detalles?.forEach((detalle: any) => {
-        productosContador[detalle.descripcionProducto] =
-          (productosContador[detalle.descripcionProducto] || 0) + (detalle.cantidad || 0);
+      const detalles = venta.detalles || (venta as any).ventaDetalles || [];
+      detalles.forEach((detalle: any) => {
+        const nombreProd = detalle.descripcionProducto || detalle.productoNombre || 'Producto';
+        productosContador[nombreProd] =
+          (productosContador[nombreProd] || 0) + (detalle.cantidad || 0);
       });
     });
 
@@ -267,19 +369,45 @@ export class Dashboard implements OnInit {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
 
-    this.barChartData.labels = sortedProducts.map(p => p[0]);
-    this.barChartData.datasets[0].data = sortedProducts.map(p => p[1]);
+    console.log('📊 Productos Top 5:', sortedProducts);
+
+    this.barChartData = {
+      labels: sortedProducts.map(p => p[0]),
+      datasets: [
+        {
+          ...this.barChartData.datasets[0],
+          data: sortedProducts.map(p => p[1])
+        }
+      ]
+    };
 
     // Calcular Margen de Ganancia General (Estimado)
     // Usamos el total de ventas del periodo actual
-    const gananciaEstimada = totalSuma * 0.3; // Asumimos 30% como fallback
-    const costosEstimados = totalSuma - gananciaEstimada;
+    const gananciaEstimada = this.gananciaTotal || (totalSuma * 0.3); // Usar ganancia real si existe
+    const costosEstimados = Math.max(0, totalSuma - gananciaEstimada);
 
-    this.marginsChartData.datasets[0].data = [costosEstimados, gananciaEstimada];
+    this.marginsChartData = {
+      datasets: [{
+        data: [costosEstimados, gananciaEstimada],
+        backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)'],
+        hoverBackgroundColor: ['rgb(59, 130, 246)', 'rgb(16, 185, 129)']
+      }],
+      labels: ['Costos', 'Ganancia']
+    };
 
-    this.cdr.markForCheck();
+    console.log('📊 Datos finales para gráfico de líneas:', {
+      labels: this.lineChartData.labels,
+      data: this.lineChartData.datasets[0].data
+    });
+
+    console.log('📊 Forzando actualización de la directiva Chart...');
+    this.cdr.detectChanges(); // Forzar detección de cambios sincrónica
+
     if (this.chart) {
       this.chart.update();
+      console.log('✅ Update ejecutado en chart');
+    } else {
+      console.warn('⚠️ No se encontró la directiva del gráfico para forzar actualización');
     }
   }
 }

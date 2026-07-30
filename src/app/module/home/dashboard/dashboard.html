@@ -153,32 +153,42 @@
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
     <!-- Ventas Mensuales -->
     <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-      <h2 class="text-lg font-semibold mb-4 text-gray-700">Ventas Mensuales</h2>
-      <div class="h-64">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Ventas (Rango seleccionado)</h2>
+      <div *ngIf="lineChartData.datasets[0].data.length > 0; else noDataVentas" class="h-64">
         <canvas baseChart
           [data]="lineChartData"
           [options]="lineChartOptions"
           [type]="lineChartType">
         </canvas>
       </div>
+      <ng-template #noDataVentas>
+        <div class="h-64 flex items-center justify-center text-gray-400 italic">
+          No hay datos de ventas para este periodo.
+        </div>
+      </ng-template>
     </div>
 
     <!-- Productos más vendidos -->
     <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
       <h2 class="text-lg font-semibold mb-4 text-gray-700">Productos Más Vendidos</h2>
-      <div class="h-64">
+      <div *ngIf="barChartData.datasets[0].data.length > 0; else noDataProductos" class="h-64">
         <canvas baseChart
           [data]="barChartData"
           [options]="barChartOptions"
           [type]="barChartType">
         </canvas>
       </div>
+      <ng-template #noDataProductos>
+        <div class="h-64 flex items-center justify-center text-gray-400 italic">
+          No hay productos registrados en las ventas de este periodo.
+        </div>
+      </ng-template>
     </div>
 
     <!-- Margen de Ganancia (Estimado) -->
     <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 lg:col-span-2">
       <h2 class="text-lg font-semibold mb-4 text-gray-700 text-center">Margen de Ganancia General (Estimado)</h2>
-      <div class="h-64 flex justify-center">
+      <div *ngIf="totalPedidos > 0; else noDataMargen" class="h-64 flex justify-center">
         <div class="w-full max-w-md">
           <canvas baseChart
             [data]="marginsChartData"
@@ -187,6 +197,11 @@
           </canvas>
         </div>
       </div>
+      <ng-template #noDataMargen>
+        <div class="h-64 flex items-center justify-center text-gray-400 italic">
+          No hay datos suficientes para calcular el margen.
+        </div>
+      </ng-template>
     </div>
   </div>
 
