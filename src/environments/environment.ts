@@ -17,6 +17,7 @@ export const environment = {
   personaNominaApi: 'https://sigiv2.onrender.com/persona-nomina',
 
 
+
 /*
    authApi: 'http://localhost:8080/auth',
    usersApi: 'http://localhost:8080/usuarios',
