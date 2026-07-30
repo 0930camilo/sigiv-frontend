@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
 
-/*
+
  authApi: 'https://sigiv2.onrender.com/auth',
   usersApi: 'https://sigiv2.onrender.com/usuarios',
   empresasApi: 'https://sigiv2.onrender.com/empresas',
@@ -16,8 +16,8 @@ export const environment = {
   nominasApi: 'https://sigiv2.onrender.com/nominas',
   personaNominaApi: 'https://sigiv2.onrender.com/persona-nomina',
 
-*/
 
+/*
    authApi: 'http://localhost:8080/auth',
    usersApi: 'http://localhost:8080/usuarios',
    empresasApi: 'http://localhost:8080/empresas',
@@ -31,5 +31,5 @@ export const environment = {
    personasApi: 'http://localhost:8080/personas',
    nominasApi: 'http://localhost:8080/nominas',
    personaNominaApi: 'http://localhost:8080/persona-nomina',
-
+*/
 };
