@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
@@ -7,9 +7,17 @@ import { EmpresaService, ResumenVendedor } from '../../home/dashboard/empresa/se
 import { UsuarioService } from '../../home/dashboard/usuario/service/usuario.service';
 import { AuthService } from '../../auth/service/auth-service';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import {
+  Chart,
+  ChartConfiguration,
+  ChartData,
+  ChartType,
+  registerables
+} from 'chart.js';
 import { VentaService } from '../../venta/service/venta-service';
 import { VentasResponse } from '../../venta/model/venta.model';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
@@ -19,7 +27,7 @@ import { VentasResponse } from '../../venta/model/venta.model';
   styleUrls: ['./dashboard.scss']
 })
 export class Dashboard implements OnInit {
-  @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
+  @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
 
   usuariosActivos = 0;
   ventasDelMes = 0;
@@ -400,14 +408,14 @@ export class Dashboard implements OnInit {
       data: this.lineChartData.datasets[0].data
     });
 
-    console.log('📊 Forzando actualización de la directiva Chart...');
+    console.log('📊 Forzando actualización de las directivas Chart...');
     this.cdr.detectChanges(); // Forzar detección de cambios sincrónica
 
-    if (this.chart) {
-      this.chart.update();
-      console.log('✅ Update ejecutado en chart');
-    } else {
-      console.warn('⚠️ No se encontró la directiva del gráfico para forzar actualización');
-    }
+    setTimeout(() => {
+      this.charts?.forEach(chart => {
+        chart.update();
+      });
+      console.log('✅ Update ejecutado en todas las gráficas');
+    }, 0);
   }
 }
