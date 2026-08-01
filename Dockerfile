@@ -4,7 +4,7 @@ FROM node:20-alpine as builder
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
 # Run the build command as defined in package.json, which should handle SSR
@@ -17,7 +17,7 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json for runtime dependencies
 COPY package.json package-lock.json ./
-RUN npm install --omit=dev # Install only production dependencies
+RUN npm install --omit=dev --legacy-peer-deps # Install only production dependencies
 
 # Copy the entire built application directory from the builder stage
 # This should include both 'browser' and 'server' subdirectories
