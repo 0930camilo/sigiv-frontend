@@ -578,6 +578,8 @@ width: 20%;
 
   .contenedor-venta {
     flex-direction: column; /* apila los paneles */
+    width: 110%;
+    margin-top: -30px;
   }
 
   .titulo-productos{
