@@ -75,6 +75,7 @@
 .tabla-productos th,
 .tabla-productos td{
   padding:14px;
+  text-align: left;
 }
 
 .tabla-productos tbody tr{
@@ -223,7 +224,7 @@
     z-index:9997;
   }
   .filtros{
-    width: 130%;
+    width: 135%;
     margin: 0 auto;
   }
 
@@ -243,6 +244,7 @@
   .tabla-productos td {
     font-size: 10px;   /* opcional: texto más pequeño */
     padding: 8px;
+    text-align: left;
   }
 
   .nombre-producto {

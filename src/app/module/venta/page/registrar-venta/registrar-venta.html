@@ -332,6 +332,8 @@
 
         <tr>
 
+          <th>ID</th>
+
           <th>Nombre</th>
 
           <th>Precio</th>
@@ -350,6 +352,8 @@
 
         <tr
           *ngFor="let p of productos">
+
+          <td>{{ p.idProducto }}</td>
 
           <td class="nombre-producto">
 
@@ -400,7 +404,7 @@
         <tr *ngIf="productos.length==0">
 
           <td
-            colspan="5"
+            colspan="6"
             class="sin-productos">
 
             No hay productos disponibles
