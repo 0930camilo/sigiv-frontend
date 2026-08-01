@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -19,7 +19,8 @@ import Swal from 'sweetalert2';
   templateUrl: './registrar-cotizacion.html',
   styleUrls: ['./registrar-cotizacion.scss']
 })
-export class RegistrarCotizacionComponent implements OnInit {
+export class RegistrarCotizacionComponent implements OnInit, OnDestroy {
+  @ViewChild('scannerVideo') scannerVideo?: ElementRef<HTMLVideoElement>;
 
   // --- Datos del cliente ---
   nombreCliente = '';
@@ -36,8 +37,14 @@ export class RegistrarCotizacionComponent implements OnInit {
 
   // --- Filtros ---
   filtroNombre = '';
+  filtroCodigoBarra = '';
   filtroCategoria = '';
   categorias: Categoria[] = [];
+
+  // --- Escaner de codigo de barras ---
+  scannerActivo = false;
+  scannerError = '';
+  private scannerControls: { stop: () => void } | null = null;
 
   // --- Cantidades por producto ---
   cantidades: { [productoId: number]: number } = {};
@@ -79,6 +86,7 @@ export class RegistrarCotizacionComponent implements OnInit {
 
     const filtros: any = {};
     if (this.filtroNombre.trim()) filtros.nombre = this.filtroNombre.trim();
+    if (this.filtroCodigoBarra.trim()) filtros.codigoBarra = this.filtroCodigoBarra.trim();
     if (this.filtroCategoria) filtros.categoria = this.filtroCategoria;
     filtros.estado = 'Activo';
 
@@ -111,6 +119,86 @@ export class RegistrarCotizacionComponent implements OnInit {
 
   buscar(): void {
     this.cargarProductos(0);
+  }
+
+  // ================================
+  // ESCANER DE CODIGO DE BARRAS
+  // ================================
+  async iniciarEscaner(): Promise<void> {
+    if (this.scannerActivo) return;
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.scannerError = 'Este navegador no permite acceder a la camara para escanear.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    try {
+      const zxing = await import('@zxing/browser');
+      const reader = new zxing.BrowserMultiFormatReader(undefined, {
+        delayBetweenScanAttempts: 80
+      });
+
+      const videoConstraints: MediaTrackConstraints = {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: { ideal: 30, max: 60 }
+      };
+
+      this.scannerActivo = true;
+      this.scannerError = '';
+      this.cdr.markForCheck();
+
+      setTimeout(() => {
+        const video = this.scannerVideo?.nativeElement;
+        if (!video) return;
+
+        reader
+          .decodeFromConstraints(
+            { video: videoConstraints, audio: false },
+            video,
+            (result: { getText: () => string } | undefined) => {
+              if (!result) return;
+
+              const valor = result.getText()?.trim();
+              if (!valor) return;
+
+              this.filtroCodigoBarra = valor;
+              this.buscar();
+              this.detenerEscaner();
+              Swal.fire('Codigo detectado', `Se busco: ${valor}`, 'success');
+            }
+          )
+          .then((controls: { stop: () => void }) => {
+            this.scannerControls = controls;
+          })
+          .catch(() => {
+            this.scannerError = 'No se pudo iniciar el escaner. Revisa permisos de camara.';
+            this.detenerEscaner();
+          });
+      }, 350);
+    } catch {
+      this.scannerError = 'No se pudo cargar el escaner en este navegador.';
+      this.detenerEscaner();
+      this.cdr.markForCheck();
+    }
+  }
+
+  detenerEscaner(): void {
+    if (this.scannerControls) {
+      this.scannerControls.stop();
+      this.scannerControls = null;
+    }
+
+    const video = this.scannerVideo?.nativeElement;
+    if (video) {
+      video.pause();
+      video.srcObject = null;
+    }
+
+    this.scannerActivo = false;
+    this.cdr.markForCheck();
   }
 
   // ================================
@@ -203,7 +291,11 @@ export class RegistrarCotizacionComponent implements OnInit {
     this.telefonoCliente = '';
     this.cantidades = {};
   }
-// Mostrar carrito en móvil
+  ngOnDestroy(): void {
+    this.detenerEscaner();
+  }
+
+  // Mostrar carrito en móvil
   carritoVisible = false;
 
   toggleCarrito(): void {
