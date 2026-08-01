@@ -578,9 +578,12 @@ width: 20%;
 
   .contenedor-venta {
     flex-direction: column; /* apila los paneles */
-    width: 110%;
+    width: 115%;
     margin-top: -30px;
+    margin-left: -15px;
   }
+
+
 
   .titulo-productos{
    font-size: 15px;

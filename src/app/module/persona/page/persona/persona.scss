@@ -17,7 +17,11 @@
 }
 
 @media (max-width: 480px) {
-
+  .todo{
+    width: 115%;
+    margin-top: -20px;
+    margin-left: -15px;
+  }
   .filtros{
     width: 150%;
     margin-bottom: 5px;

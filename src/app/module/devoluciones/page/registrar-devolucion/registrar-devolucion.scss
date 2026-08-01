@@ -3,6 +3,12 @@
 }
 
 @media (max-width: 768px) {
+
+  .todo{
+    width: 110%;
+    margin-top: -20px;
+    margin-left: -25px;
+  }
   .btn-toggle-productos {
     display: flex;
     position: fixed;
