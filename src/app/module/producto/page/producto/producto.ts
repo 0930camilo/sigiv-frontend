@@ -298,14 +298,61 @@ export class Producto implements OnInit, OnDestroy {
             return;
           }
 
-          const imageUrl = `data:image/png;base64,${imagenBase64}`;
-          Swal.fire({
-            title: `Codigo: ${codigoBarra}`,
-            imageUrl,
-            imageAlt: `Codigo de barra ${codigoBarra}`,
-            confirmButtonText: 'Cerrar',
-            confirmButtonColor: '#2563eb'
-          });
+           const imageUrl = `data:image/png;base64,${imagenBase64}`;
+           // Mostrar imagen en un modal con opción de descargar e imprimir
+           const html = `
+             <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+               <img src="${imageUrl}" alt="Codigo de barra ${codigoBarra}" style="max-width:100%;height:auto;border:1px solid #e5e7eb;padding:6px;background:#fff"/>
+               <div style="text-align:center;font-size:18px;font-weight:bold;font-family:'Courier New',monospace;letter-spacing:2px">
+                 ${codigoBarra}
+               </div>
+               <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+                 <button id="downloadBarcodeBtn" type="button" class="swal2-confirm swal2-styled" style="background-color:#10b981;border:none;padding:8px 16px;cursor:pointer">Descargar</button>
+                 <button id="printBarcodeBtn" type="button" class="swal2-confirm swal2-styled" style="background-color:#f59e0b;border:none;padding:8px 16px;cursor:pointer">Imprimir</button>
+                 <button id="closeBarcodeBtn" type="button" class="swal2-cancel swal2-styled" style="background-color:#2563eb;border:none;padding:8px 16px;cursor:pointer">Cerrar</button>
+               </div>
+             </div>
+           `;
+
+           Swal.fire({
+             title: 'Código de Barras',
+             html,
+             showConfirmButton: false,
+             didOpen: () => {
+               const self = this;
+               const downloadBtn = document.getElementById('downloadBarcodeBtn');
+               const printBtn = document.getElementById('printBarcodeBtn');
+               const closeBtn = document.getElementById('closeBarcodeBtn');
+
+               if (downloadBtn) {
+                 downloadBtn.addEventListener('click', () => {
+                   try {
+                     self.downloadBarcodeWithNumber(imagenBase64, codigoBarra);
+                   } catch (e) {
+                     console.error('Error descargando imagen:', e);
+                     Swal.fire('Error', 'No se pudo descargar la imagen.', 'error');
+                   }
+                 });
+               }
+
+               if (printBtn) {
+                 printBtn.addEventListener('click', () => {
+                   try {
+                     self.printBarcode(codigoBarra, imageUrl);
+                   } catch (e) {
+                     console.error('Error imprimiendo codigo de barra:', e);
+                     Swal.fire('Error', 'No se pudo imprimir el codigo de barra.', 'error');
+                   }
+                 });
+               }
+
+               if (closeBtn) {
+                 closeBtn.addEventListener('click', () => {
+                   Swal.close();
+                 });
+               }
+             }
+           });
         },
         error: () => {
           Swal.fire('Error', 'No se pudo cargar la imagen del codigo de barra.', 'error');
@@ -449,6 +496,134 @@ export class Producto implements OnInit, OnDestroy {
     setTimeout(() => {
       URL.revokeObjectURL(url);
     }, 0);
+  }
+
+  private downloadBarcodeWithNumber(imagenBase64: string, codigoBarra: string): void {
+    const img = new Image();
+    img.onload = () => {
+      // Crear canvas con espacio extra para el número
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const padding = 10;
+      const numberHeight = 40;
+
+      canvas.width = img.width;
+      canvas.height = img.height + numberHeight + padding * 2;
+
+      // Fondo blanco
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Dibujar imagen del código de barras
+      ctx.drawImage(img, 0, 0);
+
+      // Dibujar número del código de barras
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 18px Courier New';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(codigoBarra, canvas.width / 2, img.height + numberHeight / 2 + padding);
+
+      // Descargar
+      canvas.toBlob((blob) => {
+        if (blob) {
+          this.triggerDownload(blob, `codigo-${codigoBarra}.png`);
+        }
+      }, 'image/png');
+    };
+    img.src = `data:image/png;base64,${imagenBase64}`;
+  }
+
+  private printBarcode(codigoBarra: string, imageUrl: string): void {
+    const img = new Image();
+    img.onload = () => {
+      // Crear canvas con espacio extra para el número (igual que la descarga)
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const padding = 10;
+      const numberHeight = 40;
+
+      canvas.width = img.width;
+      canvas.height = img.height + numberHeight + padding * 2;
+
+      // Fondo blanco
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Dibujar imagen del código de barras
+      ctx.drawImage(img, 0, 0);
+
+      // Dibujar número del código de barras
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 18px Courier New';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(codigoBarra, canvas.width / 2, img.height + numberHeight / 2 + padding);
+
+      // Convertir canvas a imagen para imprimir
+      const printImageUrl = canvas.toDataURL('image/png');
+
+      const printWindow = window.open('', '_blank', 'width=400,height=300');
+      if (!printWindow) {
+        return;
+      }
+
+      const print = () => {
+        printWindow.focus();
+        printWindow.print();
+      };
+
+      printWindow.onafterprint = () => printWindow.close();
+      printWindow.document.open();
+      printWindow.document.write(`
+        <!doctype html>
+        <html lang="es">
+        <head>
+          <meta charset="utf-8">
+          <title>Codigo de Barras ${codigoBarra}</title>
+          <style>
+            @page {
+              margin: 0;
+            }
+            * {
+              box-sizing: border-box;
+            }
+            body {
+              margin: 0;
+              padding: 20mm;
+              background: #fff;
+              color: #000;
+              font-family: Arial, sans-serif;
+            }
+            .container {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 10mm;
+            }
+            .barcode-image {
+              max-width: 100%;
+              height: auto;
+              border: 1px solid #ccc;
+              padding: 5mm;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <img src="${printImageUrl}" alt="Codigo de barra" class="barcode-image"/>
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.setTimeout(print, 250);
+    };
+    img.src = imageUrl;
   }
 
   private actualizarColumnas(): void {
