@@ -153,14 +153,44 @@ export class PosPrintService {
     </section>
 
     <div class="line"></div>
+<section>
+  <div class="row">
+    <span class="label">Fecha</span>
+    <span>${this.escapeHtml(this.formatDate(documento.fecha))}</span>
+  </div>
 
-    <section>
-      <div class="row"><span class="label">Fecha</span><span>${this.escapeHtml(this.formatDate(documento.fecha))}</span></div>
-      <div class="row"><span class="label">Cliente</span><span>${this.escapeHtml(documento.nombreCliente || 'Consumidor final')}</span></div>
-      <div class="row"><span class="label">Telefono</span><span>${this.escapeHtml(documento.telefonoCliente || '-')}</span></div>
-      ${documento.documentoCliente ? `<div class="row"><span class="label">Documento</span><span>${this.escapeHtml(documento.documentoCliente)}</span></div>` : ''}
-      ${documento.nombreUsuario ? `<div class="row"><span class="label">Vendedor</span><span>${this.escapeHtml(documento.nombreUsuario)}</span></div>` : ''}
-    </section>
+  <div class="row">
+    <span class="label">Cliente</span>
+    <span>${this.escapeHtml(documento.nombreCliente || 'Consumidor final')}</span>
+  </div>
+
+  <div class="row">
+    <span class="label">Telefono</span>
+    <span>${this.escapeHtml(documento.telefonoCliente || '-')}</span>
+  </div>
+
+  ${
+      documento.documentoCliente
+        ? `
+      <div class="row">
+        <span class="label">Documento</span>
+        <span>${this.escapeHtml(this.ocultarDocumento(documento.documentoCliente))}</span>
+      </div>
+      `
+        : ''
+    }
+
+  ${
+      documento.nombreUsuario
+        ? `
+      <div class="row">
+        <span class="label">Vendedor</span>
+        <span>${this.escapeHtml(documento.nombreUsuario)}</span>
+      </div>
+      `
+        : ''
+    }
+</section>
 
     <div class="line"></div>
 
@@ -225,5 +255,19 @@ export class PosPrintService {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  }
+
+  private ocultarDocumento(documento?: string): string {
+    if (!documento) {
+      return '';
+    }
+
+    const doc = documento.trim();
+
+    if (doc.length <= 3) {
+      return doc;
+    }
+
+    return '*'.repeat(doc.length - 3) + doc.slice(-3);
   }
 }
