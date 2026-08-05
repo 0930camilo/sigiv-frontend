@@ -320,8 +320,8 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       }
 
       const dto = {
-        documento,
-        nombre,
+        documento: documento || '99999999',
+        nombre: nombre || 'NN',
         correo: this.correoCliente.trim(),
         telefono: this.telefonoCliente.trim(),
         direccion: '',
@@ -421,10 +421,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.nombreCliente.trim()) {
-      Swal.fire('Error', 'Ingresa el nombre del cliente', 'warning');
-      return;
-    }
+
 
     if (!this.efectivo || this.efectivo < this.totalVenta) {
       Swal.fire('Error', 'El efectivo debe ser igual o mayor al total', 'warning');

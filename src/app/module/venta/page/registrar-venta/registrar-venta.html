@@ -181,11 +181,9 @@
       <button
         type="button"
         class="btn-registrar"
-        [disabled]="carrito.length===0 || !efectivo || efectivo<totalVenta || !nombreCliente.trim()"
+        [disabled]="carrito.length===0 || !efectivo || efectivo<totalVenta"
         (click)="registrarVenta()">
-
         Registrar Venta
-
       </button>
       <!-- ... aquí va todo tu contenido del carrito ... -->
   </div>
