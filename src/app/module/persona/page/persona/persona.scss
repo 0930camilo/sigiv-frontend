@@ -1,0 +1,43 @@
+.filtros{
+  display:flex;
+  gap:8px;
+  width: 100%;
+  margin-bottom: 10px;
+
+  @media (min-width: 768px) {
+    width: 90%;
+  }
+
+
+}
+
+
+.filtro{
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .todo{
+    width: 115%;
+    margin-top: -20px;
+    margin-left: -15px;
+  }
+  .filtros{
+    width: 150%;
+    margin-bottom: 5px;
+    gap:2px;
+  }
+  .filtro{
+    width: 50%;
+
+
+      gap:6px;   /* antes 16px */
+
+  }
+
+.filtrosUni{
+  width: 200px;
+  margin-right: -100px;
+}
+
+}

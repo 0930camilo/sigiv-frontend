@@ -28,7 +28,10 @@ export class VentaService {
     empresaId: number,
     page = 0,
     size = 10,
-    idVenta?: number | null
+    idVenta?: number | null,
+    fechaInicio?: string,
+    fechaFin?: string,
+    cliente?: string
   ): Observable<VentasResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -37,6 +40,10 @@ export class VentaService {
     if (idVenta !== null && idVenta !== undefined) {
       params = params.set('idVenta', idVenta.toString());
     }
+
+    if (fechaInicio) params = params.set('fechaInicio', fechaInicio);
+    if (fechaFin) params = params.set('fechaFin', fechaFin);
+    if (cliente) params = params.set('cliente', cliente);
 
     return this.http.get<VentasResponse>(
       `${environment.ventasApi}/empresa/${empresaId}/ventas`,
@@ -69,7 +76,10 @@ export class VentaService {
     usuarioId: number,
     page: number = 0,
     size: number = 10,
-    idVenta?: number | null
+    idVenta?: number | null,
+    fechaInicio?: string,
+    fechaFin?: string,
+    cliente?: string
   ): Observable<VentasResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -78,6 +88,10 @@ export class VentaService {
     if (idVenta !== null && idVenta !== undefined) {
       params = params.set('idVenta', idVenta.toString());
     }
+
+    if (fechaInicio) params = params.set('fechaInicio', fechaInicio);
+    if (fechaFin) params = params.set('fechaFin', fechaFin);
+    if (cliente) params = params.set('cliente', cliente);
 
     return this.http.get<VentasResponse>(
       `${environment.ventasApi}/usuario/${usuarioId}/ventas`,

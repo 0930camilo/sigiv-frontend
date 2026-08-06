@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -8,12 +8,13 @@ import { AuthService } from '../../../auth/service/auth-service';
 import { VentaService } from '../../service/venta-service';
 import { Venta } from '../../model/venta.model';
 import { PosPrintService } from '../../../../shared/services/pos-print.service';
+import { FiltrosVentasComponent } from '../filtro/filtro';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-ventas-usuario',
   standalone: true,
-  imports: [RouterModule, CommonModule, ReusableTable],
+  imports: [RouterModule, CommonModule, ReusableTable, FiltrosVentasComponent],
   templateUrl: './ventas-usuario.html',
   styleUrls: ['./ventas-usuario.scss']
 })
@@ -24,6 +25,10 @@ export class VentasUsuarioComponent implements OnInit {
   loading = false;
   usuarioId!: number;
   pageSize = 10;
+  filtroId: number | null = null;
+  filtroCliente: string = '';
+  fechaInicio: string = '';
+  fechaFin: string = '';
 
   ventaSeleccionada: Venta | null = null;
   mostrarDetalle = false;
@@ -34,7 +39,10 @@ export class VentasUsuarioComponent implements OnInit {
   facturaIdActual: number | null = null;
   facturaActual: Venta | null = null;
 
-  columns: TableColumn[] = [
+  // Estado movil
+  isMobile = false;
+
+  columnsDesktop: TableColumn[] = [
     { field: 'idventa', header: 'ID' },
     { field: 'fecha', header: 'Fecha', type: 'date' },
     { field: 'nombreCliente', header: 'Cliente' },
@@ -71,6 +79,42 @@ export class VentasUsuarioComponent implements OnInit {
     }
   ];
 
+  columnsMobile: TableColumn[] = [
+    { field: 'idventa', header: 'ID' },
+    { field: 'fecha', header: 'Fecha', type: 'date' },
+    { field: 'nombreCliente', header: 'Cliente' },
+    { field: 'total', header: 'Total', type: 'number' },
+    {
+      field: 'accionesVenta',
+      header: 'Acciones',
+      type: 'buttons',
+      buttons: [
+        {
+          title: 'Ver detalle',
+          icon: 'fa-solid fa-eye text-green-600',
+          action: (row: Venta) => this.verDetalle(row)
+        },
+        {
+          title: 'Enviar factura POS',
+          icon: 'fa-solid fa-envelope text-amber-600',
+          action: (row: Venta) => this.enviarFacturaPorCorreo(row)
+        },
+        {
+          title: 'Ver factura PDF',
+          icon: 'fa-solid fa-file-invoice text-blue-600',
+          action: (row: Venta) => this.previewFactura(row.idventa)
+        },
+        {
+          title: 'Imprimir POS',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Venta) => this.imprimirFacturaPos(row)
+        }
+      ]
+    }
+  ];
+
+  columns: TableColumn[] = [];
+
   constructor(
     private ventaService: VentaService,
     private authService: AuthService,
@@ -86,7 +130,22 @@ export class VentasUsuarioComponent implements OnInit {
       return;
     }
     this.usuarioId = Number(usuario);
+    this.actualizarColumnas();
     this.getVentas(0);
+  }
+
+  private actualizarColumnas(): void {
+    this.isMobile = window.innerWidth <= 480;
+    if (this.isMobile) {
+      this.columns = this.columnsMobile;
+    } else {
+      this.columns = this.columnsDesktop;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.actualizarColumnas();
   }
 
   getVentas(page: number = 0): void {
@@ -95,7 +154,15 @@ export class VentasUsuarioComponent implements OnInit {
     }
     this.loading = true;
     this.ventaService
-      .getVentasByUsuario(this.usuarioId, page, this.pageSize)
+      .getVentasByUsuario(
+        this.usuarioId,
+        page,
+        this.pageSize,
+        this.filtroId,
+        this.fechaInicio,
+        this.fechaFin,
+        this.filtroCliente
+      )
       .subscribe({
         next: (res: any) => {
           this.ventas = res.data?.ventas ?? [];
@@ -110,6 +177,14 @@ export class VentasUsuarioComponent implements OnInit {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  filtrar(filtros: any): void {
+    this.filtroId = filtros.idVenta;
+    this.filtroCliente = filtros.cliente;
+    this.fechaInicio = filtros.fechaInicio;
+    this.fechaFin = filtros.fechaFin;
+    this.getVentas(0);
   }
 
   verDetalle(venta: Venta): void {

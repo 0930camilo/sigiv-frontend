@@ -32,6 +32,7 @@ export class CotizacionService {
       nombreCliente?: string;
       fechaInicio?: string;
       fechaFin?: string;
+      idCotizacion?: number | null;
     }
   ): Observable<CotizacionesResponse> {
     let params = new HttpParams()
@@ -50,7 +51,9 @@ export class CotizacionService {
     if (filtros?.fechaFin?.trim()) {
       params = params.set('fechaFin', filtros.fechaFin.trim());
     }
-
+    if (filtros?.idCotizacion !== null && filtros?.idCotizacion !== undefined) {
+      params = params.set('idCotizacion', filtros.idCotizacion.toString());
+    }
     return this.http.get<CotizacionesResponse>(
       `${environment.cotizacionesApi}/empresa/${empresaId}`,
       {
@@ -64,9 +67,18 @@ export class CotizacionService {
     empresaId: number,
     usuarioId: number,
     page = 0,
-    size = 10
+    size = 10,
+    filtros?: {
+      idCotizacion?: number | null;
+      nombreCliente?: string;
+      fechaInicio?: string;
+      fechaFin?: string;
+    }
   ): Observable<CotizacionesResponse> {
-    return this.getCotizacionesByEmpresa(empresaId, page, size, { usuarioId });
+    return this.getCotizacionesByEmpresa(empresaId, page, size, {
+      usuarioId,
+      ...filtros
+    });
   }
 
   obtenerCotizacion(id: number): Observable<any> {

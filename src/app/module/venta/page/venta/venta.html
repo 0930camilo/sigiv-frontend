@@ -1,4 +1,4 @@
-<div class="p-4 sm:p-6">
+<div class="p-4 sm:p-6 todo">
 
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold">
@@ -6,21 +6,26 @@
     </h2>
   </div>
 
-  <app-filtros-ventas
-    (filtrarId)="filtrarPorId($event)">
-  </app-filtros-ventas>
+  <div class="filtros">
+    <div class="filtro">
+      <app-filtros-ventas
+        (filtrar)="filtrar($event)">
+      </app-filtros-ventas>
+    </div>
+  </div>
 
   <app-reusable-table
     [data]="ventas"
     [columns]="columns"
+    [isMobile]="isMobile"
     [loading]="loading"
     [currentPage]="currentPage"
     [totalPages]="totalPages"
     (next)="getVentas(currentPage + 1)"
     (previous)="getVentas(currentPage - 1)">
-  </app-reusable-table>
+   </app-reusable-table>
 
-</div>
+     </div>
 
 <!-- MODAL DETALLE -->
 <div

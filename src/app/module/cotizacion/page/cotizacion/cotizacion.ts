@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { CotizacionService } from '../../service/cotizacion-service';
 import { Cotizacion } from '../../model/cotizacion.model';
 import { PosPrintService } from '../../../../shared/services/pos-print.service';
 
+import { FiltrosCotizacionesComponent, FiltrosCotizacion } from '../filtro/filtro';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -20,7 +21,8 @@ import Swal from 'sweetalert2';
     RouterModule,
     CommonModule,
     FormsModule,
-    ReusableTable
+    ReusableTable,
+    FiltrosCotizacionesComponent
   ],
   templateUrl: './cotizacion.html',
   styleUrls: ['./cotizacion.scss']
@@ -36,13 +38,14 @@ export class CotizacionComponent implements OnInit {
   pageSize = 10;
 
   // Filtros
-  filtroCliente = '';
-  filtroFechaInicio = '';
-  filtroFechaFin = '';
+  filtros: FiltrosCotizacion = {};
 
   // Detalle
   cotizacionSeleccionada: Cotizacion | null = null;
   mostrarDetalle = false;
+
+  // Estado movil
+  isMobile = false;
 
   // Preview PDF
   mostrarPreviewPdf = false;
@@ -51,7 +54,8 @@ export class CotizacionComponent implements OnInit {
   pdfIdActual: number | null = null;
   cotizacionActual: Cotizacion | null = null;
 
-  columns: TableColumn[] = [
+  columns: TableColumn[] = [];
+  columnsDesktop: TableColumn[] = [
     { field: 'idcotizacion', header: 'ID' },
     { field: 'fecha', header: 'Fecha', type: 'date' },
     { field: 'nombreCliente', header: 'Cliente' },
@@ -87,6 +91,55 @@ export class CotizacionComponent implements OnInit {
     }
   ];
 
+  columnsMobile: TableColumn[] = [
+    { field: 'idcotizacion', header: 'ID' },
+    { field: 'fecha', header: 'Fecha', type: 'date' },
+    { field: 'nombreCliente', header: 'Cliente' },
+    { field: 'total', header: 'Total', type: 'number' },
+    { field: 'nombreUsuario', header: 'Vendedor' },
+    {
+      field: 'accionesCotizacion',
+      header: 'Acciones',
+      type: 'buttons',
+      buttons: [
+        {
+          title: 'Ver detalle',
+          icon: 'fa-solid fa-eye text-green-600',
+          action: (row: Cotizacion) => this.verDetalle(row)
+        },
+        {
+          title: 'Ver cotizacion PDF',
+          icon: 'fa-solid fa-file-invoice text-blue-600',
+          action: (row: Cotizacion) => this.previewPdf(row.idcotizacion)
+        },
+        {
+          title: 'Imprimir POS',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Cotizacion) => this.imprimirCotizacionPos(row)
+        },
+        {
+          title: 'Eliminar',
+          icon: 'fa-solid fa-trash text-red-600',
+          action: (row: Cotizacion) => this.confirmarEliminar(row)
+        }
+      ]
+    }
+  ];
+
+  private actualizarColumnas(): void {
+    this.isMobile = window.innerWidth <= 480;
+    if (this.isMobile) {
+      this.columns = this.columnsMobile;
+    } else {
+      this.columns = this.columnsDesktop;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.actualizarColumnas();
+  }
+
   constructor(
     private cotizacionService: CotizacionService,
     private authService: AuthService,
@@ -96,6 +149,7 @@ export class CotizacionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.actualizarColumnas();
     const empresa = this.authService.getEmpresaId();
     if (!empresa) {
       console.error('Empresa no encontrada');
@@ -110,13 +164,8 @@ export class CotizacionComponent implements OnInit {
 
     this.loading = true;
 
-    const filtros: any = {};
-    if (this.filtroCliente.trim()) filtros.nombreCliente = this.filtroCliente.trim();
-    if (this.filtroFechaInicio) filtros.fechaInicio = this.formatDateToDDMMYYYY(this.filtroFechaInicio);
-    if (this.filtroFechaFin) filtros.fechaFin = this.formatDateToDDMMYYYY(this.filtroFechaFin);
-
     this.cotizacionService
-      .getCotizacionesByEmpresa(this.empresaId, page, this.pageSize, filtros)
+      .getCotizacionesByEmpresa(this.empresaId, page, this.pageSize, this.filtros)
       .subscribe({
         next: (res) => {
           this.cotizaciones = res.data?.cotizaciones ?? [];
@@ -133,14 +182,15 @@ export class CotizacionComponent implements OnInit {
       });
   }
 
-  buscar(): void {
+  filtrar(filtros: FiltrosCotizacion): void {
+    this.filtros = { ...filtros };
+    if (this.filtros.fechaInicio) this.filtros.fechaInicio = this.formatDateToDDMMYYYY(this.filtros.fechaInicio);
+    if (this.filtros.fechaFin) this.filtros.fechaFin = this.formatDateToDDMMYYYY(this.filtros.fechaFin);
     this.getCotizaciones(0);
   }
 
   limpiarFiltros(): void {
-    this.filtroCliente = '';
-    this.filtroFechaInicio = '';
-    this.filtroFechaFin = '';
+    this.filtros = {};
     this.getCotizaciones(0);
   }
 

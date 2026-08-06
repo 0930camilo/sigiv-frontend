@@ -135,7 +135,7 @@ export class Layout implements OnInit, OnDestroy {
   }
 
   /** 🔹 Cargar total vendido del día */
-  private cargarTotalDelDia(): void {
+  cargarTotalDelDia(): void {
     if (!this.userData) return;
     const now = new Date();
     const hoy = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -181,6 +181,11 @@ export class Layout implements OnInit, OnDestroy {
     return this.isEmpresa
       ? this.userData?.nombre_empresa || 'Empresa'
       : this.userData?.nombre || 'Usuario';
+  }
+
+  getUserInitial(): string {
+    const name = this.getUserName();
+    return name.charAt(0).toUpperCase();
   }
 
   getPanelTitle(): string {

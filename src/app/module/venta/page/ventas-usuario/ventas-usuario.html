@@ -1,13 +1,21 @@
-<div class="p-4 sm:p-6">
+<div class="p-4 sm:p-6 todo">
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold">
       🧾 Mis Ventas
     </h2>
   </div>
 
+
+  <div class="filtros">
+    <div class="filtro">
+      <app-filtros-ventas (filtrar)="filtrar($event)"></app-filtros-ventas>
+    </div>
+  </div>
+
   <app-reusable-table
     [data]="ventas"
     [columns]="columns"
+    [isMobile]="isMobile"
     [loading]="loading"
     [currentPage]="currentPage"
     [totalPages]="totalPages"

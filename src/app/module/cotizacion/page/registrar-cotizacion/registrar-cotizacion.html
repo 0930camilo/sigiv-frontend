@@ -1,9 +1,18 @@
-<div class="flex flex-col lg:flex-row gap-6 p-4 sm:p-6">
+<div class="contenedor-venta flex flex-col lg:flex-row gap-6">
+  <!-- Botón flotante móvil -->
+  <button
+    class="btn-toggle-carrito"
+    (click)="toggleCarrito()">
 
+    {{ carritoVisible ? '✖' : '📋' }}
+
+  </button>
   <!-- ============================= -->
   <!-- CARRITO DE COTIZACIÓN (izquierda) -->
   <!-- ============================= -->
-  <div class="w-full lg:w-2/5 bg-blue-50 border border-blue-200 rounded-2xl shadow-md p-5 flex flex-col">
+  <div
+    class="w-full lg:w-2/5 bg-blue-50 border border-blue-200 rounded-2xl shadow-md p-5 flex flex-col panel-carrito"
+    [class.mostrar]="carritoVisible">
 
     <h2 class="text-lg font-bold text-blue-800 mb-4">📋 Cotización</h2>
 
@@ -79,24 +88,88 @@
   <!-- ====================================== -->
   <div class="w-full lg:w-3/5 bg-white rounded-2xl shadow-md p-5">
 
-    <h2 class="text-lg font-bold text-green-700 mb-4">📦 Productos Disponibles</h2>
+    <div class="titul">
+      <h2 class="text-lg font-bold text-green-700">📦 Productos Disponibles</h2>
+      <button
+        type="button"
+        class="btn-escanear"
+        [disabled]="scannerActivo"
+        (click)="iniciarEscaner()">
+        📷
+      </button>
+    </div>
+
 
     <!-- Filtros -->
-    <div class="flex flex-wrap gap-3 mb-4">
+    <div class="filtros">
+
       <input
         type="text"
-        placeholder="Buscar por nombre..."
-        class="border rounded-lg px-3 py-2 text-sm w-60 focus:ring-2 focus:ring-green-400 focus:outline-none"
+        placeholder="Nombre..."
+        class="input-filtro"
         [(ngModel)]="filtroNombre"
-        (input)="buscar()" />
+        (input)="buscar()">
+
+      <input
+        type="text"
+        placeholder="Código de barras..."
+        class="input-filtro"
+        [(ngModel)]="filtroCodigoBarra"
+        (input)="buscar()">
 
       <select
-        class="border rounded-lg px-3 py-2 text-sm w-52 focus:ring-2 focus:ring-green-400 focus:outline-none"
+        class="input-filtro"
         [(ngModel)]="filtroCategoria"
         (change)="buscar()">
-        <option value="">Todas las categorías</option>
-        <option *ngFor="let cat of categorias" [value]="cat.nombre">{{ cat.nombre }}</option>
+
+        <option value="">Categorías</option>
+
+        <option
+          *ngFor="let cat of categorias"
+          [value]="cat.nombre">
+
+          {{ cat.nombre }}
+
+        </option>
+
       </select>
+
+    </div>
+
+
+    <!-- Error Scanner -->
+    <div
+      *ngIf="scannerError"
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg mb-4 text-sm">
+      {{ scannerError }}
+    </div>
+
+    <!-- Scanner -->
+    <div
+      *ngIf="scannerActivo"
+      class="relative bg-black rounded-xl overflow-hidden mb-4 shadow-inner">
+
+      <p class="absolute top-2 left-0 right-0 text-center text-white text-xs z-10 bg-black bg-opacity-50 py-1">
+        Apunta la cámara al código de barras
+      </p>
+
+      <video
+        #scannerVideo
+        autoplay
+        muted
+        playsinline
+        class="w-full h-48 sm:h-64 object-cover">
+      </video>
+
+      <div class="absolute bottom-2 left-0 right-0 flex justify-center z-10">
+        <button
+          type="button"
+          class="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg"
+          (click)="detenerEscaner()">
+          Cerrar cámara
+        </button>
+      </div>
+
     </div>
 
     <!-- Loader -->
@@ -109,74 +182,77 @@
     </div>
 
     <!-- Tabla de productos -->
-    <div class="overflow-auto max-h-[55vh] lg:max-h-[60vh]" *ngIf="!loadingProductos">
-      <table class="w-full text-sm border-collapse">
-        <thead class="bg-green-600 text-white">
-          <tr>
-            <th class="px-4 py-3 text-left">ID</th>
-            <th class="px-4 py-3 text-left">Nombre</th>
-            <th class="px-4 py-3 text-left">Descripción</th>
-            <th class="px-4 py-3 text-right">Precio</th>
-            <th class="px-4 py-3 text-center">Disponibles</th>
-            <th class="px-4 py-3 text-center">Cantidad</th>
-            <th class="px-4 py-3 text-center">Agregar</th>
-          </tr>
+    <div class="contenedor-tabla" *ngIf="!loadingProductos">
+      <table class="tabla-productos">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th class="derecha">Precio</th>
+          <th class="centrar">Stock</th>
+          <th class="centrar">Cantidad</th>
+          <th class="centrar">Agregar</th>
+        </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of productos"
-              class="border-b border-gray-200 hover:bg-green-50 transition">
-            <td class="px-4 py-3">{{ p.idProducto }}</td>
-            <td class="px-4 py-3">{{ p.nombre }}</td>
-            <td class="px-4 py-3 max-w-[200px] truncate">{{ p.descripcion }}</td>
-            <td class="px-4 py-3 text-right">{{ p.precio | number:'1.0-0':'es-CO' }}</td>
-            <td class="px-4 py-3 text-center">{{ p.cantidad }}</td>
-            <td class="px-4 py-3 text-center">
-              <input
-                type="number"
-                min="1"
-                [max]="p.cantidad"
-                class="w-16 border rounded px-2 py-1 text-center text-sm"
-                [(ngModel)]="cantidades[p.idProducto]"
-                [placeholder]="'1'" />
-            </td>
-            <td class="px-4 py-3 text-center">
-              <button
-                type="button"
-                class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg transition text-sm disabled:opacity-50"
-                [disabled]="p.cantidad <= 0"
-                (click)="agregarAlCarrito(p)">
-                <i class="fa-solid fa-cart-plus"></i>
-              </button>
-            </td>
-          </tr>
-
-          <tr *ngIf="productos.length === 0">
-            <td colspan="7" class="text-center py-6 text-gray-500">
-              No hay productos disponibles
-            </td>
-          </tr>
+        <tr *ngFor="let p of productos">
+          <td>{{ p.idProducto }}</td>
+          <td class="nombre-producto">{{ p.nombre }}</td>
+          <td class="derecha">{{ p.precio | number:'1.0-0':'es-CO' }}</td>
+          <td class="centrar">{{ p.cantidad }}</td>
+          <td class="centrar">
+            <input
+              type="number"
+              min="1"
+              [max]="p.cantidad"
+              class="cantidad"
+              [(ngModel)]="cantidades[p.idProducto]"
+              [placeholder]="'1'" />
+          </td>
+          <td class="centrar">
+            <button
+              type="button"
+              class="btn-agregar"
+              [disabled]="p.cantidad <= 0"
+              (click)="agregarAlCarrito(p)">
+              <i class="fa-solid fa-cart-plus"></i>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="productos.length === 0">
+          <td colspan="6" class="sin-productos">
+            No hay productos disponibles
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Paginación -->
-    <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-200" *ngIf="!loadingProductos && totalPages > 0">
+    <div class="paginacion" *ngIf="!loadingProductos && totalPages > 0">
       <button
-        type="button"
+        class="btn-pagina"
         (click)="cargarProductos(currentPage - 1)"
-        [disabled]="currentPage === 0"
-        class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+        [disabled]="currentPage === 0">
         ← Anterior
       </button>
-      <span class="text-sm text-gray-600">Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+      <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
       <button
-        type="button"
+        class="btn-pagina"
         (click)="cargarProductos(currentPage + 1)"
-        [disabled]="currentPage + 1 >= totalPages"
-        class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+        [disabled]="currentPage + 1 >= totalPages">
         Siguiente →
       </button>
     </div>
 
+  </div>
+
+
+
+
+  <div
+    class="overlay"
+    *ngIf="carritoVisible"
+    (click)="toggleCarrito()">
   </div>
 </div>

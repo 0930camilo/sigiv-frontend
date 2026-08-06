@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -10,10 +10,13 @@ import { CotizacionService } from '../../service/cotizacion-service';
 import { Cotizacion } from '../../model/cotizacion.model';
 import { PosPrintService } from '../../../../shared/services/pos-print.service';
 
+import { FiltrosCotizacionesComponent, FiltrosCotizacion } from '../filtro/filtro';
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-cotizaciones-usuario',
   standalone: true,
-  imports: [RouterModule, CommonModule, ReusableTable],
+  imports: [RouterModule, CommonModule, ReusableTable, FiltrosCotizacionesComponent],
   templateUrl: './cotizaciones-usuario.html',
   styleUrls: ['./cotizaciones-usuario.scss']
 })
@@ -25,6 +28,7 @@ export class CotizacionesUsuarioComponent implements OnInit {
   empresaId!: number;
   usuarioId!: number;
   pageSize = 10;
+  filtros: FiltrosCotizacion = {};
 
   cotizacionSeleccionada: Cotizacion | null = null;
   mostrarDetalle = false;
@@ -35,7 +39,10 @@ export class CotizacionesUsuarioComponent implements OnInit {
   pdfIdActual: number | null = null;
   cotizacionActual: Cotizacion | null = null;
 
-  columns: TableColumn[] = [
+  // Estado movil
+  isMobile = false;
+
+  columnsDesktop: TableColumn[] = [
     { field: 'idcotizacion', header: 'ID' },
     { field: 'fecha', header: 'Fecha', type: 'date' },
     { field: 'nombreCliente', header: 'Cliente' },
@@ -65,6 +72,37 @@ export class CotizacionesUsuarioComponent implements OnInit {
     }
   ];
 
+  columnsMobile: TableColumn[] = [
+    { field: 'idcotizacion', header: 'ID' },
+    { field: 'fecha', header: 'Fecha', type: 'date' },
+    { field: 'nombreCliente', header: 'Cliente' },
+    { field: 'total', header: 'Total', type: 'number' },
+    {
+      field: 'accionesCotizacion',
+      header: 'Acciones',
+      type: 'buttons',
+      buttons: [
+        {
+          title: 'Ver detalle',
+          icon: 'fa-solid fa-eye text-green-600',
+          action: (row: Cotizacion) => this.verDetalle(row)
+        },
+        {
+          title: 'Ver cotizacion PDF',
+          icon: 'fa-solid fa-file-invoice text-blue-600',
+          action: (row: Cotizacion) => this.previewPdf(row.idcotizacion)
+        },
+        {
+          title: 'Imprimir POS',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Cotizacion) => this.imprimirCotizacionPos(row)
+        }
+      ]
+    }
+  ];
+
+  columns: TableColumn[] = [];
+
   constructor(
     private cotizacionService: CotizacionService,
     private authService: AuthService,
@@ -84,7 +122,22 @@ export class CotizacionesUsuarioComponent implements OnInit {
 
     this.empresaId = Number(empresa);
     this.usuarioId = Number(usuario);
+    this.actualizarColumnas();
     this.getCotizaciones(0);
+  }
+
+  private actualizarColumnas(): void {
+    this.isMobile = window.innerWidth <= 480;
+    if (this.isMobile) {
+      this.columns = this.columnsMobile;
+    } else {
+      this.columns = this.columnsDesktop;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.actualizarColumnas();
   }
 
   getCotizaciones(page: number = 0): void {
@@ -92,7 +145,7 @@ export class CotizacionesUsuarioComponent implements OnInit {
 
     this.loading = true;
     this.cotizacionService
-      .getCotizacionesByUsuario(this.empresaId, this.usuarioId, page, this.pageSize)
+      .getCotizacionesByUsuario(this.empresaId, this.usuarioId, page, this.pageSize, this.filtros)
       .subscribe({
         next: (res) => {
           this.cotizaciones = res.data?.cotizaciones ?? [];
@@ -107,6 +160,11 @@ export class CotizacionesUsuarioComponent implements OnInit {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  filtrar(filtros: FiltrosCotizacion) {
+    this.filtros = filtros;
+    this.getCotizaciones(0);
   }
 
   verDetalle(cotizacion: Cotizacion): void {

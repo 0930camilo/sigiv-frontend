@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -38,7 +38,7 @@ export class PersonaComponent implements OnInit {
 
   form: PersonaRequest = this.formVacio();
 
-  columns: TableColumn[] = [
+  columnsDesktop: TableColumn[] = [
     { field: 'documento', header: 'Documento' },
     { field: 'nombre', header: 'Nombre' },
     { field: 'correo', header: 'Correo' },
@@ -50,6 +50,19 @@ export class PersonaComponent implements OnInit {
     { field: 'acciones', header: 'Acciones', type: 'actions' }
   ];
 
+  columnsMobile: TableColumn[] = [
+    { field: 'documento', header: 'Documento' },
+    { field: 'nombre', header: 'Nombre' },
+    { field: 'telefono', header: 'Teléfono' },
+    { field: 'direccion', header: 'Dirección' },
+    { field: 'fechaIngreso', header: 'F. Ingreso', type: 'date' },
+    { field: 'estado', header: 'Estado', type: 'status' },
+    { field: 'acciones', header: 'Acciones', type: 'actions' }
+  ];
+
+  columns: TableColumn[] = this.columnsDesktop;
+  isMobile = false;
+
   constructor(
     private personaService: PersonaService,
     private authService: AuthService,
@@ -58,7 +71,19 @@ export class PersonaComponent implements OnInit {
 
   ngOnInit(): void {
     this.empresaId = this.authService.getEmpresaId();
+    this.actualizarColumnas();
     this.cargarPersonas();
+  }
+
+  actualizarColumnas(): void {
+    this.isMobile = window.innerWidth <= 768;
+    this.columns = this.isMobile ? this.columnsMobile : this.columnsDesktop;
+    this.cdr.markForCheck();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.actualizarColumnas();
   }
 
   cargarPersonas(page: number = 0): void {
@@ -149,7 +174,10 @@ export class PersonaComponent implements OnInit {
           this.cargarPersonas();
           this.cdr.markForCheck();
         },
-        error: () => Swal.fire('Error', 'No se pudo actualizar la persona', 'error')
+        error: (err) => {
+          const mensajeError = err.error?.message || err.error || 'No se pudo actualizar la persona';
+          Swal.fire('Error', mensajeError, 'error');
+        }
       });
     } else {
       this.personaService.crearPersona(this.form).subscribe({
@@ -159,7 +187,10 @@ export class PersonaComponent implements OnInit {
           this.cargarPersonas();
           this.cdr.markForCheck();
         },
-        error: () => Swal.fire('Error', 'No se pudo crear la persona', 'error')
+        error: (err) => {
+          const mensajeError = err.error?.message || err.error || 'No se pudo crear la persona';
+          Swal.fire('Error', mensajeError, 'error');
+        }
       });
     }
   }

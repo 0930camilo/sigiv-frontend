@@ -19,7 +19,7 @@ export class PersonaService {
     empresaId: number,
     page: number = 0,
     size: number = 10,
-    filtros?: { estado?: string; documento?: string; nombre?: string }
+    filtros?: { estado?: string; documento?: string; nombre?: string; exacto?: boolean }
   ): Observable<PersonaApiResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -27,6 +27,7 @@ export class PersonaService {
     if (filtros?.estado) params = params.set('estado', filtros.estado);
     if (filtros?.documento) params = params.set('documento', filtros.documento);
     if (filtros?.nombre) params = params.set('nombre', filtros.nombre);
+    if (filtros?.exacto !== undefined) params = params.set('exacto', filtros.exacto.toString());
     return this.http.get<PersonaApiResponse>(
       `${environment.personasApi}/empresa/${empresaId}`,
       { headers: this.headerUtil.getAuthHeaders(), params }
