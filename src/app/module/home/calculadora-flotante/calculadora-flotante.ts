@@ -27,6 +27,7 @@ export class CalculadoraFlotante {
 
   loading = false;
   error: string | null = null;
+  copiado = false;
 
   constructor(private calculadoraService: CalculadoraService) {}
 
@@ -40,6 +41,7 @@ export class CalculadoraFlotante {
   setTab(tab: 'porcentaje' | 'regla') {
     this.activeTab = tab;
     this.error = null;
+    this.copiado = false;
   }
 
   calcularPorcentaje() {
@@ -50,6 +52,7 @@ export class CalculadoraFlotante {
 
     this.loading = true;
     this.error = null;
+    this.copiado = false;
 
     const dto: PorcentajeRequestDto = {
       valor: this.valorP,
@@ -81,6 +84,7 @@ export class CalculadoraFlotante {
 
     this.loading = true;
     this.error = null;
+    this.copiado = false;
 
     const dto: ReglaDeTresRequestDto = {
       a: this.valorA,
@@ -100,6 +104,21 @@ export class CalculadoraFlotante {
     });
   }
 
+  copyToClipboard(valor: number | null) {
+    if (valor === null) return;
+
+    // Formatear el número según el locale para que sea consistente
+    const formatted = new Intl.NumberFormat('es-CO', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 4
+    }).format(valor);
+
+    navigator.clipboard.writeText(formatted).then(() => {
+      this.copiado = true;
+      setTimeout(() => this.copiado = false, 2000);
+    });
+  }
+
   reset() {
     this.valorP = null;
     this.porcentajeP = null;
@@ -109,5 +128,6 @@ export class CalculadoraFlotante {
     this.valorC = null;
     this.resultadoR = null;
     this.error = null;
+    this.copiado = false;
   }
 }
