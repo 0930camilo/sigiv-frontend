@@ -9,10 +9,12 @@ import { InternalLoader } from '../../../core/services/internal-loader/internal-
 import { EmpresaService } from '../../home/dashboard/empresa/service/empresa.service';
 import { UsuarioService } from '../../home/dashboard/usuario/service/usuario.service';
 import { VentaNotificacionService } from '../../../shared/services/venta-notificacion.service';
+import { CalculadoraFlotante } from '../calculadora-flotante/calculadora-flotante';
 
 @Component({
   selector: 'app-layout',
-  imports: [RouterOutlet, RouterModule, CommonModule],
+  standalone: true,
+  imports: [RouterOutlet, RouterModule, CommonModule, CalculadoraFlotante],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
   changeDetection: ChangeDetectionStrategy.Default

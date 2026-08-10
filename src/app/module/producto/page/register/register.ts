@@ -63,6 +63,7 @@ export class RegisterProducto implements OnInit, OnDestroy {
       nombre: ['', Validators.required],
       descripcion: [''],
       cantidad: [0, Validators.required],
+      unidadMedida: ['UNIDAD', Validators.required],
       precioCompra: [0, Validators.required],
       precio: [0, Validators.required],
       codigoBarra: [''],
@@ -88,6 +89,7 @@ export class RegisterProducto implements OnInit, OnDestroy {
     this.formProducto.reset({
       estado: 'Activo',
       cantidad: 0,
+      unidadMedida: 'UNIDAD',
       precio: 0,
       precioCompra: 0,
       codigoBarra: '',

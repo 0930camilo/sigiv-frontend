@@ -64,7 +64,8 @@ export class Producto implements OnInit, OnDestroy {
     { field: 'idProducto', header: 'ID', type: 'text' },
     { field: 'nombre', header: 'Nombre', type: 'text' },
     { field: 'descripcion', header: 'Descripción', type: 'text' },
-    { field: 'cantidad', header: 'Cantidad', type: 'number' },
+    { field: 'cantidad', header: 'Cant.', type: 'text' },
+    { field: 'unidadMedida', header: 'U.M.', type: 'text' },
     { field: 'precioCompra', header: 'Precio Compra', type: 'currency' },
     { field: 'precio', header: 'Precio Venta', type: 'currency' },
     { field: 'estado', header: 'Estado', type: 'status' },
@@ -75,7 +76,8 @@ export class Producto implements OnInit, OnDestroy {
 
   columnsMobile: TableColumn[] = [
     { field: 'nombre', header: 'Nombre', type: 'text' },
-    { field: 'cantidad', header: 'Cant.', type: 'number' },
+    { field: 'cantidad', header: 'Cant.', type: 'text' },
+    { field: 'unidadMedida', header: 'U.M.', type: 'text' },
     { field: 'precio', header: 'Venta', type: 'currency' },
     { field: 'estado', header: 'Estado', type: 'status' },
     { field: 'acciones', header: 'Acciones', type: 'actions' }

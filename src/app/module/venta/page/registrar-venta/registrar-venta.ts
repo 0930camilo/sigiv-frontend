@@ -241,7 +241,8 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
         nombre: producto.nombre,
         precio: producto.precio,
         cantidad,
-        disponible: producto.cantidad
+        disponible: producto.cantidad,
+        unidadMedida: producto.unidadMedida
       });
     }
 

@@ -3,6 +3,7 @@ export interface VentaDetalle {
   cantidad: number;
   precio: number;
   subtotal: number;
+  unidadMedida?: string;
 }
 
 export interface Venta {
@@ -62,4 +63,5 @@ export interface ItemCarrito {
   precio: number;
   cantidad: number;
   disponible: number;
+  unidadMedida?: string;
 }

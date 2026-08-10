@@ -16,4 +16,5 @@ export const environment = {
   personasApi: 'https://sigiv2.onrender.com/personas',
   nominasApi: 'https://sigiv2.onrender.com/nominas',
   personaNominaApi: 'https://sigiv2.onrender.com/persona-nomina',
+  calculadoraApi: 'https://sigiv2.onrender.com/api/calculadora',
 };
