@@ -49,12 +49,12 @@
 
           <!-- NUMBER -->
           <ng-container *ngIf="col.type === 'number'">
-            {{ item[col.field] | number:'1.2-2':'es-CO' }}
+            {{ item[col.field] | number:'1.0-2':'es-CO' }}
           </ng-container>
 
           <!-- CURRENCY -->
           <ng-container *ngIf="col.type === 'currency'">
-            {{ item[col.field] | currency:'COP':'symbol-narrow':'1.2-2':'es-CO' }}
+            {{ item[col.field] | currency:'COP':'symbol-narrow':'1.0-2':'es-CO' }}
           </ng-container>
 
           <!-- DATE -->
