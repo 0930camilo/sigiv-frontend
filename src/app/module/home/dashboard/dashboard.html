@@ -226,7 +226,7 @@
 
     <!-- Productos más vendidos -->
     <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-      <h2 class="text-lg font-semibold mb-4 text-gray-700">Productos Más Vendidos</h2>
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Productos Más Vendidos (Top 5)</h2>
       <div *ngIf="barChartData.datasets[0].data.length > 0; else noDataProductos" class="h-64">
         <canvas baseChart
           [data]="barChartData"
@@ -237,6 +237,25 @@
       <ng-template #noDataProductos>
         <div class="h-64 flex items-center justify-center text-gray-400 italic">
           No hay productos registrados en las ventas de este periodo.
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Ventas por Categoría -->
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Ventas por Categoría</h2>
+      <div *ngIf="categoryChartData.datasets[0].data.length > 0; else noDataCategorias" class="h-64 flex justify-center">
+        <div class="w-full max-w-md">
+          <canvas baseChart
+            [data]="categoryChartData"
+            [options]="categoryChartOptions"
+            [type]="categoryChartType">
+          </canvas>
+        </div>
+      </div>
+      <ng-template #noDataCategorias>
+        <div class="h-64 flex items-center justify-center text-gray-400 italic">
+          No hay categorías registradas en este periodo.
         </div>
       </ng-template>
     </div>

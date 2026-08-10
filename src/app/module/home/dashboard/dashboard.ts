@@ -45,6 +45,30 @@ export class Dashboard implements OnInit {
   resumenVendedores: ResumenVendedor[] = [];
 
   // 📊 Configuración de Gráficos
+  public categoryChartData: ChartData<'pie'> = {
+    labels: [],
+    datasets: [{
+      data: [],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)',
+      ]
+    }]
+  };
+
+  public categoryChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom' }
+    }
+  };
+
+  public categoryChartType: ChartType = 'pie';
+
   public marginsChartData: ChartData<'doughnut'> = {
     datasets: [
       {
@@ -138,14 +162,15 @@ export class Dashboard implements OnInit {
 
     if (this.idEntidad) {
       console.log('🚀 Iniciando carga de Dashboard con idEntidad:', this.idEntidad);
-      // Establecer fechas por defecto (mes actual)
+      // Establecer fechas por defecto (últimos 7 días)
       const hoy = new Date();
-      const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-      const finMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
-      this.fechaInicio = `${inicioMes.getFullYear()}-${String(inicioMes.getMonth() + 1).padStart(2, '0')}-${String(inicioMes.getDate()).padStart(2, '0')}`;
-      this.fechaFin = `${finMes.getFullYear()}-${String(finMes.getMonth() + 1).padStart(2, '0')}-${String(finMes.getDate()).padStart(2, '0')}`;
+      const hace7Dias = new Date();
+      hace7Dias.setDate(hoy.getDate() - 6);
 
-      console.log('📅 Fechas por defecto:', { inicio: this.fechaInicio, fin: this.fechaFin });
+      this.fechaInicio = hace7Dias.toISOString().split('T')[0];
+      this.fechaFin = hoy.toISOString().split('T')[0];
+
+      console.log('📅 Fechas por defecto (7 días):', { inicio: this.fechaInicio, fin: this.fechaFin });
       this.cargarDatos();
       this.loadChartsData();
     } else {
@@ -387,6 +412,24 @@ export class Dashboard implements OnInit {
           data: sortedProducts.map(p => p[1])
         }
       ]
+    };
+
+    // 3. Ventas por Categoría
+    const categoriasContador: { [key: string]: number } = {};
+    ventas.forEach(venta => {
+      const detalles = venta.detalles || (venta as any).ventaDetalles || [];
+      detalles.forEach((detalle: any) => {
+        const cat = detalle.categoriaNombre || detalle.categoria || 'Sin Categoría';
+        categoriasContador[cat] = (categoriasContador[cat] || 0) + (detalle.subtotal || 0);
+      });
+    });
+
+    this.categoryChartData = {
+      labels: Object.keys(categoriasContador),
+      datasets: [{
+        ...this.categoryChartData.datasets[0],
+        data: Object.values(categoriasContador)
+      }]
     };
 
     // Calcular Margen de Ganancia General (Estimado)
