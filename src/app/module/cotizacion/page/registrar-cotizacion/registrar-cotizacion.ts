@@ -6,6 +6,7 @@ import { AuthService } from '../../../auth/service/auth-service';
 import { ProductoService } from '../../../producto/service/producto-service';
 import { CategoriaService } from '../../../categorias/service/categoria-service';
 import { CotizacionService } from '../../service/cotizacion-service';
+import { PosPrintService, PosPrintDocument } from '../../../../shared/services/pos-print.service';
 import { Producto } from '../../../producto/model/productos.model';
 import { Categoria } from '../../../categorias/model/categorias.model';
 import { ItemCarritoCotizacion, CotizacionRequest } from '../../model/cotizacion.model';
@@ -57,6 +58,7 @@ export class RegistrarCotizacionComponent implements OnInit, OnDestroy {
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
     private cotizacionService: CotizacionService,
+    private posPrintService: PosPrintService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -271,11 +273,24 @@ export class RegistrarCotizacionComponent implements OnInit, OnDestroy {
     };
 
     this.cotizacionService.crearCotizacion(cotizacion).subscribe({
-      next: () => {
-        Swal.fire('Cotización creada', 'La cotización se registró exitosamente', 'success');
-        this.limpiarFormulario();
-        this.cargarProductos(this.currentPage);
-        this.cdr.markForCheck();
+      next: (res: any) => {
+        Swal.fire({
+          title: 'Cotización creada',
+          text: '¿Deseas imprimir el ticket POS?',
+          icon: 'success',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, imprimir',
+          cancelButtonText: 'No, finalizar',
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.imprimirTicketPos(res, cotizacion);
+          }
+          this.limpiarFormulario();
+          this.cargarProductos(this.currentPage);
+          this.cdr.markForCheck();
+        });
       },
       error: (err: any) => {
         const msg = err.error?.error || err.error?.message || 'Error al registrar la cotización';
@@ -283,6 +298,29 @@ export class RegistrarCotizacionComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  private imprimirTicketPos(res: any, cotizacion: any): void {
+    const cotizacionId = res?.idcotizacion ?? res?.idCotizacion ?? res?.id ?? 0;
+
+    const doc: PosPrintDocument = {
+      tipo: 'COTIZACION',
+      numero: cotizacionId,
+      fecha: new Date().toISOString(),
+      empresaNombre: this.authService.getUserName(),
+      nombreCliente: cotizacion.nombreCliente || 'Cliente',
+      telefonoCliente: cotizacion.telefonoCliente || '-',
+      nombreUsuario: this.authService.getUserData()?.nombre || 'Vendedor',
+      total: cotizacion.total,
+      detalles: this.carrito.map(item => ({
+        descripcionProducto: item.nombre,
+        cantidad: item.cantidad,
+        precio: item.precio,
+        subtotal: item.precio * item.cantidad
+      }))
+    };
+
+    this.posPrintService.imprimir(doc);
   }
 
   limpiarFormulario(): void {

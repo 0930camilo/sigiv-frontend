@@ -12,6 +12,7 @@ import { ItemCarrito, VentaRequest } from '../../model/venta.model';
 import { PersonaService } from '../../../persona/service/persona-service';
 import { Persona } from '../../../persona/model/persona.model';
 import { VentaNotificacionService } from '../../../../shared/services/venta-notificacion.service';
+import { PosPrintService, PosPrintDocument } from '../../../../shared/services/pos-print.service';
 
 import Swal from 'sweetalert2';
 import { HostListener } from '@angular/core';
@@ -70,6 +71,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     private ventaService: VentaService,
     private personaService: PersonaService,
     private ventaNotificacion: VentaNotificacionService,
+    private posPrintService: PosPrintService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -372,24 +374,38 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
 
   private procesarEnvioFactura(response: any): void {
     const correo = this.correoCliente.trim();
-
     const ventaId = this.obtenerVentaId(response);
 
+    const preguntarImprimir = async () => {
+      const result = await Swal.fire({
+        title: 'Venta registrada',
+        text: '¿Deseas imprimir el ticket POS?',
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, imprimir',
+        cancelButtonText: 'No, finalizar',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33'
+      });
 
+      if (result.isConfirmed) {
+        this.imprimirTicketPos(response);
+      }
+      this.finalizarRegistroVenta();
+    };
 
     if (!this.requiereEnvioCorreo()) {
-      Swal.fire('Venta registrada', response.message || 'Venta creada exitosamente', 'success');
-      this.finalizarRegistroVenta();
+      preguntarImprimir();
       return;
     }
 
     if (!ventaId) {
       Swal.fire(
         'Venta registrada',
-        'La venta se guardo, pero no se pudo identificar el ID para enviar la factura POS por correo.',
+        'La venta se guardó, pero no se pudo identificar el ID para enviar la factura POS por correo.',
         'warning'
       );
-      this.finalizarRegistroVenta();
+      preguntarImprimir();
       return;
     }
 
@@ -402,15 +418,48 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
 
     this.ventaService.enviarFacturaPorCorreo(ventaId, correo).subscribe({
       next: () => {
-        Swal.fire('Venta registrada', 'Venta creada y factura POS enviada por correo.', 'success');
-        this.finalizarRegistroVenta();
+        Swal.close();
+        preguntarImprimir();
       },
       error: (err: any) => {
-        const msg = err.error?.message || 'La venta se guardo, pero no se pudo enviar la factura POS por correo.';
-        Swal.fire('Venta registrada', msg, 'warning');
-        this.finalizarRegistroVenta();
+        Swal.close();
+        const msg = err.error?.message || 'La venta se guardó, pero no se pudo enviar la factura POS por correo.';
+        Swal.fire('Venta registrada', msg, 'warning').then(() => {
+          preguntarImprimir();
+        });
       }
     });
+  }
+
+  private imprimirTicketPos(response: any): void {
+    const ventaId = this.obtenerVentaId(response);
+    if (!ventaId) return;
+
+    // Intentamos obtener los datos de la respuesta, si no están completos, PosPrintService usará lo que tenga.
+    // Opcional: Podríamos llamar a this.ventaService.getVentasByEmpresa(...) para obtener el objeto Venta completo.
+    // Pero para rapidez, usaremos los datos que ya tenemos en el componente (carrito, cliente, etc).
+
+    const doc: PosPrintDocument = {
+      tipo: 'FACTURA',
+      numero: ventaId,
+      fecha: new Date().toISOString(),
+      empresaNombre: this.authService.getUserName(), // O alguna propiedad de la empresa
+      nombreCliente: this.nombreCliente || 'Consumidor Final',
+      telefonoCliente: this.telefonoCliente || '-',
+      documentoCliente: this.documentoCliente || undefined,
+      nombreUsuario: this.authService.getUserData()?.nombre || 'Vendedor',
+      total: this.totalVenta,
+      efectivo: this.efectivo || 0,
+      cambio: (this.efectivo || 0) - this.totalVenta,
+      detalles: this.carrito.map(item => ({
+        descripcionProducto: item.nombre,
+        cantidad: item.cantidad,
+        precio: item.precio,
+        subtotal: item.precio * item.cantidad
+      }))
+    };
+
+    this.posPrintService.imprimir(doc);
   }
 
   // ================================
