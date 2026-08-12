@@ -36,7 +36,6 @@ export class User implements OnInit {
   columns: TableColumn[] = [
     { field: 'documento', header: 'Documento', type: 'text' },
     { field: 'nombres', header: 'Nombre', type: 'text' },
-    { field: 'rol', header: 'Rol', type: 'text' },
     { field: 'direccion', header: 'Dirección', type: 'text' },
     { field: 'telefono', header: 'Teléfono', type: 'text' },
     { field: 'estado', header: 'Estado', type: 'status' },
