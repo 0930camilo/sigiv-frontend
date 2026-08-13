@@ -70,6 +70,23 @@
       </tbody>
     </table>
 
+    <div class="mt-4 flex justify-end">
+      <div class="w-full max-w-xs text-sm space-y-1">
+        <div class="flex justify-between">
+          <span>Subtotal</span>
+          <strong>{{ ventaSeleccionada.subtotal | number:'1.0-0':'es-CO' }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Descuento</span>
+          <strong>{{ ventaSeleccionada.descuentoTotal | number:'1.0-0':'es-CO' }}</strong>
+        </div>
+        <div class="flex justify-between text-base border-t pt-2">
+          <span>Total</span>
+          <strong>{{ ventaSeleccionada.total | number:'1.0-0':'es-CO' }}</strong>
+        </div>
+      </div>
+    </div>
+
     <ng-template #sinDetalles>
       <div class="p-4 text-center text-gray-500">
         No hay productos en esta venta

@@ -16,6 +16,8 @@ export interface PosPrintDocument {
   telefonoCliente: string;
   documentoCliente?: string;
   nombreUsuario?: string;
+  subtotal?: number;
+  descuentoTotal?: number;
   total: number;
   efectivo?: number;
   cambio?: number;
@@ -201,6 +203,8 @@ export class PosPrintService {
     <div class="line"></div>
 
     <section>
+      ${typeof documento.subtotal === 'number' ? `<div class="row"><span>Subtotal</span><span>${this.formatCurrency(documento.subtotal)}</span></div>` : ''}
+      ${typeof documento.descuentoTotal === 'number' && documento.descuentoTotal > 0 ? `<div class="row"><span>Descuento</span><span>-${this.formatCurrency(documento.descuentoTotal)}</span></div>` : ''}
       <div class="row total"><span>Total</span><span>${this.formatCurrency(documento.total)}</span></div>
       ${typeof documento.efectivo === 'number' ? `<div class="row"><span>Efectivo</span><span>${this.formatCurrency(documento.efectivo)}</span></div>` : ''}
       ${typeof documento.cambio === 'number' ? `<div class="row"><span>Cambio</span><span>${this.formatCurrency(documento.cambio)}</span></div>` : ''}

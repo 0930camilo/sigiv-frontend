@@ -13,6 +13,8 @@ export interface Venta {
   telefonoCliente: string;
   correoCliente?: string;
   documentoCliente?: string;
+  subtotal: number;
+  descuentoTotal: number;
   total: number;
   efectivo: number;
   cambio: number;
@@ -48,6 +50,7 @@ export interface VentaRequest {
   correoCliente?: string;
   documentoCliente?: string;
   efectivo: number;
+  descuentoTotal: number;
   detalles: DetalleVentaRequest[];
   enviarFactura?: boolean;
   canalEnvioFactura?: 'ninguno' | 'correo' | 'whatsapp' | 'correo-whatsapp';

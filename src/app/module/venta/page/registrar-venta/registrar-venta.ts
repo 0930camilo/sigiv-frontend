@@ -33,6 +33,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
   correoCliente = '';
   documentoCliente = '';
   efectivo: number | null = null;
+  descuentoTotal: number | null = null;
   clienteEncontrado: Persona | null = null;
   buscandoCliente = false;
   registrarClienteAutomaticamente = true;
@@ -257,8 +258,17 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  get totalVenta(): number {
+  get subtotalVenta(): number {
     return this.carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  }
+
+  get descuentoAplicado(): number {
+    const descuento = Number(this.descuentoTotal) || 0;
+    return Math.min(Math.max(descuento, 0), this.subtotalVenta);
+  }
+
+  get totalVenta(): number {
+    return this.subtotalVenta - this.descuentoAplicado;
   }
 
   get cambio(): number {
@@ -448,6 +458,8 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       telefonoCliente: this.telefonoCliente || '-',
       documentoCliente: this.documentoCliente || undefined,
       nombreUsuario: this.authService.getUserData()?.nombre || 'Vendedor',
+      subtotal: this.subtotalVenta,
+      descuentoTotal: this.descuentoAplicado,
       total: this.totalVenta,
       efectivo: this.efectivo || 0,
       cambio: (this.efectivo || 0) - this.totalVenta,
@@ -500,6 +512,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
         correoCliente: this.correoCliente.trim() || undefined,
         documentoCliente: this.documentoCliente.trim() || undefined,
         efectivo: this.efectivo!,
+        descuentoTotal: this.descuentoAplicado,
         detalles: this.carrito.map(item => ({
           productoId: item.productoId,
           cantidad: item.cantidad
@@ -533,6 +546,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     this.registrarClienteAutomaticamente = true;
     this.enviarFacturaCorreo = false;
     this.efectivo = null;
+    this.descuentoTotal = null;
     this.cantidades = {};
   }
 

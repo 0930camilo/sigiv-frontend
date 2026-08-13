@@ -252,6 +252,20 @@ width: 20%;
   color:#78350f;
 }
 
+.grupo-descuento{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  color:#78350f;
+  font-size:14px;
+  font-weight:600;
+}
+
+.total-neto{
+  padding-top:10px;
+  border-top:1px dashed #fcd34d;
+}
+
 .fila-cambio{
   display:flex;
   justify-content:space-between;

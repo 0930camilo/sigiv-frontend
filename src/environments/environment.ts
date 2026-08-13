@@ -18,7 +18,7 @@ export const environment = {
       personaNominaApi: 'https://sigiv2.onrender.com/persona-nomina',
        calculadoraApi: 'https://sigiv2.onrender.com/api/calculadora',
 
-  /*
+ /*
 
        authApi: 'http://localhost:8080/auth',
        usersApi: 'http://localhost:8080/usuarios',
@@ -34,5 +34,5 @@ export const environment = {
        nominasApi: 'http://localhost:8080/nominas',
        personaNominaApi: 'http://localhost:8080/persona-nomina',
        calculadoraApi: 'http://localhost:8080/api/calculadora',
-   */
+*/
 };
