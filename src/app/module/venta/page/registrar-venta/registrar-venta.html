@@ -107,13 +107,13 @@
 
         <tr *ngFor="let item of carrito; let i=index">
 
-          <td>{{ item.nombre }}</td>
+          <td class="producto-carrito">{{ item.nombre }}</td>
 
-          <td class="centrar">
+          <td class="centrar cantidad-carrito">
             {{ item.cantidad }} {{ item.unidadMedida }}
           </td>
 
-          <td class="derecha">
+          <td class="derecha subtotal-carrito">
             {{ item.precio * item.cantidad | number:'1.0-2':'es-CO' }}
           </td>
 

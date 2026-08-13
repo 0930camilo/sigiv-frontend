@@ -10,17 +10,6 @@
   align-items:flex-start;
 }
 
-/* Panel izquierdo */
-
-.panel-carrito{
-  width:30%;
-}
-
-/* Panel derecho */
-
-.panel-productos{
-  width:70%;
-}
 /* ==========================
    PANEL CARRITO
 ========================== */
@@ -70,8 +59,7 @@
 
 /*==========================*/
 
-.input,
-.select{
+.input{
   width:100%;
   padding:10px 14px;
   border:1px solid #d1d5db;
@@ -81,8 +69,7 @@
   box-sizing:border-box;
 }
 
-.input:focus,
-.select:focus{
+.input:focus{
   border-color:#f59e0b;
 }
 
@@ -144,29 +131,8 @@ width: 20%;
   gap:8px;
   font-weight:600;
   color:#92400e;
-  font-size: 10px;
-}
-
-.descripcion{
-  margin-top:6px;
-  color:#6b7280;
-  font-size:13px;
-}
-
-.label-select{
-  display:block;
-  margin-bottom:10px;
-  font-weight:600;
-  color:#92400e;
-}
-
-.check{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-weight:600;
-  color:#92400e;
   cursor:pointer;
+  font-size:10px;
 }
 
 .check input[type="checkbox"]{
@@ -592,9 +558,10 @@ width: 20%;
 
   .contenedor-venta {
     flex-direction: column; /* apila los paneles */
-    width: 115%;
-    margin-top: -30px;
-    margin-left: -15px;
+    width: 100%;
+    margin: 0;
+    padding: 12px;
+    gap: 12px;
   }
 
 
@@ -608,6 +575,7 @@ width: 20%;
     width: 100%;              /* ocupar todo el ancho */
     margin: 0 auto;           /* centrar horizontalmente */
     text-align: center;       /* centrar contenido */
+    border-radius: 12px;
   }
 
   .contenedor-tabla {
@@ -642,40 +610,43 @@ width: 20%;
     box-shadow:0 5px 15px rgba(0,0,0,.3);
   }
 
+  .contenedor-venta:has(.panel-carrito) .btn-toggle-carrito{
+    top:10dvh;
+    right:18px;
+    bottom:auto;
+    width:46px;
+    height:46px;
+    font-size:20px;
+  }
+
   .panel-carrito{
-
     position:fixed;
-
-    left:0;
-    right:0;
+    left:10px;
+    right:10px;
     bottom:0;
-
-    width:100%;
-    height:90vh;
-
+    width:auto;
+    max-height:92dvh;
+    min-height:72dvh;
     margin:0;
-
     z-index:9998;
-
-    border-radius:20px 20px 0 0;
-
-    overflow:auto;
-
+    padding:14px;
+    border-radius:18px 18px 0 0;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
   }
 
-  .panel-carrito {
-    order: 2; /* carrito abajo */
-    width: 100%; /* ocupar todo el ancho */
-    margin-top: 50px; /* espacio entre productos y carrito */
-  }
   .titulo-carrito{
-    font-size: 15px;
-
+    flex-shrink:0;
+    margin-bottom:4px;
+    font-size:16px;
   }
 
   .busc{
-    width: 85%;
-    font-size: 15px;
+    width:100%;
+    font-size:14px;
+    gap:8px;
   }
 
   .btn-buscar{
@@ -692,39 +663,73 @@ width: 20%;
   height: 30px;
 }
 
+  .datos-cliente{
+    flex-shrink:0;
+    gap:8px;
+    margin-bottom:6px;
+  }
+
+  .opcion{
+    padding:10px 12px;
+  }
+
   .check{
     font-size: 12px;
   }
-  .descripcion{
-    font-size: 12px;
-  }
-  .label-select{
-    font-size: 12px;
-  }
-
-  .select{
-    font-size: 12px;
-  }
   .carrito-vacio{
-    font-size: 10px;
+    font-size:12px;
+    padding:20px 0;
   }
 
+  .tabla-carrito{
+    flex:1 1 auto;
+    min-height:120px;
+    max-height:28dvh;
+    overflow-y:auto;
+    padding:8px;
+    border:1px solid #fde68a;
+    border-radius:12px;
+    background:#fffdf4;
+  }
 
+  .tabla-carrito table{font-size:12px;}
+  .tabla-carrito th,
+  .tabla-carrito td{padding:8px 6px;}
+  .producto-carrito{max-width:120px;overflow-wrap:anywhere;font-weight:600;}
+  .cantidad-carrito{white-space:nowrap;}
+  .subtotal-carrito{font-weight:700;color:#78350f;}
+
+  .totales{
+    flex-shrink:0;
+    margin-top:0;
+    padding-top:10px;
+    gap:10px;
+    background:#fffbeb;
+  }
 
   .fila-total{
-    font-size: 13px;
+    font-size:14px;
+  }
+
+  .grupo-descuento{
+    gap:6px;
+    font-size:13px;
   }
 
   .fila-cambio{
-   font-size: 13px;
+   font-size:14px;
   }
 
-  .btn-registrar{
-
+  .btn-registrar {
+    padding:12px;
+    border-radius:12px;
+    font-size:15px;
   }
   .filtros{
-    width: 135%;
+    width:100%;
     margin: 0 auto;
+    grid-template-columns:1fr;
+    gap:8px;
   }
 
   .input-filtro{
