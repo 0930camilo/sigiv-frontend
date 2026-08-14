@@ -5,6 +5,14 @@
       <img src="/assets/logo.jpg" alt="SIGIV Logo" class="h-10 w-10 rounded-lg shadow-sm border border-gray-100 bg-white" />
       <span class="text-2xl font-bold text-blue-900 tracking-tight">SIGIV</span>
     </div>
+
+    <nav class="hidden md:flex items-center space-x-6">
+      <a href="#caracteristicas" class="text-gray-600 hover:text-blue-600 font-semibold text-sm transition">Funcionalidades</a>
+      <a href="#instrucciones" class="text-gray-600 hover:text-blue-600 font-semibold text-sm transition">Cómo funciona</a>
+      <a href="#sobre-sigiv" class="text-gray-600 hover:text-blue-600 font-semibold text-sm transition">Sobre SIGIV</a>
+      <a href="#footer" class="text-gray-600 hover:text-blue-600 font-semibold text-sm transition">Contacto</a>
+    </nav>
+
     <div class="flex items-center space-x-3">
       <a routerLink="/login" class="text-gray-600 hover:text-blue-600 font-semibold text-xs md:text-sm transition px-2">LOGIN</a>
       <a routerLink="/register" class="bg-blue-600 text-white px-4 py-2 md:px-6 md:py-2 rounded-full text-xs md:text-sm font-bold hover:bg-blue-700 shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 uppercase tracking-wide">REGISTRO</a>
@@ -40,101 +48,80 @@
       </div>
     </section>
 
-    <!-- Estadísticas Rápidas -->
-    <section class="w-full py-12 px-6 bg-gradient-to-r from-blue-600 to-blue-700">
-      <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
-        <div class="text-center text-white" data-animate>
-          <p class="text-4xl md:text-5xl font-extrabold">1000+</p>
-          <p class="text-lg mt-2 text-blue-100">Usuarios Activos</p>
+    <!-- Funcionalidades Detalladas -->
+    <section id="caracteristicas" class="w-full py-20 px-6 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl font-bold text-gray-900">Funcionalidades Principales</h2>
+          <p class="text-lg text-gray-600 mt-4 max-w-3xl mx-auto">SIGIV no es solo un sistema, es una solución integral. Descubre lo que puedes hacer:</p>
+          <div class="h-1 w-20 bg-blue-600 mx-auto mt-4 rounded-full"></div>
         </div>
-        <div class="text-center text-white" data-animate>
-          <p class="text-4xl md:text-5xl font-extrabold">500K</p>
-          <p class="text-lg mt-2 text-blue-100">Transacciones Mensuales</p>
-        </div>
-        <div class="text-center text-white" data-animate>
-          <p class="text-4xl md:text-5xl font-extrabold">99.9%</p>
-          <p class="text-lg mt-2 text-blue-100">Disponibilidad</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-800 mb-3">📦 Productos</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2">
+              <li>Registro de productos y código de barras</li>
+              <li>Gestión por categorías y proveedores</li>
+              <li>Control de estado (activo/inactivo)</li>
+            </ul>
+          </div>
+          <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-800 mb-3">🛒 Ventas</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2">
+              <li>Registro de ventas y detalle de productos</li>
+              <li>Aplicación de descuentos y métodos de pago</li>
+              <!-- ===== LÍNEA MODIFICADA AQUÍ ===== -->
+              <li>Generación y envío de facturas por correo</li>
+            </ul>
+          </div>
+          <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-800 mb-3">📋 Cotizaciones</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2">
+              <li>Creación y gestión de cotizaciones</li>
+              <li>Conversión de cotización a venta</li>
+              <li>No afecta existencias de inventario</li>
+            </ul>
+          </div>
+          <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-800 mb-3">👥 Usuarios</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2">
+              <li>Administración de usuarios del sistema</li>
+              <li>Asignación de roles y permisos</li>
+              <li>Control de acceso a módulos</li>
+            </ul>
+          </div>
+          <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-800 mb-3">💰 Nómina</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2">
+              <li>Gestión de empleados</li>
+              <li>Registro de información relacionada</li>
+            </ul>
+          </div>
+          <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-800 mb-3">📊 Reportes</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2">
+              <li>Análisis de ventas e inventario</li>
+              <li>Visualización de rendimiento</li>
+              <li>Toma de decisiones basada en datos</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Características -->
-    <section class="w-full py-16 px-6 bg-white">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900">¿Por qué elegir SIGIV?</h2>
-          <div class="h-1 w-20 bg-blue-600 mx-auto mt-4 rounded-full"></div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-xl transition-shadow group">
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors">
-              <svg class="w-6 h-6 text-blue-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-3">Control de Inventario</h3>
-            <p class="text-gray-600">Gestión automática de existencias, categorías y proveedores en un solo lugar.</p>
-          </div>
-          <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-xl transition-shadow group">
-            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
-              <svg class="w-6 h-6 text-green-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="Q13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-3">Ventas en Tiempo Real</h3>
-            <p class="text-gray-600">Registra transacciones rápidamente y visualiza el rendimiento de tu negocio al instante.</p>
-          </div>
-          <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-xl transition-shadow group">
-            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-purple-600 transition-colors">
-              <svg class="w-6 h-6 text-purple-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="Q9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-3">Reportes Detallados</h3>
-            <p class="text-gray-600">Genera análisis profundos sobre tus ventas e inventario para tomar mejores decisiones.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Testimonios -->
-    <section class="w-full py-16 px-6 bg-gray-50">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900">Lo que dicen nuestros usuarios</h2>
-          <div class="h-1 w-20 bg-blue-600 mx-auto mt-4 rounded-full"></div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="p-8 rounded-2xl bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow" data-animate>
-            <div class="flex items-center gap-1 mb-4">
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-            </div>
-            <p class="text-gray-700 mb-4 italic">"SIGIV cambió completamente la forma en que gestiono mi negocio. Los reportes en tiempo real me ayudan a tomar mejores decisiones."</p>
-            <p class="font-bold text-gray-900">Juan Pérez</p>
-            <p class="text-sm text-gray-600">Dueño - Tienda Electrónica</p>
-          </div>
-          <div class="p-8 rounded-2xl bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow" data-animate>
-            <div class="flex items-center gap-1 mb-4">
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-            </div>
-            <p class="text-gray-700 mb-4 italic">"La funcionalidad de código de barras es excelente. Me ahorra horas de trabajo cada semana en el inventario."</p>
-            <p class="font-bold text-gray-900">María García</p>
-            <p class="text-sm text-gray-600">Gerenta - Distribuidor</p>
-          </div>
-          <div class="p-8 rounded-2xl bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow" data-animate>
-            <div class="flex items-center gap-1 mb-4">
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-              <span class="text-yellow-400">⭐</span>
-            </div>
-            <p class="text-gray-700 mb-4 italic">"El servicio al cliente es impecable. Cada consulta es resuelta rápidamente. Totalmente recomendado."</p>
-            <p class="font-bold text-gray-900">Carlos López</p>
-            <p class="text-sm text-gray-600">Emprendedor - Negocio Online</p>
-          </div>
+    <!-- Sobre SIGIV -->
+    <section id="sobre-sigiv" class="w-full py-16 px-6 bg-gray-50 border-t border-b border-gray-200">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Sobre SIGIV</h2>
+        <div class="h-1 w-20 bg-blue-600 mx-auto mt-2 rounded-full"></div>
+        <p class="text-lg text-gray-600 mt-8 leading-relaxed">
+          SIGIV (Sistema de Gestión de Inventario y Ventas) nació como una solución para el desafío que enfrentan las pymes: la necesidad de centralizar el control de productos, inventario, proveedores, ventas y facturación en una única plataforma accesible.
+        </p>
+        <div class="mt-10">
+          <h3 class="text-xl font-bold text-gray-800 mb-3">Desarrollo y Tecnología</h3>
+          <p class="text-gray-600 leading-relaxed max-w-3xl mx-auto">
+            Desarrollado por <strong>Camilo Pérez Velásquez</strong>, Profesional en Sistemas, este proyecto utiliza tecnologías robustas para garantizar un sistema estable y escalable: <strong class="text-blue-600">Spring Boot</strong> para un backend potente, <strong class="text-blue-600">Angular</strong> para una interfaz de usuario moderna y <strong class="text-blue-600">MySQL/TiDB</strong> para la persistencia de datos.
+          </p>
         </div>
       </div>
     </section>
@@ -173,8 +160,38 @@
             </div>
           </div>
         </div>
-        <div class="mt-16 text-center">
-          <p class="text-2xl font-bold text-blue-700 mb-8 italic">"Optimiza el rendimiento de tu negocio hoy mismo"</p>
+      </div>
+    </section>
+
+    <!-- Centro de Ayuda -->
+    <section id="documentacion" class="w-full py-16 px-6 bg-gray-50 border-t border-b border-gray-200">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900">Centro de Ayuda</h2>
+          <p class="text-lg text-gray-600 mt-4">Encuentra guías y respuestas a preguntas comunes.</p>
+          <div class="h-1 w-20 bg-blue-600 mx-auto mt-4 rounded-full"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <a href="#" class="block p-6 bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <h5 class="mb-2 text-md font-bold tracking-tight text-gray-800">Cómo registrar una empresa</h5>
+          </a>
+          <a href="#" class="block p-6 bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <h5 class="mb-2 text-md font-bold tracking-tight text-gray-800">Cómo crear productos</h5>
+          </a>
+          <a href="#" class="block p-6 bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <h5 class="mb-2 text-md font-bold tracking-tight text-gray-800">Cómo gestionar categorías</h5>
+          </a>
+          <a href="#" class="block p-6 bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <h5 class="mb-2 text-md font-bold tracking-tight text-gray-800">Cómo registrar proveedores</h5>
+          </a>
+          <a href="#" class="block p-6 bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <h5 class="mb-2 text-md font-bold tracking-tight text-gray-800">Cómo realizar una venta</h5>
+          </a>
+          <a href="#" class="block p-6 bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <h5 class="mb-2 text-md font-bold tracking-tight text-gray-800">Cómo generar una cotización</h5>
+          </a>
+        </div>
+        <div class="mt-12 text-center">
           <a routerLink="/register" class="bg-green-500 hover:bg-green-600 text-white font-extrabold px-10 py-4 rounded-xl shadow-xl transition-all transform hover:scale-110">
             ¡COMENZAR AHORA!
           </a>
@@ -184,44 +201,61 @@
   </main>
 
   <!-- Footer -->
-  <footer class="w-full bg-gray-900 text-gray-300 py-12 px-6">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
-      <div>
-        <div class="flex items-center space-x-3 mb-6">
+  <footer id="footer" class="w-full bg-gray-900 text-gray-300 py-12 px-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Columna SIGIV -->
+      <div class="md:col-span-1">
+        <div class="flex items-center space-x-3 mb-4">
           <img src="/assets/logo.jpg" alt="SIGIV" class="h-8 w-8 rounded-lg brightness-90" />
           <span class="text-xl font-bold text-white">SIGIV</span>
         </div>
-        <p class="text-sm leading-relaxed">
-          Tu socio estratégico en la gestión de inventarios y optimización de ventas. Soluciones tecnológicas para negocios modernos.
+        <p class="text-sm leading-relaxed text-gray-400">
+          Soluciones tecnológicas para la gestión de inventarios y optimización de ventas en negocios modernos.
         </p>
       </div>
+      <!-- Columna Producto -->
       <div>
-        <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Contacto</h4>
+        <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Producto</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#caracteristicas" class="text-gray-400 hover:text-white transition">Funcionalidades</a></li>
+          <li><a href="#instrucciones" class="text-gray-400 hover:text-white transition">Cómo Empezar</a></li>
+          <li><a href="#documentacion" class="text-gray-400 hover:text-white transition">Centro de Ayuda</a></li>
+        </ul>
+      </div>
+      <!-- Columna Legal -->
+      <div>
+        <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Legal</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="text-gray-400 hover:text-white transition">Política de Privacidad</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition">Términos y Condiciones</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition">Política de Cookies</a></li>
+        </ul>
+      </div>
+      <!-- Columna Contacto Detallado -->
+      <div>
+        <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Contacto</h4>
         <ul class="space-y-3 text-sm">
           <li class="flex items-center gap-3">
-            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            perezvelasquezcamilo&#64;gmail.com
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            <a href="mailto:perezvelasquezcamilo@gmail.com" class="text-gray-400 hover:text-white transition">perezvelasquezcamilo@gmail.com</a>
           </li>
           <li class="flex items-center gap-3">
-            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            Moñitos-Córdoba, Colombia
+            <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.588-5.946 0-6.556 5.332-11.888 11.888-11.888 3.176 0 6.161 1.237 8.404 3.48s3.481 5.229 3.481 8.408c0 6.556-5.332 11.888-11.888 11.888-2.003 0-3.963-.505-5.7-1.467l-6.305 1.701zm6.34-3.417c1.551.921 3.255 1.408 4.99 1.409 5.503 0 9.98-4.477 9.98-9.98 0-2.665-1.037-5.171-2.921-7.054s-4.389-2.922-7.058-2.922c-5.503 0-9.98 4.477-9.98 9.98 0 1.892.536 3.73 1.55 5.32l-.998 3.645 3.738-.998zm12.933-7.791c-.069-.115-.255-.184-.533-.323s-1.644-.811-1.899-.903-.44-.139-.625.139-.718.903-.88 1.088-.324.208-.602.069c-.278-.139-1.171-.432-2.231-1.377-.825-.736-1.382-1.644-1.544-1.922s-.017-.428.122-.566c.125-.124.278-.324.417-.486.139-.162.185-.278.278-.463s.047-.347-.023-.486c-.069-.139-.625-1.505-.856-2.061-.225-.542-.454-.469-.625-.477-.162-.008-.347-.009-.533-.009s-.486.07-.741.347c-.255.278-.972.949-.972 2.315s.996 2.686 1.134 2.871c.139.185 1.96 2.992 4.748 4.194.663.287 1.18.459 1.583.587.666.212 1.272.182 1.751.11.535-.08 1.644-.671 1.875-1.32s.231-1.204.162-1.32z"/></svg>
+            <a href="https://wa.me/573147025585" target="_blank" class="text-gray-400 hover:text-white transition">+57 314 702 5585</a>
           </li>
           <li class="flex items-center gap-3">
-            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-            +57 314 702 5585
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <span class="text-gray-400">Moñitos, Córdoba, Colombia</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="text-gray-400">L-V, 9:00 AM - 5:00 PM (COT)</span>
           </li>
         </ul>
       </div>
-      <div>
-        <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Síguenos</h4>
-        <a href="https://wa.me/573147025585" target="_blank" class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full transition-colors text-sm font-bold shadow-lg">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.588-5.946 0-6.556 5.332-11.888 11.888-11.888 3.176 0 6.161 1.237 8.404 3.48s3.481 5.229 3.481 8.408c0 6.556-5.332 11.888-11.888 11.888-2.003 0-3.963-.505-5.7-1.467l-6.305 1.701zm6.34-3.417c1.551.921 3.255 1.408 4.99 1.409 5.503 0 9.98-4.477 9.98-9.98 0-2.665-1.037-5.171-2.921-7.054s-4.389-2.922-7.058-2.922c-5.503 0-9.98 4.477-9.98 9.98 0 1.892.536 3.73 1.55 5.32l-.998 3.645 3.738-.998zm12.933-7.791c-.069-.115-.255-.184-.533-.323s-1.644-.811-1.899-.903-.44-.139-.625.139-.718.903-.88 1.088-.324.208-.602.069c-.278-.139-1.171-.432-2.231-1.377-.825-.736-1.382-1.644-1.544-1.922s-.017-.428.122-.566c.125-.124.278-.324.417-.486.139-.162.185-.278.278-.463s.047-.347-.023-.486c-.069-.139-.625-1.505-.856-2.061-.225-.542-.454-.469-.625-.477-.162-.008-.347-.009-.533-.009s-.486.07-.741.347c-.255.278-.972.949-.972 2.315s.996 2.686 1.134 2.871c.139.185 1.96 2.992 4.748 4.194.663.287 1.18.459 1.583.587.666.212 1.272.182 1.751.11.535-.08 1.644-.671 1.875-1.32s.231-1.204.162-1.32z"/></svg>
-          WhatsApp
-        </a>
-      </div>
     </div>
-    <div class="max-w-7xl mx-auto border-t border-gray-800 mt-12 pt-8 text-center text-xs text-gray-500">
-      <p>&copy; 2026 SIGIV - Todos los derechos reservados. | Diseñado para la excelencia operativa.</p>
+    <div class="max-w-7xl mx-auto border-t border-gray-800 mt-8 pt-8 text-center text-xs text-gray-500">
+      <p>&copy; 2024 SIGIV - Todos los derechos reservados.</p>
     </div>
   </footer>
 </div>
