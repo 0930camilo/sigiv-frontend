@@ -46,7 +46,7 @@
       </div>
     </div>
 
-
+<div class="tab">
     <app-reusable-table
       [data]="personas"
       [columns]="columns"
@@ -58,6 +58,8 @@
       (previous)="cargarPersonas(currentPage - 1)"
       (actionClick)="onAction($event)">
     </app-reusable-table>
+
+</div>
   </div>
 
 

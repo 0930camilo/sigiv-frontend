@@ -1,6 +1,6 @@
 <div class="p-4 sm:p-6 todo">
 
-  <div class="flex items-center justify-between mb-4">
+  <div class="flex items-center justify-between mb-4 ">
     <h2 class="text-lg font-semibold">🔄 Devoluciones</h2>
   </div>
 
@@ -45,7 +45,7 @@
       </div>
 
     </div>
-
+<div class="tab">
     <app-reusable-table
       [data]="devoluciones"
       [columns]="columns"
@@ -55,7 +55,7 @@
       (next)="cargarDevoluciones(currentPage + 1)"
       (previous)="cargarDevoluciones(currentPage - 1)">
     </app-reusable-table>
-
+</div>
     <div
       *ngIf="!loading && ventaBuscada && devoluciones.length === 0"
       class="text-center text-gray-500 py-6">
