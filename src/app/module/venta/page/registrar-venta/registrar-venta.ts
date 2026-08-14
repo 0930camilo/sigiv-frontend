@@ -568,4 +568,28 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     }
 
   }
+
+  formatearNumero(valor: number | null | undefined): string {
+    if (valor === null || valor === undefined || valor === 0) {
+      return '';
+    }
+
+    return valor.toLocaleString('es-CO');
+  }
+
+  actualizarDescuento(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    const valor = input.value.replace(/\./g, '').replace(/,/g, '');
+
+    this.descuentoTotal = valor ? Number(valor) : 0;
+  }
+
+  actualizarEfectivo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    const valor = input.value.replace(/\./g, '').replace(/,/g, '');
+
+    this.efectivo = valor ? Number(valor) : 0;
+  }
 }

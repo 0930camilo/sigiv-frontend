@@ -159,15 +159,15 @@
 
       <div class="grupo-descuento">
         <label for="descuentoTotal">Descuento:</label>
+
         <input
           id="descuentoTotal"
-          type="number"
-          step="0.01"
-          min="0"
-          [max]="subtotalVenta"
+          type="text"
+          inputmode="numeric"
           placeholder="0"
           class="input"
-          [(ngModel)]="descuentoTotal" />
+          [value]="formatearNumero(descuentoTotal)"
+          (input)="actualizarDescuento($event)" />
       </div>
 
       <div class="fila-total total-neto">
@@ -177,12 +177,21 @@
         </span>
       </div>
 
-      <input
-        type="number"
-        step="0.01"
-        placeholder="Efectivo recibido"
-        class="input"
-        [(ngModel)]="efectivo" />
+      <div class="grupo-descuento">
+        <label for="efectivo">Efectivo:</label>
+
+        <input
+          id="efectivo"
+          type="text"
+          inputmode="numeric"
+          placeholder="Efectivo recibido"
+          class="input"
+          [value]="formatearNumero(efectivo)"
+          (input)="actualizarEfectivo($event)" />
+      </div>
+
+
+
 
       <div
         class="fila-cambio"

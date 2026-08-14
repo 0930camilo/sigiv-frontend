@@ -218,13 +218,24 @@ width: 20%;
   color:#78350f;
 }
 
-.grupo-descuento{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  color:#78350f;
-  font-size:14px;
-  font-weight:600;
+.grupo-descuento {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  width: 100%;
+}
+
+.grupo-descuento label {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.grupo-descuento .input {
+  width: 120px !important;
+  flex: 0 0 120px;
 }
 
 .total-neto{
@@ -704,9 +715,24 @@ width: 20%;
     font-size:14px;
   }
 
-  .grupo-descuento{
-    gap:6px;
-    font-size:13px;
+  .grupo-descuento {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .grupo-descuento label {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .grupo-descuento .input {
+    width: 120px !important;
+    flex: 0 0 120px;
   }
 
   .fila-cambio{
