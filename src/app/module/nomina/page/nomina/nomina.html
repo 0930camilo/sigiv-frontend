@@ -23,7 +23,7 @@
     </app-reusable-table>
 
     <!-- Click para ver detalle -->
-    <div *ngIf="!loading && nominas.length > 0" class="mt-4">
+    <div *ngIf="!loading && nominas.length > 0" class="mt-4, asig">
       <p class="text-sm text-gray-500 mb-2">Seleccione una nómina para ver las personas asignadas:</p>
       <div class="grid gap-2">
         <button *ngFor="let n of nominas" (click)="verDetalle(n)"
@@ -42,7 +42,7 @@
 
   <!-- Vista detalle: Personas asignadas a nómina -->
   <div *ngIf="mostrarDetalle && nominaSeleccionada">
-    <div class="flex items-center justify-between mb-4 asig">
+    <div class="flex items-center justify-between mb-4 asign">
       <div>
         <button (click)="cerrarDetalle()"
           class="text-blue-600 hover:underline text-sm mb-1">&larr; Volver a nóminas</button>
