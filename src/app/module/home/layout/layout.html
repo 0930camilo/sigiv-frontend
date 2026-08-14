@@ -42,9 +42,18 @@
 
       <!-- Principal -->
       <a routerLink="dashboard" routerLinkActive="active-link"
-        class="nav-item group">
-        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-        <span>Dashboard</span>
+         class="nav-item group">
+        <svg class="w-5 h-5 mr-3"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 19V5m0 14h16M8 17v-5m4 5V8m4 9V4m4 13v-7">
+          </path>
+        </svg>
+        <span>Indicadores</span>
       </a>
 
       <a *ngIf="isEmpresa" routerLink="users" routerLinkActive="active-link"
