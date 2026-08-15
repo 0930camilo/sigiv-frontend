@@ -104,4 +104,12 @@ export class CotizacionService {
       }
     );
   }
+
+  enviarCorreo(id: number, correoDestino: string): Observable<any> {
+    return this.http.post(
+      `${environment.cotizacionesApi}/${id}/enviar-correo`,
+      { correoDestino },
+      { headers: this.headerUtil.getAuthHeaders() }
+    );
+  }
 }

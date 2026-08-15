@@ -73,14 +73,14 @@ export class CotizacionComponent implements OnInit {
           action: (row: Cotizacion) => this.verDetalle(row)
         },
         {
-          title: 'Ver cotizacion PDF',
-          icon: 'fa-solid fa-file-invoice text-blue-600',
+          title: 'Imprimir',
+          icon: 'fa-solid fa-print text-purple-600',
           action: (row: Cotizacion) => this.previewPdf(row.idcotizacion)
         },
         {
-          title: 'Imprimir POS',
-          icon: 'fa-solid fa-print text-purple-600',
-          action: (row: Cotizacion) => this.imprimirCotizacionPos(row)
+          title: 'Enviar por correo',
+          icon: 'fa-solid fa-envelope text-blue-600',
+          action: (row: Cotizacion) => this.enviarCorreo(row)
         },
         {
           title: 'Eliminar',
@@ -116,6 +116,11 @@ export class CotizacionComponent implements OnInit {
           title: 'Imprimir POS',
           icon: 'fa-solid fa-print text-purple-600',
           action: (row: Cotizacion) => this.imprimirCotizacionPos(row)
+        },
+        {
+          title: 'Enviar por correo',
+          icon: 'fa-solid fa-envelope text-blue-600',
+          action: (row: Cotizacion) => this.enviarCorreo(row)
         },
         {
           title: 'Eliminar',
@@ -228,6 +233,39 @@ export class CotizacionComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  async enviarCorreo(cotizacion: Cotizacion): Promise<void> {
+    const { value: correo } = await Swal.fire({
+      title: 'Enviar cotización por correo',
+      input: 'email',
+      inputLabel: 'Dirección de correo electrónico',
+      inputPlaceholder: 'Ingrese el correo electrónico',
+      showCancelButton: true,
+      confirmButtonText: 'Enviar',
+      cancelButtonText: 'Cancelar',
+      inputValidator: (value) => {
+        if (!value) {
+          return '¡Necesitas escribir una dirección de correo!';
+        }
+        return null;
+      }
+    });
+
+    if (correo) {
+      this.loading = true;
+      this.cotizacionService.enviarCorreo(cotizacion.idcotizacion, correo).subscribe({
+        next: () => {
+          this.loading = false;
+          Swal.fire('¡Enviado!', 'La cotización ha sido enviada.', 'success');
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error('Error enviando correo:', err);
+          Swal.fire('Error', 'No se pudo enviar la cotización.', 'error');
+        }
+      });
+    }
   }
 
   // ================================
