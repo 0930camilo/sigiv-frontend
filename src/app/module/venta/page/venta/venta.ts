@@ -122,14 +122,9 @@ export class VentaComponent implements OnInit {
           action: (row: Venta) => this.enviarFacturaPorCorreo(row)
         },
         {
-          title: 'Ver factura PDF',
-          icon: 'fa-solid fa-file-invoice text-blue-600',
-          action: (row: Venta) => this.previewFactura(row.idventa)
-        },
-        {
-          title: 'Imprimir POS',
+          title: 'Ver factura',
           icon: 'fa-solid fa-print text-purple-600',
-          action: (row: Venta) => this.imprimirFacturaPos(row)
+          action: (row: Venta) => this.previewFactura(row.idventa)
         }
       ]
     }

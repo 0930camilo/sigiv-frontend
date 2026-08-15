@@ -108,14 +108,9 @@ export class CotizacionComponent implements OnInit {
           action: (row: Cotizacion) => this.verDetalle(row)
         },
         {
-          title: 'Ver cotizacion PDF',
-          icon: 'fa-solid fa-file-invoice text-blue-600',
-          action: (row: Cotizacion) => this.previewPdf(row.idcotizacion)
-        },
-        {
-          title: 'Imprimir POS',
+          title: 'Ver cotizacion',
           icon: 'fa-solid fa-print text-purple-600',
-          action: (row: Cotizacion) => this.imprimirCotizacionPos(row)
+          action: (row: Cotizacion) => this.previewPdf(row.idcotizacion)
         },
         {
           title: 'Enviar por correo',
