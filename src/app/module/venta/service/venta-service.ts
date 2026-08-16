@@ -4,7 +4,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { HeaderTokenUtil } from '../../../shared/services/header-token-util';
-import { VentaRequest, VentasResponse } from '../model/venta.model';
+import { Abono, AbonoRequest, VentaRequest, VentasResponse } from '../model/venta.model';
+
+interface ApiResponse<T> {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: T;
+  timestamp?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +72,16 @@ export class VentaService {
     );
   }
 
+  descargarFacturaPos(id: number) {
+    return this.http.get(
+      `${environment.ventasApi}/${id}/factura-pos`,
+      {
+        responseType: 'blob',
+        headers: this.headerUtil.getAuthHeaders()
+      }
+    );
+  }
+
   enviarFacturaPorCorreo(id: number, correoDestino: string): Observable<any> {
     return this.http.post(
       `${environment.ventasApi}/${id}/factura/enviar-correo`,
@@ -99,6 +117,21 @@ export class VentaService {
         headers: this.headerUtil.getAuthHeaders(),
         params
       }
+    );
+  }
+
+  registrarAbono(ventaId: number, abono: AbonoRequest): Observable<ApiResponse<Abono>> {
+    return this.http.post<ApiResponse<Abono>>(
+      `${environment.ventasApi}/${ventaId}/abonos`,
+      abono,
+      { headers: this.headerUtil.getAuthHeaders() }
+    );
+  }
+
+  getAbonosByVentaId(ventaId: number): Observable<ApiResponse<Abono[]>> {
+    return this.http.get<ApiResponse<Abono[]>>(
+      `${environment.ventasApi}/${ventaId}/abonos`,
+      { headers: this.headerUtil.getAuthHeaders() }
     );
   }
 

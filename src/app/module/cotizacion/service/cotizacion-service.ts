@@ -105,6 +105,49 @@ export class CotizacionService {
     );
   }
 
+  obtenerCotizacionPosPdf(id: number): Observable<Blob> {
+    return this.http.get(
+      `${environment.cotizacionesApi}/${id}/descargar-pos`,
+      {
+        responseType: 'blob',
+        headers: this.headerUtil.getAuthHeaders()
+      }
+    );
+  }
+
+  showCotizacionPos(id: number): void {
+    this.obtenerCotizacionPosPdf(id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const tab = window.open(url, '_blank');
+        if (!tab) {
+          window.URL.revokeObjectURL(url);
+        } else {
+          window.setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+        }
+      },
+      error: (err) => {
+        console.error('Error al abrir la cotizacion POS', err);
+      }
+    });
+  }
+
+  descargarCotizacionPos(id: number): void {
+    this.obtenerCotizacionPosPdf(id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `cotizacion-pos-${id}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error al descargar la cotizacion POS', err);
+      }
+    });
+  }
+
   enviarCorreo(id: number, correoDestino: string): Observable<any> {
     return this.http.post(
       `${environment.cotizacionesApi}/${id}/enviar-correo`,

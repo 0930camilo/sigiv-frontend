@@ -9,7 +9,6 @@ import { AuthService } from '../../../auth/service/auth-service';
 import { ReusableTable } from '../../../../components/reusable-table/reusable-table';
 import { CotizacionService } from '../../service/cotizacion-service';
 import { Cotizacion } from '../../model/cotizacion.model';
-import { PosPrintService } from '../../../../shared/services/pos-print.service';
 
 import { FiltrosCotizacionesComponent, FiltrosCotizacion } from '../filtro/filtro';
 import Swal from 'sweetalert2';
@@ -144,8 +143,7 @@ export class CotizacionComponent implements OnInit {
     private cotizacionService: CotizacionService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private sanitizer: DomSanitizer,
-    private posPrintService: PosPrintService
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -270,18 +268,20 @@ export class CotizacionComponent implements OnInit {
     this.cotizacionActual =
       this.cotizaciones.find((cotizacion) => cotizacion.idcotizacion === id) ?? null;
 
-    this.cotizacionService.descargarCotizacionPdf(id).subscribe({
+    this.cotizacionService.obtenerCotizacionPosPdf(id).subscribe({
       next: (blob) => {
         this.pdfBlob = blob;
         this.pdfIdActual = id;
         const url = window.URL.createObjectURL(blob);
+
         this.pdfPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
         this.mostrarPreviewPdf = true;
+
         this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error cargando PDF:', err);
-        Swal.fire('Error', 'No se pudo cargar el PDF de la cotización', 'error');
+        Swal.fire('Error', 'No se pudo cargar el PDF POS de la cotizacion', 'error');
         this.cdr.markForCheck();
       }
     });
@@ -289,27 +289,20 @@ export class CotizacionComponent implements OnInit {
 
   descargarPdfDesdePreview(): void {
     if (!this.pdfBlob || !this.pdfIdActual) return;
-    const url = window.URL.createObjectURL(this.pdfBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `cotizacion-${this.pdfIdActual}.pdf`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    this.cotizacionService.descargarCotizacionPos(this.pdfIdActual);
   }
 
-  imprimirCotizacionPos(cotizacion: Cotizacion | null = this.cotizacionActual): void {
-    if (!cotizacion) return;
+  imprimirCotizacionPos(): void {
+    if (!this.pdfBlob) return;
 
-    this.posPrintService.imprimir({
-      tipo: 'COTIZACION',
-      numero: cotizacion.idcotizacion,
-      fecha: cotizacion.fecha,
-      nombreCliente: cotizacion.nombreCliente,
-      telefonoCliente: cotizacion.telefonoCliente,
-      nombreUsuario: cotizacion.nombreUsuario,
-      total: cotizacion.total,
-      detalles: cotizacion.detalles ?? []
-    });
+    const url = window.URL.createObjectURL(this.pdfBlob);
+    const printWindow = window.open(url, '_blank');
+
+    if (printWindow) {
+      printWindow.onload = () => printWindow.print();
+    }
+
+    window.setTimeout(() => window.URL.revokeObjectURL(url), 10000);
   }
 
   cerrarPreviewPdf(): void {

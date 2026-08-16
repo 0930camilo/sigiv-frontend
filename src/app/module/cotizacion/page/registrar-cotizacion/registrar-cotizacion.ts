@@ -6,7 +6,6 @@ import { AuthService } from '../../../auth/service/auth-service';
 import { ProductoService } from '../../../producto/service/producto-service';
 import { CategoriaService } from '../../../categorias/service/categoria-service';
 import { CotizacionService } from '../../service/cotizacion-service';
-import { PosPrintService, PosPrintDocument } from '../../../../shared/services/pos-print.service';
 import { Producto } from '../../../producto/model/productos.model';
 import { Categoria } from '../../../categorias/model/categorias.model';
 import { ItemCarritoCotizacion, CotizacionRequest } from '../../model/cotizacion.model';
@@ -58,7 +57,6 @@ export class RegistrarCotizacionComponent implements OnInit, OnDestroy {
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
     private cotizacionService: CotizacionService,
-    private posPrintService: PosPrintService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -285,7 +283,7 @@ export class RegistrarCotizacionComponent implements OnInit, OnDestroy {
           cancelButtonColor: '#d33'
         }).then((result) => {
           if (result.isConfirmed) {
-            this.imprimirTicketPos(res, cotizacion);
+            this.imprimirTicketPosDesdeBackend(res);
           }
           this.limpiarFormulario();
           this.cargarProductos(this.currentPage);
@@ -300,27 +298,37 @@ export class RegistrarCotizacionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private imprimirTicketPos(res: any, cotizacion: any): void {
-    const cotizacionId = res?.idcotizacion ?? res?.idCotizacion ?? res?.id ?? 0;
+  private imprimirTicketPosDesdeBackend(response: any): void {
+    const cotizacionId = this.obtenerCotizacionId(response);
+    if (!cotizacionId) return;
 
-    const doc: PosPrintDocument = {
-      tipo: 'COTIZACION',
-      numero: cotizacionId,
-      fecha: new Date().toISOString(),
-      empresaNombre: this.authService.getUserName(),
-      nombreCliente: cotizacion.nombreCliente || 'Cliente',
-      telefonoCliente: cotizacion.telefonoCliente || '-',
-      nombreUsuario: this.authService.getUserData()?.nombre || 'Vendedor',
-      total: cotizacion.total,
-      detalles: this.carrito.map(item => ({
-        descripcionProducto: item.nombre,
-        cantidad: item.cantidad,
-        precio: item.precio,
-        subtotal: item.precio * item.cantidad
-      }))
-    };
+    this.cotizacionService.obtenerCotizacionPosPdf(cotizacionId).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const printWindow = window.open(url, '_blank');
 
-    this.posPrintService.imprimir(doc);
+        if (printWindow) {
+          printWindow.onload = () => printWindow.print();
+        }
+
+        window.setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+      },
+      error: () => {
+        Swal.fire('Atencion', 'La cotizacion se creo, pero no se pudo abrir el PDF POS para imprimir.', 'warning');
+      }
+    });
+  }
+
+  private obtenerCotizacionId(response: any): number | null {
+    const id =
+      response?.idcotizacion ??
+      response?.idCotizacion ??
+      response?.id ??
+      response?.data?.idcotizacion ??
+      response?.data?.idCotizacion ??
+      response?.data?.id;
+    const idNumerico = Number(id);
+    return Number.isFinite(idNumerico) && idNumerico > 0 ? idNumerico : null;
   }
 
   limpiarFormulario(): void {

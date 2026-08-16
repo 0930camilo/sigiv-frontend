@@ -177,7 +177,21 @@
         </span>
       </div>
 
-      <div class="grupo-descuento">
+      <div class="grupo-descuento tipo-pago-control">
+        <label for="tipoPago" class="tipo-pago-label">Tipo de pago:</label>
+
+        <select
+          id="tipoPago"
+          class="input input-tipo-pago"
+          [(ngModel)]="tipoPago">
+          <option value="CONTADO">Contado</option>
+          <option value="CREDITO">Crédito</option>
+        </select>
+      </div>
+
+      <div
+        class="grupo-descuento"
+        *ngIf="tipoPago === 'CONTADO'">
         <label for="efectivo">Efectivo:</label>
 
         <input
@@ -190,15 +204,52 @@
           (input)="actualizarEfectivo($event)" />
       </div>
 
+      <div
+        class="grupo-descuento"
+        *ngIf="tipoPago === 'CREDITO'">
+        <label for="abonoInicial">Abono inicial:</label>
 
+        <input
+          id="abonoInicial"
+          type="text"
+          inputmode="numeric"
+          placeholder="Abono inicial"
+          class="input"
+          [value]="formatearNumero(abonoInicial)"
+          (input)="actualizarAbonoInicial($event)" />
+      </div>
 
+      <div
+        class="grupo-descuento"
+        *ngIf="tipoPago === 'CREDITO'">
+        <label for="metodoPagoAbonoInicial">Método abono:</label>
+
+        <select
+          id="metodoPagoAbonoInicial"
+          class="input"
+          [(ngModel)]="metodoPagoAbonoInicial">
+          <option value="EFECTIVO">Efectivo</option>
+          <option value="TRANSFERENCIA">Transferencia</option>
+          <option value="TARJETA_DEBITO">Tarjeta débito</option>
+          <option value="TARJETA_CREDITO">Tarjeta crédito</option>
+          <option value="OTRO">Otro</option>
+        </select>
+      </div>
+
+      <div
+        class="fila-total"
+        *ngIf="tipoPago === 'CREDITO'">
+        <span>Saldo pendiente:</span>
+        <span>
+          {{ saldoInicial | number:'1.0-2':'es-CO' }}
+        </span>
+      </div>
 
       <div
         class="fila-cambio"
-        [ngClass]="cambio>=0 ? 'positivo' : 'negativo'">
-
+        [ngClass]="cambio>=0 ? 'positivo' : 'negativo'"
+        *ngIf="tipoPago === 'CONTADO'">
         <span>Cambio:</span>
-
         <span>
           {{ cambio | number:'1.0-2':'es-CO' }}
         </span>
@@ -207,7 +258,10 @@
       <button
         type="button"
         class="btn-registrar"
-        [disabled]="carrito.length===0 || !efectivo || efectivo<totalVenta"
+        [disabled]="
+          carrito.length===0 ||
+          (tipoPago === 'CONTADO' && (!efectivo || efectivo < totalVenta))
+        "
         (click)="registrarVenta()">
         Registrar Venta
       </button>

@@ -12,7 +12,6 @@ import { ItemCarrito, VentaRequest } from '../../model/venta.model';
 import { PersonaService } from '../../../persona/service/persona-service';
 import { Persona } from '../../../persona/model/persona.model';
 import { VentaNotificacionService } from '../../../../shared/services/venta-notificacion.service';
-import { PosPrintService, PosPrintDocument } from '../../../../shared/services/pos-print.service';
 
 import Swal from 'sweetalert2';
 import { HostListener } from '@angular/core';
@@ -34,6 +33,9 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
   documentoCliente = '';
   efectivo: number | null = null;
   descuentoTotal: number | null = null;
+  tipoPago: 'CONTADO' | 'CREDITO' = 'CONTADO';
+  abonoInicial: number | null = null;
+  metodoPagoAbonoInicial: 'EFECTIVO' | 'TRANSFERENCIA' | 'TARJETA_DEBITO' | 'TARJETA_CREDITO' | 'OTRO' = 'EFECTIVO';
   clienteEncontrado: Persona | null = null;
   buscandoCliente = false;
   registrarClienteAutomaticamente = true;
@@ -72,7 +74,6 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     private ventaService: VentaService,
     private personaService: PersonaService,
     private ventaNotificacion: VentaNotificacionService,
-    private posPrintService: PosPrintService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -271,7 +272,13 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     return this.subtotalVenta - this.descuentoAplicado;
   }
 
+  get saldoInicial(): number {
+    const abono = this.abonoInicial || 0;
+    return Math.max(this.totalVenta - abono, 0);
+  }
+
   get cambio(): number {
+    if (this.tipoPago !== 'CONTADO') return 0;
     if (!this.efectivo || this.efectivo < this.totalVenta) return 0;
     return this.efectivo - this.totalVenta;
   }
@@ -399,7 +406,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       });
 
       if (result.isConfirmed) {
-        this.imprimirTicketPos(response);
+        this.imprimirTicketPosDesdeBackend(response);
       }
       this.finalizarRegistroVenta();
     };
@@ -441,37 +448,29 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     });
   }
 
-  private imprimirTicketPos(response: any): void {
+  private imprimirTicketPosDesdeBackend(response: any): void {
     const ventaId = this.obtenerVentaId(response);
     if (!ventaId) return;
 
-    // Intentamos obtener los datos de la respuesta, si no están completos, PosPrintService usará lo que tenga.
-    // Opcional: Podríamos llamar a this.ventaService.getVentasByEmpresa(...) para obtener el objeto Venta completo.
-    // Pero para rapidez, usaremos los datos que ya tenemos en el componente (carrito, cliente, etc).
+    this.ventaService.descargarFacturaPos(ventaId).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const printWindow = window.open(url, '_blank');
 
-    const doc: PosPrintDocument = {
-      tipo: 'FACTURA',
-      numero: ventaId,
-      fecha: new Date().toISOString(),
-      empresaNombre: this.authService.getUserName(), // O alguna propiedad de la empresa
-      nombreCliente: this.nombreCliente || 'Consumidor Final',
-      telefonoCliente: this.telefonoCliente || '-',
-      documentoCliente: this.documentoCliente || undefined,
-      nombreUsuario: this.authService.getUserData()?.nombre || 'Vendedor',
-      subtotal: this.subtotalVenta,
-      descuentoTotal: this.descuentoAplicado,
-      total: this.totalVenta,
-      efectivo: this.efectivo || 0,
-      cambio: (this.efectivo || 0) - this.totalVenta,
-      detalles: this.carrito.map(item => ({
-        descripcionProducto: item.nombre,
-        cantidad: item.cantidad,
-        precio: item.precio,
-        subtotal: item.precio * item.cantidad
-      }))
-    };
+        if (printWindow) {
+          printWindow.onload = () => printWindow.print();
+        }
 
-    this.posPrintService.imprimir(doc);
+        window.setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+      },
+      error: () => {
+        Swal.fire(
+          'Atencion',
+          'La venta se registro, pero no se pudo abrir la factura POS para imprimir.',
+          'warning'
+        );
+      }
+    });
   }
 
   // ================================
@@ -482,12 +481,17 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       Swal.fire('Carrito vacío', 'Agrega productos al carrito', 'warning');
       return;
     }
-
-
-
-    if (!this.efectivo || this.efectivo < this.totalVenta) {
-      Swal.fire('Error', 'El efectivo debe ser igual o mayor al total', 'warning');
-      return;
+    if (this.tipoPago === 'CONTADO') {
+      if (!this.efectivo || this.efectivo < this.totalVenta) {
+        Swal.fire('Error', 'El efectivo debe ser igual o mayor al total', 'warning');
+        return;
+      }
+    } else {
+      const abono = this.abonoInicial || 0;
+      if (abono < 0 || abono > this.totalVenta) {
+        Swal.fire('Error', 'El abono inicial no puede superar el total de la venta', 'warning');
+        return;
+      }
     }
 
     if (this.requiereEnvioCorreo() && !this.correoCliente.trim()) {
@@ -511,7 +515,10 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
         telefonoCliente: this.telefonoCliente.trim(),
         correoCliente: this.correoCliente.trim() || undefined,
         documentoCliente: this.documentoCliente.trim() || undefined,
-        efectivo: this.efectivo!,
+        tipoPago: this.tipoPago,
+        efectivo: this.tipoPago === 'CONTADO' ? (this.efectivo || 0) : 0,
+        abonoInicial: this.tipoPago === 'CREDITO' ? (this.abonoInicial || 0) : 0,
+        metodoPagoAbonoInicial: this.tipoPago === 'CREDITO' ? this.metodoPagoAbonoInicial : undefined,
         descuentoTotal: this.descuentoAplicado,
         detalles: this.carrito.map(item => ({
           productoId: item.productoId,
@@ -547,6 +554,9 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     this.enviarFacturaCorreo = false;
     this.efectivo = null;
     this.descuentoTotal = null;
+    this.tipoPago = 'CONTADO';
+    this.abonoInicial = null;
+    this.metodoPagoAbonoInicial = 'EFECTIVO';
     this.cantidades = {};
   }
 
@@ -591,5 +601,11 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     const valor = input.value.replace(/\./g, '').replace(/,/g, '');
 
     this.efectivo = valor ? Number(valor) : 0;
+  }
+
+  actualizarAbonoInicial(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valor = input.value.replace(/\./g, '').replace(/,/g, '');
+    this.abonoInicial = valor ? Number(valor) : 0;
   }
 }

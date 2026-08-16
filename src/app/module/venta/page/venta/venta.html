@@ -87,6 +87,60 @@
           <span>Total</span>
           <strong>{{ ventaSeleccionada.total | number:'1.0-2':'es-CO' }}</strong>
         </div>
+        <div class="flex justify-between border-t pt-2">
+          <span>Tipo pago</span>
+          <strong>{{ ventaSeleccionada.tipoPago || 'CONTADO' }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Estado</span>
+          <strong>{{ ventaSeleccionada.estadoPago || 'PAGADA' }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Abonado</span>
+          <strong>{{ (ventaSeleccionada.totalAbonado ?? ventaSeleccionada.total) | number:'1.0-2':'es-CO' }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Saldo</span>
+          <strong>{{ (ventaSeleccionada.saldoPendiente ?? 0) | number:'1.0-2':'es-CO' }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 border rounded p-3">
+      <div class="flex items-center justify-between mb-2">
+        <h4 class="font-semibold text-sm">Historial de abonos</h4>
+        <button
+          type="button"
+          class="px-3 py-1 bg-emerald-600 text-white rounded text-xs disabled:opacity-50"
+          [disabled]="!puedeRegistrarAbono(ventaSeleccionada)"
+          (click)="abrirRegistroAbono(ventaSeleccionada)">
+          Registrar abono
+        </button>
+      </div>
+
+      <div *ngIf="cargandoAbonos" class="text-xs text-gray-500">Cargando abonos...</div>
+
+      <table *ngIf="!cargandoAbonos && abonosDetalle.length > 0" class="w-full text-xs">
+        <thead>
+          <tr class="border-b">
+            <th class="text-left py-1">Fecha</th>
+            <th class="text-left py-1">Valor</th>
+            <th class="text-left py-1">Metodo</th>
+            <th class="text-left py-1">Observacion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let abono of abonosDetalle" class="border-b last:border-0">
+            <td class="py-1">{{ abono.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="py-1">{{ abono.valor | number:'1.0-2':'es-CO' }}</td>
+            <td class="py-1">{{ abono.metodoPago }}</td>
+            <td class="py-1">{{ abono.observacion || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="!cargandoAbonos && abonosDetalle.length === 0" class="text-xs text-gray-500">
+        No hay abonos registrados.
       </div>
     </div>
 
