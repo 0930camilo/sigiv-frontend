@@ -5,3 +5,12 @@
 .shadow { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .p-8 { padding: 2rem; }
 .mt-8 { margin-top: 2rem; }
+
+
+@media (max-width: 480px) {
+  .todo {
+
+    margin-top: -20px;
+    margin-left: -15px;
+  }
+}

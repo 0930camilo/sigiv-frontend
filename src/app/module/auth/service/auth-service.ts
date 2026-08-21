@@ -13,11 +13,14 @@ export class AuthService {
  private tokenKey = 'auth_token';
   private currentUserSubject = new BehaviorSubject<TokenPayload | null>(this.getDecodedToken());
   public currentUser$ = this.currentUserSubject.asObservable();
+  private expirationTimer: any;
 
   constructor(
     private http: HttpClient,
     private router: Router
-  ) {}
+  ) {
+    this.scheduleExpirationAlert(this.getDecodedToken());
+  }
 
   private isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
@@ -30,6 +33,7 @@ export class AuthService {
           this.setToken(response.data.token);
           const decoded = this.getDecodedToken();
           this.currentUserSubject.next(decoded);
+          this.scheduleExpirationAlert(decoded);
           console.log('✅ Login exitoso, token guardado');
         }
       })
@@ -114,6 +118,9 @@ export class AuthService {
 
   logout(): void {
     console.log('🚪 Cerrando sesión...');
+    if (this.expirationTimer) {
+      clearTimeout(this.expirationTimer);
+    }
     if (this.isBrowser()) {
       localStorage.removeItem(this.tokenKey);
     }
@@ -126,5 +133,56 @@ export class AuthService {
     console.log('🔄 Redirigiendo a perfil. Rol:', role);
     const target = role === 'ROLE_USUARIO' ? '/home/perfil-usuario' : '/home/perfil';
     this.router.navigate([target], { replaceUrl: true });
+  }
+
+  /** 🔹 Programar alerta de expiración de sesión */
+  private scheduleExpirationAlert(payload: TokenPayload | null): void {
+    if (!payload || !payload.exp || !this.isBrowser()) return;
+
+    if (this.expirationTimer) {
+      clearTimeout(this.expirationTimer);
+    }
+
+    const currentTime = Date.now();
+    const expirationTime = payload.exp * 1000;
+    const timeUntilExpiration = expirationTime - currentTime;
+
+    // Mostrar alerta 2 minutos antes de expirar
+    const alertLeadTime = 2 * 60 * 1000;
+    const delayUntilAlert = timeUntilExpiration - alertLeadTime;
+
+    if (delayUntilAlert > 0) {
+      this.expirationTimer = setTimeout(() => {
+        this.showExpirationWarning();
+      }, delayUntilAlert);
+    } else if (timeUntilExpiration > 0) {
+      // Si queda menos de 2 minutos, mostrar alerta inmediatamente
+      this.showExpirationWarning();
+    }
+  }
+
+  private async showExpirationWarning(): Promise<void> {
+    const Swal = (await import('sweetalert2')).default;
+    Swal.fire({
+      title: '¡Tu sesión está por caducar!',
+      text: 'Por seguridad, tu sesión se cerrará en menos de 2 minutos. ¿Deseas continuar conectado?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, mantener sesión',
+      cancelButtonText: 'Cerrar sesión ahora',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      timer: 120000,
+      timerProgressBar: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // En un escenario real, aquí llamaríamos a un endpoint de /refresh-token
+        // Como no tenemos uno explícito, al menos reseteamos el timer localmente
+        // o notificamos que el usuario sigue activo.
+        console.log('🔄 Usuario desea continuar. (Idealmente refrescar token aquí)');
+      } else if (result.dismiss === Swal.DismissReason.timer || result.isDismissed) {
+        this.logout();
+      }
+    });
   }
 }

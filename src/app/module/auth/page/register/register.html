@@ -1,65 +1,94 @@
-<div class="min-h-screen flex items-center justify-center bg-black px-4 py-8">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-gray-100 px-4 py-12">
   <div class="w-full max-w-2xl">
-    <div class="bg-zinc-900 rounded-2xl p-8 border border-zinc-800">
-      <h2 class="text-3xl font-bold text-white text-center mb-2">
-        Registrar Empresa
-      </h2>
-      <p class="text-gray-400 text-center mb-8">
-        Tu cuenta quedara pendiente hasta que un administrador la active.
-      </p>
+    <div class="bg-white rounded-3xl p-8 md:p-12 shadow-2xl border border-gray-100 relative overflow-hidden">
+      <!-- Decoración de fondo -->
+      <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-100 rounded-full opacity-50 blur-3xl"></div>
+      <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-50 rounded-full opacity-50 blur-3xl"></div>
 
-      <div *ngIf="successMessage" class="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/50 rounded-lg">
-        <p class="text-emerald-400 text-sm text-center">{{ successMessage }}</p>
-      </div>
+      <div class="relative">
+        <h2 class="text-4xl font-extrabold text-gray-900 text-center mb-2 tracking-tight">
+          Registrar Empresa
+        </h2>
+        <p class="text-gray-500 text-center mb-10 font-medium">
+          Únete a SIGIV y optimiza tu gestión hoy mismo.
+        </p>
 
-      <div *ngIf="errorMessage" class="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
-        <p class="text-red-400 text-sm text-center">{{ errorMessage }}</p>
-      </div>
-
-      <form [formGroup]="empresaForm" (ngSubmit)="registrarEmpresa()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-white text-sm font-medium mb-2">Nombre empresa</label>
-          <input formControlName="nombre_empresa" type="text" class="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-zinc-700 focus:outline-none focus:border-emerald-500" />
+        <!-- Messages -->
+        <div *ngIf="successMessage" class="mb-8 p-4 bg-green-50 border border-green-100 rounded-xl flex items-center gap-3 animate-pulse">
+          <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p class="text-green-700 font-bold text-center">{{ successMessage }}</p>
         </div>
 
-        <div>
-          <label class="block text-white text-sm font-medium mb-2">NIT</label>
-          <input formControlName="nit" type="text" class="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-zinc-700 focus:outline-none focus:border-emerald-500" />
+        <div *ngIf="errorMessage" class="mb-8 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3">
+          <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p class="text-red-700 font-bold text-center">{{ errorMessage }}</p>
         </div>
 
-        <div>
-          <label class="block text-white text-sm font-medium mb-2">Correo</label>
-          <input formControlName="correo" type="email" class="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-zinc-700 focus:outline-none focus:border-emerald-500" />
-        </div>
+        <form [formGroup]="empresaForm" (ngSubmit)="registrarEmpresa()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="block text-gray-700 text-sm font-bold ml-1">Nombre de la Empresa</label>
+            <input formControlName="nombre_empresa" type="text" placeholder="Ej. Mi Negocio S.A.S" class="w-full bg-gray-50 text-gray-900 rounded-xl px-4 py-4 border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium" />
+          </div>
 
-        <div>
-          <label class="block text-white text-sm font-medium mb-2">Telefono</label>
-          <input formControlName="telefono" type="text" class="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-zinc-700 focus:outline-none focus:border-emerald-500" />
-        </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 text-sm font-bold ml-1">NIT / Identificación</label>
+            <input formControlName="nit" type="text" placeholder="123456789-0" class="w-full bg-gray-50 text-gray-900 rounded-xl px-4 py-4 border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium" />
+          </div>
 
-        <div class="md:col-span-2">
-          <label class="block text-white text-sm font-medium mb-2">Direccion</label>
-          <input formControlName="direccion" type="text" class="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-zinc-700 focus:outline-none focus:border-emerald-500" />
-        </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 text-sm font-bold ml-1">Correo Electrónico</label>
+            <input formControlName="correo" type="email" placeholder="contacto@empresa.com" class="w-full bg-gray-50 text-gray-900 rounded-xl px-4 py-4 border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium" />
+          </div>
 
-        <div class="md:col-span-2">
-          <label class="block text-white text-sm font-medium mb-2">Clave</label>
-          <input formControlName="clave" type="password" class="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-zinc-700 focus:outline-none focus:border-emerald-500" />
-        </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 text-sm font-bold ml-1">Teléfono de Contacto</label>
+            <input formControlName="telefono" type="text" placeholder="+57 300 000 0000" class="w-full bg-gray-50 text-gray-900 rounded-xl px-4 py-4 border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium" />
+          </div>
 
-        <div class="md:col-span-2 mt-2">
-          <button
-            type="submit"
-            [disabled]="loading || empresaForm.invalid"
-            class="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition"
-          >
-            {{ loading ? 'Registrando...' : 'Registrar Empresa' }}
-          </button>
-        </div>
-      </form>
+          <div class="md:col-span-2 space-y-2">
+            <label class="block text-gray-700 text-sm font-bold ml-1">Dirección Física</label>
+            <input formControlName="direccion" type="text" placeholder="Calle 123 #45-67" class="w-full bg-gray-50 text-gray-900 rounded-xl px-4 py-4 border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium" />
+          </div>
 
-      <div class="mt-6 text-center">
-        <a routerLink="/login" class="text-emerald-400 hover:underline font-semibold">Ya tengo cuenta</a>
+          <div class="md:col-span-2 space-y-2">
+            <label class="block text-gray-700 text-sm font-bold ml-1">Contraseña de Acceso</label>
+            <input formControlName="clave" type="password" placeholder="••••••••" class="w-full bg-gray-50 text-gray-900 rounded-xl px-4 py-4 border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium" />
+          </div>
+
+          <div class="md:col-span-2 mt-6">
+            <button
+              type="submit"
+              [disabled]="loading || empresaForm.invalid"
+              class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center text-lg"
+            >
+              <span *ngIf="!loading">Completar Registro</span>
+              <span *ngIf="loading" class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Procesando...
+              </span>
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-8 flex flex-col gap-4 items-center border-t border-gray-100 pt-8">
+          <p class="text-gray-600 font-medium">
+            ¿Ya tienes una cuenta?
+            <a routerLink="/login" class="text-blue-600 hover:text-blue-700 font-bold ml-1 transition-colors">Inicia sesión</a>
+          </p>
+          <a routerLink="/" class="text-gray-400 hover:text-gray-600 font-bold flex items-center gap-2 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver al inicio
+          </a>
+        </div>
       </div>
     </div>
   </div>

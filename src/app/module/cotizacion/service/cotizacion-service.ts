@@ -32,6 +32,7 @@ export class CotizacionService {
       nombreCliente?: string;
       fechaInicio?: string;
       fechaFin?: string;
+      idCotizacion?: number | null;
     }
   ): Observable<CotizacionesResponse> {
     let params = new HttpParams()
@@ -50,7 +51,9 @@ export class CotizacionService {
     if (filtros?.fechaFin?.trim()) {
       params = params.set('fechaFin', filtros.fechaFin.trim());
     }
-
+    if (filtros?.idCotizacion !== null && filtros?.idCotizacion !== undefined) {
+      params = params.set('idCotizacion', filtros.idCotizacion.toString());
+    }
     return this.http.get<CotizacionesResponse>(
       `${environment.cotizacionesApi}/empresa/${empresaId}`,
       {
@@ -64,9 +67,18 @@ export class CotizacionService {
     empresaId: number,
     usuarioId: number,
     page = 0,
-    size = 10
+    size = 10,
+    filtros?: {
+      idCotizacion?: number | null;
+      nombreCliente?: string;
+      fechaInicio?: string;
+      fechaFin?: string;
+    }
   ): Observable<CotizacionesResponse> {
-    return this.getCotizacionesByEmpresa(empresaId, page, size, { usuarioId });
+    return this.getCotizacionesByEmpresa(empresaId, page, size, {
+      usuarioId,
+      ...filtros
+    });
   }
 
   obtenerCotizacion(id: number): Observable<any> {
@@ -90,6 +102,57 @@ export class CotizacionService {
         responseType: 'blob',
         headers: this.headerUtil.getAuthHeaders()
       }
+    );
+  }
+
+  obtenerCotizacionPosPdf(id: number): Observable<Blob> {
+    return this.http.get(
+      `${environment.cotizacionesApi}/${id}/descargar-pos`,
+      {
+        responseType: 'blob',
+        headers: this.headerUtil.getAuthHeaders()
+      }
+    );
+  }
+
+  showCotizacionPos(id: number): void {
+    this.obtenerCotizacionPosPdf(id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const tab = window.open(url, '_blank');
+        if (!tab) {
+          window.URL.revokeObjectURL(url);
+        } else {
+          window.setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+        }
+      },
+      error: (err) => {
+        console.error('Error al abrir la cotizacion POS', err);
+      }
+    });
+  }
+
+  descargarCotizacionPos(id: number): void {
+    this.obtenerCotizacionPosPdf(id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `cotizacion-pos-${id}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error al descargar la cotizacion POS', err);
+      }
+    });
+  }
+
+  enviarCorreo(id: number, correoDestino: string): Observable<any> {
+    return this.http.post(
+      `${environment.cotizacionesApi}/${id}/enviar-correo`,
+      { correoDestino },
+      { headers: this.headerUtil.getAuthHeaders() }
     );
   }
 }

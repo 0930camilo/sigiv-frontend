@@ -1,0 +1,28 @@
+/* Móviles */
+@media (max-width: 480px) {
+
+  .todo{
+    width: 110%;
+    margin-top: -20px;
+    margin-left: -25px;
+  }
+
+  .encabezado{
+    margin-bottom: 10px;
+  }
+
+  .titulo{
+    font-size: 20px;
+    line-height: 1.2;
+  }
+  .filtros {
+    width: 130%;
+  }
+
+
+  .filtro{
+    width: 77%;
+  }
+}
+
+

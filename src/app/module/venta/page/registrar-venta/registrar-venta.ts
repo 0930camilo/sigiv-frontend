@@ -14,6 +14,7 @@ import { Persona } from '../../../persona/model/persona.model';
 import { VentaNotificacionService } from '../../../../shared/services/venta-notificacion.service';
 
 import Swal from 'sweetalert2';
+import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-registrar-venta',
@@ -31,10 +32,14 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
   correoCliente = '';
   documentoCliente = '';
   efectivo: number | null = null;
+  descuentoTotal: number | null = null;
+  tipoPago: 'CONTADO' | 'CREDITO' = 'CONTADO';
+  abonoInicial: number | null = null;
+  metodoPagoAbonoInicial: 'EFECTIVO' | 'TRANSFERENCIA' | 'TARJETA_DEBITO' | 'TARJETA_CREDITO' | 'OTRO' = 'EFECTIVO';
   clienteEncontrado: Persona | null = null;
   buscandoCliente = false;
   registrarClienteAutomaticamente = true;
-  canalEnvioFactura: 'ninguno' | 'correo' | 'whatsapp' | 'correo-whatsapp' = 'ninguno';
+  enviarFacturaCorreo = false;
 
   // --- Carrito ---
   carrito: ItemCarrito[] = [];
@@ -240,7 +245,8 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
         nombre: producto.nombre,
         precio: producto.precio,
         cantidad,
-        disponible: producto.cantidad
+        disponible: producto.cantidad,
+        unidadMedida: producto.unidadMedida
       });
     }
 
@@ -253,11 +259,26 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  get totalVenta(): number {
+  get subtotalVenta(): number {
     return this.carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
   }
 
+  get descuentoAplicado(): number {
+    const descuento = Number(this.descuentoTotal) || 0;
+    return Math.min(Math.max(descuento, 0), this.subtotalVenta);
+  }
+
+  get totalVenta(): number {
+    return this.subtotalVenta - this.descuentoAplicado;
+  }
+
+  get saldoInicial(): number {
+    const abono = this.abonoInicial || 0;
+    return Math.max(this.totalVenta - abono, 0);
+  }
+
   get cambio(): number {
+    if (this.tipoPago !== 'CONTADO') return 0;
     if (!this.efectivo || this.efectivo < this.totalVenta) return 0;
     return this.efectivo - this.totalVenta;
   }
@@ -277,7 +298,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     this.buscandoCliente = true;
     this.cdr.markForCheck();
 
-    this.personaService.listarPorEmpresa(this.empresaId, 0, 10, { documento }).subscribe({
+    this.personaService.listarPorEmpresa(this.empresaId, 0, 10, { documento, exacto: true }).subscribe({
       next: (res) => {
         const personas = Array.isArray(res.data?.personas) ? res.data.personas : [];
         this.clienteEncontrado = personas[0] ?? null;
@@ -319,8 +340,8 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       }
 
       const dto = {
-        documento,
-        nombre,
+        documento: documento || '99999999',
+        nombre: nombre || 'NN',
         correo: this.correoCliente.trim(),
         telefono: this.telefonoCliente.trim(),
         direccion: '',
@@ -343,11 +364,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
   }
 
   private requiereEnvioCorreo(): boolean {
-    return this.canalEnvioFactura === 'correo' || this.canalEnvioFactura === 'correo-whatsapp';
-  }
-
-  private requiereEnvioWhatsapp(): boolean {
-    return this.canalEnvioFactura === 'whatsapp' || this.canalEnvioFactura === 'correo-whatsapp';
+    return this.enviarFacturaCorreo;
   }
 
   private obtenerVentaId(response: any): number | null {
@@ -363,10 +380,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     return Number.isFinite(idNumerico) && idNumerico > 0 ? idNumerico : null;
   }
 
-  private abrirWhatsappFactura(telefono: string): void {
-    const mensaje = encodeURIComponent('Hola, adjunto la factura POS de su compra.');
-    window.open(`https://wa.me/${telefono}?text=${mensaje}`, '_blank');
-  }
+
 
   private finalizarRegistroVenta(): void {
     this.ventaNotificacion.notificarVentaRegistrada();
@@ -377,26 +391,38 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
 
   private procesarEnvioFactura(response: any): void {
     const correo = this.correoCliente.trim();
-    const telefono = this.telefonoCliente.trim().replace(/\D/g, '');
     const ventaId = this.obtenerVentaId(response);
 
-    if (this.requiereEnvioWhatsapp() && telefono) {
-      this.abrirWhatsappFactura(telefono);
-    }
+    const preguntarImprimir = async () => {
+      const result = await Swal.fire({
+        title: 'Venta registrada',
+        text: '¿Deseas imprimir el ticket POS?',
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, imprimir',
+        cancelButtonText: 'No, finalizar',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33'
+      });
+
+      if (result.isConfirmed) {
+        this.imprimirTicketPosDesdeBackend(response);
+      }
+      this.finalizarRegistroVenta();
+    };
 
     if (!this.requiereEnvioCorreo()) {
-      Swal.fire('Venta registrada', response.message || 'Venta creada exitosamente', 'success');
-      this.finalizarRegistroVenta();
+      preguntarImprimir();
       return;
     }
 
     if (!ventaId) {
       Swal.fire(
         'Venta registrada',
-        'La venta se guardo, pero no se pudo identificar el ID para enviar la factura POS por correo.',
+        'La venta se guardó, pero no se pudo identificar el ID para enviar la factura POS por correo.',
         'warning'
       );
-      this.finalizarRegistroVenta();
+      preguntarImprimir();
       return;
     }
 
@@ -409,13 +435,40 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
 
     this.ventaService.enviarFacturaPorCorreo(ventaId, correo).subscribe({
       next: () => {
-        Swal.fire('Venta registrada', 'Venta creada y factura POS enviada por correo.', 'success');
-        this.finalizarRegistroVenta();
+        Swal.close();
+        preguntarImprimir();
       },
       error: (err: any) => {
-        const msg = err.error?.message || 'La venta se guardo, pero no se pudo enviar la factura POS por correo.';
-        Swal.fire('Venta registrada', msg, 'warning');
-        this.finalizarRegistroVenta();
+        Swal.close();
+        const msg = err.error?.message || 'La venta se guardó, pero no se pudo enviar la factura POS por correo.';
+        Swal.fire('Venta registrada', msg, 'warning').then(() => {
+          preguntarImprimir();
+        });
+      }
+    });
+  }
+
+  private imprimirTicketPosDesdeBackend(response: any): void {
+    const ventaId = this.obtenerVentaId(response);
+    if (!ventaId) return;
+
+    this.ventaService.descargarFacturaPos(ventaId).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const printWindow = window.open(url, '_blank');
+
+        if (printWindow) {
+          printWindow.onload = () => printWindow.print();
+        }
+
+        window.setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+      },
+      error: () => {
+        Swal.fire(
+          'Atencion',
+          'La venta se registro, pero no se pudo abrir la factura POS para imprimir.',
+          'warning'
+        );
       }
     });
   }
@@ -428,15 +481,17 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       Swal.fire('Carrito vacío', 'Agrega productos al carrito', 'warning');
       return;
     }
-
-    if (!this.nombreCliente.trim()) {
-      Swal.fire('Error', 'Ingresa el nombre del cliente', 'warning');
-      return;
-    }
-
-    if (!this.efectivo || this.efectivo < this.totalVenta) {
-      Swal.fire('Error', 'El efectivo debe ser igual o mayor al total', 'warning');
-      return;
+    if (this.tipoPago === 'CONTADO') {
+      if (!this.efectivo || this.efectivo < this.totalVenta) {
+        Swal.fire('Error', 'El efectivo debe ser igual o mayor al total', 'warning');
+        return;
+      }
+    } else {
+      const abono = this.abonoInicial || 0;
+      if (abono < 0 || abono > this.totalVenta) {
+        Swal.fire('Error', 'El abono inicial no puede superar el total de la venta', 'warning');
+        return;
+      }
     }
 
     if (this.requiereEnvioCorreo() && !this.correoCliente.trim()) {
@@ -444,10 +499,7 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.requiereEnvioWhatsapp() && !this.telefonoCliente.trim().replace(/\D/g, '')) {
-      Swal.fire('Error', 'Ingresa el telefono del cliente para enviar la factura POS por WhatsApp', 'warning');
-      return;
-    }
+
 
     Swal.fire({
       title: 'Registrando venta',
@@ -463,7 +515,11 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
         telefonoCliente: this.telefonoCliente.trim(),
         correoCliente: this.correoCliente.trim() || undefined,
         documentoCliente: this.documentoCliente.trim() || undefined,
-        efectivo: this.efectivo!,
+        tipoPago: this.tipoPago,
+        efectivo: this.tipoPago === 'CONTADO' ? (this.efectivo || 0) : 0,
+        abonoInicial: this.tipoPago === 'CREDITO' ? (this.abonoInicial || 0) : 0,
+        metodoPagoAbonoInicial: this.tipoPago === 'CREDITO' ? this.metodoPagoAbonoInicial : undefined,
+        descuentoTotal: this.descuentoAplicado,
         detalles: this.carrito.map(item => ({
           productoId: item.productoId,
           cantidad: item.cantidad
@@ -495,12 +551,61 @@ export class RegistrarVentaComponent implements OnInit, OnDestroy {
     this.documentoCliente = '';
     this.clienteEncontrado = null;
     this.registrarClienteAutomaticamente = true;
-    this.canalEnvioFactura = 'ninguno';
+    this.enviarFacturaCorreo = false;
     this.efectivo = null;
+    this.descuentoTotal = null;
+    this.tipoPago = 'CONTADO';
+    this.abonoInicial = null;
+    this.metodoPagoAbonoInicial = 'EFECTIVO';
     this.cantidades = {};
   }
 
   ngOnDestroy(): void {
     this.detenerEscaner();
+  }
+
+  carritoVisible = window.innerWidth > 480;
+
+  toggleCarrito(): void {
+    this.carritoVisible = !this.carritoVisible;
+  }
+
+  @HostListener('window:resize')
+  onResize(){
+
+    if(window.innerWidth > 480){
+      this.carritoVisible = true;
+    }
+
+  }
+
+  formatearNumero(valor: number | null | undefined): string {
+    if (valor === null || valor === undefined || valor === 0) {
+      return '';
+    }
+
+    return valor.toLocaleString('es-CO');
+  }
+
+  actualizarDescuento(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    const valor = input.value.replace(/\./g, '').replace(/,/g, '');
+
+    this.descuentoTotal = valor ? Number(valor) : 0;
+  }
+
+  actualizarEfectivo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    const valor = input.value.replace(/\./g, '').replace(/,/g, '');
+
+    this.efectivo = valor ? Number(valor) : 0;
+  }
+
+  actualizarAbonoInicial(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valor = input.value.replace(/\./g, '').replace(/,/g, '');
+    this.abonoInicial = valor ? Number(valor) : 0;
   }
 }

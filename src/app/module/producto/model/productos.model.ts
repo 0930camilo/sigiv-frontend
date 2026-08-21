@@ -1,10 +1,14 @@
+export type UnidadMedida = 'KG' | 'GRAMOS' | 'UNIDAD' | 'LITRO' | 'METRO';
+
 export interface Producto {
   idProducto: number;
   nombre: string;
   descripcion: string;
   cantidad: number;
+  unidadMedida: UnidadMedida;
   precioCompra: number;
   precio: number;
+  codigoBarra?: string;
   fecha: string;
   estado: 'Activo' | 'Inactivo';
 
@@ -32,8 +36,10 @@ export interface ProductoCreateRequest {
   nombre: string;
   descripcion: string;
   cantidad: number;
+  unidadMedida: UnidadMedida;
   precioCompra: number;
   precio: number;
+  codigoBarra?: string;
   estado: 'Activo' | 'Inactivo';
   proveedorId?: number;
   categoriaId: number;

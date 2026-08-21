@@ -1,97 +1,283 @@
-<div class="space-y-8">
-  <h1 class="text-2xl font-semibold text-gray-800">Resumen general</h1>
+<div class="space-y-6 md:space-y-8 ">
+
+  <h1 class="text-xl md:text-2xl font-semibold text-gray-800">
+    Resumen general
+  </h1>
 
   <!-- 🔹 Filtro por rango de fechas -->
-  <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex flex-col md:flex-row gap-4 items-center">
+  <div class="bg-white p-3 md:p-6 rounded-2xl shadow-md border border-gray-100 flex flex-row items-end gap-2 md:gap-4 filtro-fechas">
+
     <div class="flex flex-col">
-      <label for="fechaInicio" class="text-sm text-gray-600">Fecha inicio</label>
+      <label for="fechaInicio" class="text-xs md:text-sm text-gray-600">
+        Fecha inicio
+      </label>
+
       <input
         id="fechaInicio"
         type="date"
         [(ngModel)]="fechaInicio"
-        class="border border-gray-300 rounded-lg px-3 py-2"
+        class="border border-gray-300 rounded-lg px-2 py-1 md:px-3 md:py-2"
       />
     </div>
 
     <div class="flex flex-col">
-      <label for="fechaFin" class="text-sm text-gray-600">Fecha fin</label>
+      <label for="fechaFin" class="text-xs md:text-sm text-gray-600">
+        Fecha fin
+      </label>
+
       <input
         id="fechaFin"
         type="date"
         [(ngModel)]="fechaFin"
-        class="border border-gray-300 rounded-lg px-3 py-2"
+        class="border border-gray-300 rounded-lg px-2 py-1 md:px-3 md:py-2"
       />
     </div>
 
     <button
       (click)="filtrarVentasPorFechas()"
-      class="bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+      class="bg-blue-600 text-white text-xs md:text-sm font-medium px-3 py-2 rounded-lg hover:bg-blue-700 transition"
     >
       Filtrar
     </button>
+
   </div>
 
-  <!-- 🔹 Empresa -->
-  <div *ngIf="isEmpresa" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-      <p class="text-gray-500">Usuarios activos</p>
-      <h2 class="text-3xl font-bold text-blue-600 mt-2">{{ usuariosActivos }}</h2>
+  <!-- Empresa -->
+  <div *ngIf="isEmpresa" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
+
+    <!-- Usuarios Activos -->
+    <div class="stat-card stat-card-users group">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-xs md:text-sm font-medium">Usuarios Activos</p>
+          <h2 class="stat-value text-blue-600">{{ usuariosActivos }}</h2>
+        </div>
+        <div class="stat-icon-box bg-blue-100 group-hover:bg-blue-600">
+          👥
+        </div>
+      </div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-      <p class="text-gray-500">Ventas del rango seleccionado</p>
-      <h2 class="text-3xl font-bold text-green-600 mt-2">
-        {{ ventasDelMes | currency:'COP':'symbol-narrow':'1.0-0' }}
-      </h2>
+    <!-- Ventas -->
+    <div class="stat-card stat-card-sales group">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-xs md:text-sm font-medium">Ventas (Rango)</p>
+          <h2 class="stat-value text-green-600">{{ ventasDelMes | currency:'COP':'symbol-narrow':'1.0-0' }}</h2>
+        </div>
+        <div class="stat-icon-box bg-green-100 group-hover:bg-green-600">
+          💰
+        </div>
+      </div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-      <p class="text-gray-500">Ganancia del rango seleccionado</p>
-      <h2 class="text-3xl font-bold text-purple-600 mt-2">
-        {{ gananciaTotal | currency:'COP':'symbol-narrow':'1.0-0' }}
-      </h2>
+    <!-- Ganancia -->
+    <div class="stat-card stat-card-profit group">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-xs md:text-sm font-medium">Ganancia (Rango)</p>
+          <h2 class="stat-value text-purple-600">{{ gananciaTotal | currency:'COP':'symbol-narrow':'1.0-0' }}</h2>
+        </div>
+        <div class="stat-icon-box bg-purple-100 group-hover:bg-purple-600">
+          📈
+        </div>
+      </div>
     </div>
+
+    <!-- Pedidos -->
+    <div class="stat-card stat-card-orders group">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-xs md:text-sm font-medium">Pedidos Totales</p>
+          <h2 class="stat-value text-orange-600">{{ totalPedidos }}</h2>
+        </div>
+        <div class="stat-icon-box bg-orange-100 group-hover:bg-orange-600">
+          📦
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- 📊 Resumen por vendedor -->
-  <div *ngIf="isEmpresa && resumenVendedores.length > 0" class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Ventas por vendedor</h3>
+
+  <!-- Resumen vendedores -->
+  <div
+    *ngIf="isEmpresa && resumenVendedores.length > 0"
+    class="bg-white p-3 md:p-6 rounded-2xl shadow-md border border-gray-100">
+
+    <h3 class="text-base md:text-lg font-semibold text-gray-800 mb-3 md:mb-4">
+      📊 Ventas por vendedor
+    </h3>
+
     <div class="overflow-x-auto">
-      <table class="w-full text-sm">
+
+      <table class="w-full text-xs md:text-sm">
+
         <thead class="bg-gray-50">
-          <tr>
-            <th class="p-3 text-left font-medium text-gray-600">Vendedor</th>
-            <th class="p-3 text-center font-medium text-gray-600">Cantidad Ventas</th>
-            <th class="p-3 text-right font-medium text-gray-600">Total Vendido</th>
-          </tr>
+
+        <tr>
+
+          <th class="p-2 md:p-3 text-left font-medium text-gray-600">
+            Vendedor
+          </th>
+
+          <th class="p-2 md:p-3 text-center font-medium text-gray-600">
+            Cantidad Ventas
+          </th>
+
+          <th class="p-2 md:p-3 text-right font-medium text-gray-600">
+            Total Vendido
+          </th>
+
+        </tr>
+
         </thead>
+
         <tbody>
-          <tr *ngFor="let r of resumenVendedores" class="border-t hover:bg-gray-50 transition">
-            <td class="p-3">{{ r.nombreUsuario }}</td>
-            <td class="p-3 text-center font-semibold">{{ r.cantidadVentas }}</td>
-            <td class="p-3 text-right font-semibold text-green-600">
-              {{ r.totalVendido | currency:'COP':'symbol-narrow':'1.0-0' }}
-            </td>
-          </tr>
+
+        <tr
+          *ngFor="let r of resumenVendedores"
+          class="border-t hover:bg-gray-50 transition">
+
+          <td class="p-2 md:p-3">
+            {{ r.nombreUsuario }}
+          </td>
+
+          <td class="p-2 md:p-3 text-center font-semibold">
+            {{ r.cantidadVentas }}
+          </td>
+
+          <td class="p-2 md:p-3 text-right font-semibold text-green-600">
+            {{ r.totalVendido | currency:'COP':'symbol-narrow':'1.0-0' }}
+          </td>
+
+        </tr>
+
         </tbody>
+
       </table>
+
+    </div>
+
+  </div>
+
+  <!-- Usuario -->
+  <div *ngIf="isUsuario" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
+
+    <!-- Ventas -->
+    <div class="stat-card stat-card-sales group">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-xs md:text-sm font-medium">Ventas (Rango)</p>
+          <h2 class="stat-value text-green-600">{{ ventasDelMes | currency:'COP':'symbol-narrow':'1.0-0' }}</h2>
+        </div>
+        <div class="stat-icon-box bg-green-100 group-hover:bg-green-600">
+          💰
+        </div>
+      </div>
+    </div>
+
+    <!-- Ganancia -->
+    <div class="stat-card stat-card-profit group">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-xs md:text-sm font-medium">Ganancia (Rango)</p>
+          <h2 class="stat-value text-purple-600">{{ gananciaTotal | currency:'COP':'symbol-narrow':'1.0-0' }}</h2>
+        </div>
+        <div class="stat-icon-box bg-purple-100 group-hover:bg-purple-600">
+          📈
+        </div>
+      </div>
+    </div>
+
+    <!-- Mis Pedidos -->
+    <div class="stat-card stat-card-orders group">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-xs md:text-sm font-medium">Mis Pedidos</p>
+          <h2 class="stat-value text-orange-600">{{ totalPedidos }}</h2>
+        </div>
+        <div class="stat-icon-box bg-orange-100 group-hover:bg-orange-600">
+          📦
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 📊 Gráficos -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+    <!-- Ventas Mensuales -->
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Ventas (Rango seleccionado)</h2>
+      <div *ngIf="lineChartData.datasets[0].data.length > 0; else noDataVentas" class="h-64">
+        <canvas baseChart
+          [data]="lineChartData"
+          [options]="lineChartOptions"
+          [type]="lineChartType">
+        </canvas>
+      </div>
+      <ng-template #noDataVentas>
+        <div class="h-64 flex items-center justify-center text-gray-400 italic">
+          No hay datos de ventas para este periodo.
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Productos más vendidos -->
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Productos Más Vendidos (Top 5)</h2>
+      <div *ngIf="barChartData.datasets[0].data.length > 0; else noDataProductos" class="h-64">
+        <canvas baseChart
+          [data]="barChartData"
+          [options]="barChartOptions"
+          [type]="barChartType">
+        </canvas>
+      </div>
+      <ng-template #noDataProductos>
+        <div class="h-64 flex items-center justify-center text-gray-400 italic">
+          No hay productos registrados en las ventas de este periodo.
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Ventas por Categoría -->
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Ventas por Categoría</h2>
+      <div *ngIf="categoryChartData.datasets[0].data.length > 0; else noDataCategorias" class="h-64 flex justify-center">
+        <div class="w-full max-w-md">
+          <canvas baseChart
+            [data]="categoryChartData"
+            [options]="categoryChartOptions"
+            [type]="categoryChartType">
+          </canvas>
+        </div>
+      </div>
+      <ng-template #noDataCategorias>
+        <div class="h-64 flex items-center justify-center text-gray-400 italic">
+          No hay categorías registradas en este periodo.
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Margen de Ganancia (Estimado) -->
+    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700 text-center">Margen de Ganancia General (Estimado)</h2>
+      <div *ngIf="totalPedidos > 0; else noDataMargen" class="h-64 flex justify-center">
+        <div class="w-full max-w-md">
+          <canvas baseChart
+            [data]="marginsChartData"
+            [options]="marginsChartOptions"
+            [type]="marginsChartType">
+          </canvas>
+        </div>
+      </div>
+      <ng-template #noDataMargen>
+        <div class="h-64 flex items-center justify-center text-gray-400 italic">
+          No hay datos suficientes para calcular el margen.
+        </div>
+      </ng-template>
     </div>
   </div>
 
-  <!-- 🔹 Usuario -->
-  <div *ngIf="isUsuario" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-      <p class="text-gray-500">Ventas del rango seleccionado</p>
-      <h2 class="text-3xl font-bold text-green-600 mt-2">
-        {{ ventasDelMes | currency:'COP':'symbol-narrow':'1.0-0' }}
-      </h2>
-    </div>
-
-    <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-      <p class="text-gray-500">Ganancia del rango seleccionado</p>
-      <h2 class="text-3xl font-bold text-purple-600 mt-2">
-        {{ gananciaTotal | currency:'COP':'symbol-narrow':'1.0-0' }}
-      </h2>
-    </div>
-  </div>
 </div>

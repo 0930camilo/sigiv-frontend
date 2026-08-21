@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoriaService } from '../../../categorias/service/categoria-service';
@@ -12,15 +12,15 @@ import Swal from 'sweetalert2';
   templateUrl: './filtro.html',
   styleUrls: ['./filtro.scss']
 })
-export class FiltrosProductoComponent implements OnInit {
+export class FiltrosProductoComponent implements OnInit, OnChanges {
 
   @Input() empresaId!: number;
 
-  filtroNombre: string = '';
-  filtroCodigoBarra: string = '';
-  filtroEstado: string = '';
-  categoriaNombre: string = '';
-  proveedorNombre: string = '';
+  filtroNombre = '';
+  filtroCodigoBarra = '';
+  filtroEstado = '';
+  categoriaNombre = '';
+  proveedorNombre = '';
 
   categorias: any[] = [];
   proveedores: any[] = [];
@@ -38,10 +38,20 @@ export class FiltrosProductoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.empresaId) {
-      this.cargarCategorias();
-      this.cargarProveedores();
+    this.cargarDatos();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['empresaId'] && !changes['empresaId'].firstChange) {
+      this.cargarDatos();
     }
+  }
+
+  private cargarDatos(): void {
+    if (!this.empresaId) return;
+
+    this.cargarCategorias();
+    this.cargarProveedores();
   }
 
   buscarPorNombre(): void {
@@ -50,6 +60,11 @@ export class FiltrosProductoComponent implements OnInit {
 
   buscarPorCodigoBarra(): void {
     this.filtrarCodigoBarra.emit(this.filtroCodigoBarra);
+  }
+
+  public establecerCodigoBarra(codigo: string): void {
+    this.filtroCodigoBarra = codigo;
+    this.buscarPorCodigoBarra();
   }
 
   filtrarPorEstado(): void {
@@ -65,15 +80,25 @@ export class FiltrosProductoComponent implements OnInit {
   }
 
   cargarCategorias(): void {
+    if (!this.empresaId) return;
+
     this.categoriaService.getCategoriasByEmpresa(this.empresaId).subscribe({
-      next: (res: any) => { this.categorias = res.data?.categorias || res.data || []; this.cdr.markForCheck(); },
+      next: (res: any) => {
+        this.categorias = res.data?.categorias || res.data || [];
+        this.cdr.markForCheck();
+      },
       error: () => Swal.fire('Error', 'No se pudieron cargar categorías', 'error')
     });
   }
 
   cargarProveedores(): void {
+    if (!this.empresaId) return;
+
     this.proveedorService.getProveedoresByEmpresa(this.empresaId).subscribe({
-      next: (res: any) => { this.proveedores = res.data?.proveedores || res.data || []; this.cdr.markForCheck(); },
+      next: (res: any) => {
+        this.proveedores = res.data?.proveedores || res.data || [];
+        this.cdr.markForCheck();
+      },
       error: () => Swal.fire('Error', 'No se pudieron cargar proveedores', 'error')
     });
   }

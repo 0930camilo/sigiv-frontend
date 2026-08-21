@@ -1,11 +1,11 @@
-<div class="p-4 sm:p-6">
+<div class="p-4 sm:p-6 todo">
 
   <!-- Vista principal: Lista de Nóminas -->
   <div *ngIf="!mostrarDetalle">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold text-gray-800">💼 Nóminas</h2>
+    <div class="flex items-center justify-between mb-4  tit">
+      <h2 class="text-lg font-semibold text-gray-800 ">💼 Nóminas</h2>
       <button (click)="abrirModalCrear()"
-        class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition">
+        class="bg-blue-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded text-xs md:text-sm hover:bg-blue-700 transition ti">
         + Nueva Nómina
       </button>
     </div>
@@ -13,6 +13,7 @@
     <app-reusable-table
       [data]="nominas"
       [columns]="columns"
+      [isMobile]="isMobile"
       [loading]="loading"
       [currentPage]="currentPage"
       [totalPages]="totalPages"
@@ -22,7 +23,7 @@
     </app-reusable-table>
 
     <!-- Click para ver detalle -->
-    <div *ngIf="!loading && nominas.length > 0" class="mt-4">
+    <div *ngIf="!loading && nominas.length > 0" class="mt-4, asig">
       <p class="text-sm text-gray-500 mb-2">Seleccione una nómina para ver las personas asignadas:</p>
       <div class="grid gap-2">
         <button *ngFor="let n of nominas" (click)="verDetalle(n)"
@@ -41,7 +42,7 @@
 
   <!-- Vista detalle: Personas asignadas a nómina -->
   <div *ngIf="mostrarDetalle && nominaSeleccionada">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-4 asign">
       <div>
         <button (click)="cerrarDetalle()"
           class="text-blue-600 hover:underline text-sm mb-1">&larr; Volver a nóminas</button>
@@ -54,7 +55,7 @@
         </p>
       </div>
       <button (click)="abrirModalAsignar()"
-        class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition">
+        class="bg-green-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded text-xs md:text-sm hover:bg-green-700 transition btnAsi">
         + Asignar Persona
       </button>
     </div>
@@ -66,8 +67,8 @@
       <thead class="bg-gray-100">
         <tr>
           <th class="px-4 py-2 text-left">Persona</th>
-          <th class="px-4 py-2 text-left">Días Trabajados</th>
-          <th class="px-4 py-2 text-left">Valor Día</th>
+          <th class="px-4 py-2 text-left">Días</th>
+          <th class="px-4 py-2 text-left">Valor</th>
           <th class="px-4 py-2 text-left">Salario</th>
           <th class="px-4 py-2 text-left">Acciones</th>
         </tr>
