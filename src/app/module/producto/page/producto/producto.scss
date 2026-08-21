@@ -233,7 +233,7 @@ app-register-producto button:disabled {
   }
 
   .scanner {
-    width: 100%;              /* que no se desborde */
+    width: 120%;              /* que no se desborde */
     padding: 10px;
     box-sizing: border-box;
   }
@@ -241,7 +241,7 @@ app-register-producto button:disabled {
   .scanner video {
     width: 100%;              /* ocupa todo el ancho disponible */
     height: auto;             /* mantiene proporción */
-    max-height: 250px;        /* límite para que no se extienda demasiado */
+    max-height: 150px;        /* límite para que no se extienda demasiado */
     object-fit: cover;        /* recorta si es necesario */
     border-radius: 8px;       /* opcional: esquinas redondeadas */
   }
