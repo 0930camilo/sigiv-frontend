@@ -68,3 +68,30 @@
 		display: none;
 	}
 }
+
+
+@media (max-width: 480px) {
+
+  .sidebar {
+    width: 200px !important;
+    max-width: 200px;
+  }
+
+  .nav-item,
+  .nav-item-btn {
+    @apply px-2.5 py-2 rounded-lg text-xs;
+  }
+
+  .sub-nav-item {
+    @apply px-2.5 py-1.5 text-[11px];
+  }
+
+  .sidebar svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sidebar span {
+    font-size: 0.75rem;
+  }
+}

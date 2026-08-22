@@ -13,7 +13,17 @@
         <h1 class="text-2xl font-black text-blue-900 tracking-tight">SIGIV</h1>
       </div>
     </div>
-
+    <div class="p-4 border-t border-gray-50 bg-gray-50/50">
+      <div class="flex items-center p-2 rounded-xl bg-white border border-gray-100 shadow-sm">
+        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-3">
+          {{ getUserInitial() }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-gray-900 truncate">{{ getUserName() }}</p>
+          <p class="text-[10px] text-gray-500 truncate">{{ isEmpresa ? 'Administrador' : 'Vendedor' }}</p>
+        </div>
+      </div>
+    </div>
     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-hide">
 
       <div class="px-2 mb-2">
@@ -147,17 +157,7 @@
 
     </nav>
 
-    <div class="p-4 border-t border-gray-50 bg-gray-50/50">
-      <div class="flex items-center p-2 rounded-xl bg-white border border-gray-100 shadow-sm">
-        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-3">
-          {{ getUserInitial() }}
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs font-bold text-gray-900 truncate">{{ getUserName() }}</p>
-          <p class="text-[10px] text-gray-500 truncate">{{ isEmpresa ? 'Administrador' : 'Vendedor' }}</p>
-        </div>
-      </div>
-    </div>
+
   </aside>
 
   <!-- Main Content -->

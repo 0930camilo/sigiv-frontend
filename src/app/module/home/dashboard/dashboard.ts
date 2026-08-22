@@ -26,6 +26,9 @@ Chart.register(...registerables);
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
+
+
+
 export class Dashboard implements OnInit {
   @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
 
@@ -123,9 +126,31 @@ export class Dashboard implements OnInit {
       {
         data: [],
         label: 'Unidades Vendidas',
-        backgroundColor: 'rgba(147, 51, 234, 0.6)',
-        borderColor: 'rgb(147, 51, 234)',
-        borderWidth: 1
+
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.6)',   // Azul
+          'rgba(16, 185, 129, 0.6)',   // Verde
+          'rgba(245, 158, 11, 0.6)',   // Amarillo
+          'rgba(147, 51, 234, 0.6)',   // Morado
+          'rgba(239, 68, 68, 0.6)' ,     // Rojo
+          'rgba(6, 182, 212, 0.7)',    // Cyan
+          'rgba(236, 72, 153, 0.7)',   // Rosa
+          'rgba(99, 102, 241, 0.7)',   // Índigo
+          'rgba(132, 204, 22, 0.7)',   // Lima
+          'rgba(249, 115, 22, 0.7)',   // Naranja
+          'rgba(20, 184, 166, 0.7)',   // Teal
+        ],
+
+        borderColor: [
+          'rgb(59, 130, 246)',
+          'rgb(16, 185, 129)',
+          'rgb(245, 158, 11)',
+          'rgb(147, 51, 234)',
+          'rgb(239, 68, 68)'
+        ],
+
+        borderWidth: 1,
+        borderRadius: 6
       }
     ],
     labels: []
@@ -400,9 +425,9 @@ export class Dashboard implements OnInit {
 
     const sortedProducts = Object.entries(productosContador)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+      .slice(0, 10);
 
-    console.log('📊 Productos Top 5:', sortedProducts);
+    console.log('📊 Productos Top 10:', sortedProducts);
 
     this.barChartData = {
       labels: sortedProducts.map(p => p[0]),
