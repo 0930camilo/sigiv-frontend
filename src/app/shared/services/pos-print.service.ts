@@ -16,6 +16,8 @@ export interface PosPrintDocument {
   telefonoCliente: string;
   documentoCliente?: string;
   nombreUsuario?: string;
+  subtotal?: number;
+  descuentoTotal?: number;
   total: number;
   efectivo?: number;
   cambio?: number;
@@ -153,14 +155,44 @@ export class PosPrintService {
     </section>
 
     <div class="line"></div>
+<section>
+  <div class="row">
+    <span class="label">Fecha</span>
+    <span>${this.escapeHtml(this.formatDate(documento.fecha))}</span>
+  </div>
 
-    <section>
-      <div class="row"><span class="label">Fecha</span><span>${this.escapeHtml(this.formatDate(documento.fecha))}</span></div>
-      <div class="row"><span class="label">Cliente</span><span>${this.escapeHtml(documento.nombreCliente || 'Consumidor final')}</span></div>
-      <div class="row"><span class="label">Telefono</span><span>${this.escapeHtml(documento.telefonoCliente || '-')}</span></div>
-      ${documento.documentoCliente ? `<div class="row"><span class="label">Documento</span><span>${this.escapeHtml(documento.documentoCliente)}</span></div>` : ''}
-      ${documento.nombreUsuario ? `<div class="row"><span class="label">Vendedor</span><span>${this.escapeHtml(documento.nombreUsuario)}</span></div>` : ''}
-    </section>
+  <div class="row">
+    <span class="label">Cliente</span>
+    <span>${this.escapeHtml(documento.nombreCliente || 'Consumidor final')}</span>
+  </div>
+
+  <div class="row">
+    <span class="label">Telefono</span>
+    <span>${this.escapeHtml(documento.telefonoCliente || '-')}</span>
+  </div>
+
+  ${
+      documento.documentoCliente
+        ? `
+      <div class="row">
+        <span class="label">Documento</span>
+        <span>${this.escapeHtml(this.ocultarDocumento(documento.documentoCliente))}</span>
+      </div>
+      `
+        : ''
+    }
+
+  ${
+      documento.nombreUsuario
+        ? `
+      <div class="row">
+        <span class="label">Vendedor</span>
+        <span>${this.escapeHtml(documento.nombreUsuario)}</span>
+      </div>
+      `
+        : ''
+    }
+</section>
 
     <div class="line"></div>
 
@@ -171,6 +203,8 @@ export class PosPrintService {
     <div class="line"></div>
 
     <section>
+      ${typeof documento.subtotal === 'number' ? `<div class="row"><span>Subtotal</span><span>${this.formatCurrency(documento.subtotal)}</span></div>` : ''}
+      ${typeof documento.descuentoTotal === 'number' && documento.descuentoTotal > 0 ? `<div class="row"><span>Descuento</span><span>-${this.formatCurrency(documento.descuentoTotal)}</span></div>` : ''}
       <div class="row total"><span>Total</span><span>${this.formatCurrency(documento.total)}</span></div>
       ${typeof documento.efectivo === 'number' ? `<div class="row"><span>Efectivo</span><span>${this.formatCurrency(documento.efectivo)}</span></div>` : ''}
       ${typeof documento.cambio === 'number' ? `<div class="row"><span>Cambio</span><span>${this.formatCurrency(documento.cambio)}</span></div>` : ''}
@@ -225,5 +259,19 @@ export class PosPrintService {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  }
+
+  private ocultarDocumento(documento?: string): string {
+    if (!documento) {
+      return '';
+    }
+
+    const doc = documento.trim();
+
+    if (doc.length <= 3) {
+      return doc;
+    }
+
+    return '*'.repeat(doc.length - 3) + doc.slice(-3);
   }
 }

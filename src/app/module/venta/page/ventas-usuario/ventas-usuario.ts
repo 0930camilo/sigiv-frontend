@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -6,14 +6,18 @@ import { TableColumn } from '../../../../shared/interface/TableColumn';
 import { ReusableTable } from '../../../../components/reusable-table/reusable-table';
 import { AuthService } from '../../../auth/service/auth-service';
 import { VentaService } from '../../service/venta-service';
-import { Venta } from '../../model/venta.model';
-import { PosPrintService } from '../../../../shared/services/pos-print.service';
+import { Abono, Venta } from '../../model/venta.model';
+import { FiltrosVentasComponent } from '../filtro/filtro';
 import Swal from 'sweetalert2';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+
 
 @Component({
   selector: 'app-ventas-usuario',
   standalone: true,
-  imports: [RouterModule, CommonModule, ReusableTable],
+  imports: [RouterModule, CommonModule, ReusableTable, FiltrosVentasComponent],
   templateUrl: './ventas-usuario.html',
   styleUrls: ['./ventas-usuario.scss']
 })
@@ -24,6 +28,10 @@ export class VentasUsuarioComponent implements OnInit {
   loading = false;
   usuarioId!: number;
   pageSize = 10;
+  filtroId: number | null = null;
+  filtroCliente: string = '';
+  fechaInicio: string = '';
+  fechaFin: string = '';
 
   ventaSeleccionada: Venta | null = null;
   mostrarDetalle = false;
@@ -33,15 +41,21 @@ export class VentasUsuarioComponent implements OnInit {
   facturaBlob: Blob | null = null;
   facturaIdActual: number | null = null;
   facturaActual: Venta | null = null;
+  abonosDetalle: Abono[] = [];
+  cargandoAbonos = false;
 
-  columns: TableColumn[] = [
+  // Estado movil
+  isMobile = false;
+
+  columnsDesktop: TableColumn[] = [
     { field: 'idventa', header: 'ID' },
     { field: 'fecha', header: 'Fecha', type: 'date' },
     { field: 'nombreCliente', header: 'Cliente' },
-    { field: 'telefonoCliente', header: 'Teléfono' },
+    { field: 'tipoPago', header: 'Tipo pago' },
     { field: 'total', header: 'Total', type: 'number' },
-    { field: 'efectivo', header: 'Efectivo', type: 'number' },
-    { field: 'cambio', header: 'Cambio', type: 'number' },
+    { field: 'totalAbonado', header: 'Abonado', type: 'number' },
+    { field: 'saldoPendiente', header: 'Saldo', type: 'number' },
+    { field: 'estadoPago', header: 'Estado' },
     {
       field: 'accionesVenta',
       header: 'Acciones',
@@ -53,30 +67,69 @@ export class VentasUsuarioComponent implements OnInit {
           action: (row: Venta) => this.verDetalle(row)
         },
         {
-          title: 'Enviar factura POS',
+          title: 'Imprimir',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Venta) => this.previewFactura(row.idventa)
+        },
+        {
+          title: 'Enviar',
           icon: 'fa-solid fa-envelope text-amber-600',
           action: (row: Venta) => this.enviarFacturaPorCorreo(row)
         },
         {
-          title: 'Ver factura PDF',
-          icon: 'fa-solid fa-file-invoice text-blue-600',
-          action: (row: Venta) => this.previewFactura(row.idventa)
-        },
-        {
-          title: 'Imprimir POS',
-          icon: 'fa-solid fa-print text-purple-600',
-          action: (row: Venta) => this.imprimirFacturaPos(row)
+          title: 'Registrar abono',
+          icon: 'fa-solid fa-hand-holding-dollar text-blue-600',
+          action: (row: Venta) => this.abrirRegistroAbono(row)
         }
       ]
     }
   ];
 
+  columnsMobile: TableColumn[] = [
+    { field: 'idventa', header: 'ID' },
+    { field: 'fecha', header: 'Fecha', type: 'date' },
+    { field: 'nombreCliente', header: 'Cliente' },
+    { field: 'tipoPago', header: 'Tipo pago' },
+    { field: 'total', header: 'Total', type: 'number' },
+    { field: 'saldoPendiente', header: 'Saldo', type: 'number' },
+    { field: 'estadoPago', header: 'Estado' },
+    {
+      field: 'accionesVenta',
+      header: 'Acciones',
+      type: 'buttons',
+      buttons: [
+        {
+          title: 'Ver detalle',
+          icon: 'fa-solid fa-eye text-green-600',
+          action: (row: Venta) => this.verDetalle(row)
+        },
+        {
+          title: 'Ver factura',
+          icon: 'fa-solid fa-print text-purple-600',
+          action: (row: Venta) => this.previewFactura(row.idventa)
+        },
+        {
+          title: 'Enviar factura POS',
+          icon: 'fa-solid fa-envelope text-amber-600',
+          action: (row: Venta) => this.enviarFacturaPorCorreo(row)
+        },
+        {
+          title: 'Registrar abono',
+          icon: 'fa-solid fa-hand-holding-dollar text-blue-600',
+          action: (row: Venta) => this.abrirRegistroAbono(row)
+        },
+
+      ]
+    }
+  ];
+
+  columns: TableColumn[] = [];
+
   constructor(
     private ventaService: VentaService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private sanitizer: DomSanitizer,
-    private posPrintService: PosPrintService
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -86,7 +139,22 @@ export class VentasUsuarioComponent implements OnInit {
       return;
     }
     this.usuarioId = Number(usuario);
+    this.actualizarColumnas();
     this.getVentas(0);
+  }
+
+  private actualizarColumnas(): void {
+    this.isMobile = window.innerWidth <= 480;
+    if (this.isMobile) {
+      this.columns = this.columnsMobile;
+    } else {
+      this.columns = this.columnsDesktop;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.actualizarColumnas();
   }
 
   getVentas(page: number = 0): void {
@@ -95,10 +163,19 @@ export class VentasUsuarioComponent implements OnInit {
     }
     this.loading = true;
     this.ventaService
-      .getVentasByUsuario(this.usuarioId, page, this.pageSize)
+      .getVentasByUsuario(
+        this.usuarioId,
+        page,
+        this.pageSize,
+        this.filtroId,
+        this.fechaInicio,
+        this.fechaFin,
+        this.filtroCliente
+      )
       .subscribe({
         next: (res: any) => {
-          this.ventas = res.data?.ventas ?? [];
+          const ventas = res.data?.ventas ?? [];
+          this.ventas = ventas.map((venta: Venta) => this.normalizarTotalesPago(venta));
           this.currentPage = res.data?.currentPage ?? 0;
           this.totalPages = res.data?.totalPages ?? 0;
           this.loading = false;
@@ -112,59 +189,324 @@ export class VentasUsuarioComponent implements OnInit {
       });
   }
 
+  filtrar(filtros: any): void {
+    this.filtroId = filtros.idVenta;
+    this.filtroCliente = filtros.cliente;
+    this.fechaInicio = filtros.fechaInicio;
+    this.fechaFin = filtros.fechaFin;
+    this.getVentas(0);
+  }
+
   verDetalle(venta: Venta): void {
     this.ventaSeleccionada = venta;
     this.mostrarDetalle = true;
+    this.cargarAbonos(venta.idventa);
     this.cdr.markForCheck();
   }
 
-  previewFactura(id: number): void {
-    this.facturaActual = this.ventas.find((venta) => venta.idventa === id) ?? null;
+  private normalizarTotalesPago(venta: Venta): Venta {
+    const tipoPago = venta.tipoPago || 'CONTADO';
+    const totalAbonado = Number(venta.totalAbonado ?? (tipoPago === 'CREDITO' ? 0 : venta.total ?? 0));
+    const saldoPendiente = Number(venta.saldoPendiente ?? Math.max((venta.total ?? 0) - totalAbonado, 0));
+    return {
+      ...venta,
+      tipoPago,
+      totalAbonado,
+      saldoPendiente,
+      estadoPago: venta.estadoPago || (saldoPendiente > 0 ? 'PENDIENTE' : 'PAGADA')
+    };
+  }
 
-    this.ventaService.descargarFactura(id).subscribe({
-      next: (blob) => {
-        this.facturaBlob = blob;
-        this.facturaIdActual = id;
-        const url = window.URL.createObjectURL(blob);
-        this.facturaPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-        this.mostrarPreviewFactura = true;
+  private cargarAbonos(ventaId: number): void {
+    this.cargandoAbonos = true;
+    this.ventaService.getAbonosByVentaId(ventaId).subscribe({
+      next: (res) => {
+        this.abonosDetalle = res.data ?? [];
+        this.cargandoAbonos = false;
         this.cdr.markForCheck();
       },
-      error: (err) => {
-        console.error('Error cargando factura:', err);
+      error: () => {
+        this.abonosDetalle = [];
+        this.cargandoAbonos = false;
         this.cdr.markForCheck();
       }
     });
   }
 
-  descargarFacturaDesdePreview(): void {
-    if (!this.facturaBlob || !this.facturaIdActual) return;
-
-    const url = window.URL.createObjectURL(this.facturaBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `factura-${this.facturaIdActual}.pdf`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+  puedeRegistrarAbono(venta: Venta): boolean {
+    const saldo = Number(venta.saldoPendiente ?? 0);
+    return venta.tipoPago === 'CREDITO' && saldo > 0;
   }
 
-  imprimirFacturaPos(venta: Venta | null = this.facturaActual): void {
-    if (!venta) return;
+  async abrirRegistroAbono(venta: Venta): Promise<void> {
+    if (!this.puedeRegistrarAbono(venta)) {
+      Swal.fire('Sin saldo pendiente', 'Solo se pueden registrar abonos en ventas a credito pendientes.', 'info');
+      return;
+    }
 
-    this.posPrintService.imprimir({
-      tipo: 'FACTURA',
-      numero: venta.idventa,
-      fecha: venta.fecha,
-      empresaNombre: venta.empresaNombre,
-      nombreCliente: venta.nombreCliente,
-      telefonoCliente: venta.telefonoCliente,
-      documentoCliente: venta.documentoCliente,
-      nombreUsuario: venta.nombreUsuario,
-      total: venta.total,
-      efectivo: venta.efectivo,
-      cambio: venta.cambio,
-      detalles: venta.detalles ?? []
+    const saldoPendiente = Number(venta.saldoPendiente ?? 0);
+    const result = await Swal.fire({
+      title: `Registrar abono #${venta.idventa}`,
+      html:
+        `<div style="text-align:left;display:grid;gap:8px">` +
+        `<p><strong>Saldo pendiente:</strong> ${saldoPendiente.toLocaleString('es-CO')}</p>` +
+        `<input id="abono-valor" class="swal2-input" placeholder="Valor del abono" inputmode="numeric">` +
+        `<select id="abono-metodo" class="swal2-input">` +
+        `<option value="EFECTIVO">Efectivo</option>` +
+        `<option value="TRANSFERENCIA">Transferencia</option>` +
+        `<option value="TARJETA_DEBITO">Tarjeta debito</option>` +
+        `<option value="TARJETA_CREDITO">Tarjeta credito</option>` +
+        `<option value="OTRO">Otro</option>` +
+        `</select>` +
+        `<input id="abono-observacion" class="swal2-input" placeholder="Observacion (opcional)">` +
+        `</div>`,
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      cancelButtonText: 'Cancelar',
+      focusConfirm: false,
+      preConfirm: () => {
+        const valorInput = document.getElementById('abono-valor') as HTMLInputElement | null;
+        const metodoInput = document.getElementById('abono-metodo') as HTMLSelectElement | null;
+        const observacionInput = document.getElementById('abono-observacion') as HTMLInputElement | null;
+        const valor = Number((valorInput?.value || '').replace(/\./g, '').replace(/,/g, ''));
+        if (!valor || valor <= 0) {
+          Swal.showValidationMessage('Ingresa un valor de abono valido');
+          return;
+        }
+        if (valor > saldoPendiente) {
+          Swal.showValidationMessage('El abono no puede superar el saldo pendiente');
+          return;
+        }
+        return {
+          valor,
+          metodoPago: metodoInput?.value || 'EFECTIVO',
+          observacion: observacionInput?.value || ''
+        };
+      }
     });
+
+    if (!result.isConfirmed || !result.value) return;
+
+    const usuarioId = Number(this.authService.getUserId());
+    if (!usuarioId) {
+      Swal.fire('Error', 'No se encontro el usuario autenticado para registrar el abono.', 'error');
+      return;
+    }
+
+    this.ventaService.registrarAbono(venta.idventa, { usuarioId, ...result.value }).subscribe({
+      next: () => {
+        const nuevoTotalAbonado = Number(venta.totalAbonado ?? 0) + Number(result.value.valor);
+        const nuevoSaldo = Math.max((venta.total ?? 0) - nuevoTotalAbonado, 0);
+        venta.totalAbonado = nuevoTotalAbonado;
+        venta.saldoPendiente = nuevoSaldo;
+        venta.estadoPago = nuevoSaldo === 0 ? 'PAGADA' : 'PENDIENTE';
+        if (this.ventaSeleccionada?.idventa === venta.idventa) {
+          this.ventaSeleccionada = { ...venta };
+          this.cargarAbonos(venta.idventa);
+        }
+        this.cdr.markForCheck();
+        Swal.fire('Abono registrado', 'El abono se registro correctamente.', 'success');
+      },
+      error: (err) => {
+        const msg = err.error?.message || 'No se pudo registrar el abono.';
+        Swal.fire('Error', msg, 'error');
+      }
+    });
+  }
+
+  previewFactura(id: number): void {
+    this.facturaActual =
+      this.ventas.find((venta) => venta.idventa === id) ?? null;
+
+    this.ventaService.descargarFacturaPos(id).subscribe({
+      next: (blob) => {
+
+        this.facturaBlob = blob;
+        this.facturaIdActual = id;
+
+        const url = window.URL.createObjectURL(blob);
+
+        this.facturaPreviewUrl =
+          this.sanitizer.bypassSecurityTrustResourceUrl(url);
+
+        this.mostrarPreviewFactura = true;
+
+        this.cdr.markForCheck();
+      },
+
+      error: (err) => {
+        console.error('Error cargando factura:', err);
+
+        Swal.fire(
+          'Error',
+          'No se pudo cargar la factura.',
+          'error'
+        );
+
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  async descargarFacturaDesdePreview(): Promise<void> {
+
+    if (!this.facturaBlob || !this.facturaIdActual) {
+      return;
+    }
+
+    const nombreArchivo =
+      `factura-${this.facturaIdActual}.pdf`;
+
+    try {
+
+      // ==========================================
+      // 🌐 NAVEGADOR
+      // ==========================================
+      if (!Capacitor.isNativePlatform()) {
+
+        const url =
+          window.URL.createObjectURL(this.facturaBlob);
+
+        const a =
+          document.createElement('a');
+
+        a.href = url;
+        a.download = nombreArchivo;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        window.URL.revokeObjectURL(url);
+
+        return;
+      }
+
+      // ==========================================
+      // 📱 ANDROID / CAPACITOR
+      // ==========================================
+
+      const base64 =
+        await this.blobToBase64(this.facturaBlob);
+
+      await Filesystem.writeFile({
+        path: nombreArchivo,
+        data: base64,
+        directory: Directory.Cache
+      });
+
+      const fileUri =
+        await Filesystem.getUri({
+          path: nombreArchivo,
+          directory: Directory.Cache
+        });
+
+      await Share.share({
+        title: `Factura #${this.facturaIdActual}`,
+        text: `Factura POS #${this.facturaIdActual}`,
+        url: fileUri.uri,
+        dialogTitle: 'Compartir factura'
+      });
+
+    } catch (error) {
+
+      console.error(
+        'Error descargando factura:',
+        error
+      );
+
+      Swal.fire(
+        'Error',
+        'No se pudo guardar o compartir la factura.',
+        'error'
+      );
+    }
+  }
+
+  async imprimirFacturaPos(): Promise<void> {
+
+    if (!this.facturaBlob || !this.facturaIdActual) {
+      return;
+    }
+
+    try {
+
+      // ==========================================
+      // 🌐 NAVEGADOR
+      // ==========================================
+      if (!Capacitor.isNativePlatform()) {
+
+        const url =
+          window.URL.createObjectURL(this.facturaBlob);
+
+        const printWindow =
+          window.open(url, '_blank');
+
+        if (!printWindow) {
+
+          Swal.fire(
+            'Bloqueado',
+            'El navegador bloqueó la ventana de impresión.',
+            'warning'
+          );
+
+          return;
+        }
+
+        printWindow.onload = () => {
+          printWindow.focus();
+          printWindow.print();
+        };
+
+        window.setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 10000);
+
+        return;
+      }
+
+      // ==========================================
+      // 📱 ANDROID / CAPACITOR
+      // ==========================================
+
+      const nombreArchivo =
+        `factura-${this.facturaIdActual}.pdf`;
+
+      const base64 =
+        await this.blobToBase64(this.facturaBlob);
+
+      await Filesystem.writeFile({
+        path: nombreArchivo,
+        data: base64,
+        directory: Directory.Cache
+      });
+
+      const fileUri =
+        await Filesystem.getUri({
+          path: nombreArchivo,
+          directory: Directory.Cache
+        });
+
+      await Share.share({
+        title: `Factura #${this.facturaIdActual}`,
+        text: 'Factura POS',
+        url: fileUri.uri,
+        dialogTitle: 'Abrir factura'
+      });
+
+    } catch (error) {
+
+      console.error(
+        'Error preparando factura para impresión:',
+        error
+      );
+
+      Swal.fire(
+        'Error',
+        'No se pudo abrir la factura en Android.',
+        'error'
+      );
+    }
   }
 
   cerrarPreviewFactura(): void {
@@ -209,6 +551,41 @@ export class VentasUsuarioComponent implements OnInit {
         const msg = err.error?.message || 'No se pudo enviar la factura POS por correo.';
         Swal.fire('Error', msg, 'error');
       }
+    });
+  }
+
+
+  private blobToBase64(blob: Blob): Promise<string> {
+
+    return new Promise((resolve, reject) => {
+
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+
+        try {
+
+          const result =
+            reader.result as string;
+
+          const base64 =
+            result.split(',')[1];
+
+          if (!base64) {
+            reject(new Error('No se pudo convertir el PDF a Base64'));
+            return;
+          }
+
+          resolve(base64);
+
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsDataURL(blob);
     });
   }
 }

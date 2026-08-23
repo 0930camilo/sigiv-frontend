@@ -14,10 +14,20 @@ export class LoaderInterceptor implements HttpInterceptor {
   constructor(private loader: Loaderservice) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.loader.show();
+    // No mostrar el loader global para peticiones GET normales (que suelen ser las de carga de datos)
+    // para evitar el bloqueo total de la pantalla.
+    const skipLoader = request.method === 'GET';
+
+    if (!skipLoader) {
+      this.loader.show();
+    }
 
     return next.handle(request).pipe(
-      finalize(() => this.loader.hide())
+      finalize(() => {
+        if (!skipLoader) {
+          this.loader.hide();
+        }
+      })
     );
   }
 }

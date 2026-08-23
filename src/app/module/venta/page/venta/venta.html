@@ -1,4 +1,4 @@
-<div class="p-4 sm:p-6">
+<div class="p-4 sm:p-6 todo">
 
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold">
@@ -6,21 +6,26 @@
     </h2>
   </div>
 
-  <app-filtros-ventas
-    (filtrarId)="filtrarPorId($event)">
-  </app-filtros-ventas>
+  <div class="filtros">
+    <div class="filtro">
+      <app-filtros-ventas
+        (filtrar)="filtrar($event)">
+      </app-filtros-ventas>
+    </div>
+  </div>
 
   <app-reusable-table
     [data]="ventas"
     [columns]="columns"
+    [isMobile]="isMobile"
     [loading]="loading"
     [currentPage]="currentPage"
     [totalPages]="totalPages"
     (next)="getVentas(currentPage + 1)"
     (previous)="getVentas(currentPage - 1)">
-  </app-reusable-table>
+   </app-reusable-table>
 
-</div>
+     </div>
 
 <!-- MODAL DETALLE -->
 <div
@@ -57,16 +62,87 @@
       <tbody *ngIf="ventaSeleccionada.detalles?.length; else sinDetalles">
         <tr *ngFor="let d of ventaSeleccionada.detalles">
           <td class="p-2">{{ d.descripcionProducto }}</td>
-          <td class="p-2 text-center">{{ d.cantidad }}</td>
+          <td class="p-2 text-center">{{ d.cantidad }} {{ d.unidadMedida }}</td>
           <td class="p-2 text-center">
-            {{ d.precio | number:'1.0-0':'es-CO' }}
+            {{ d.precio | number:'1.0-2':'es-CO' }}
           </td>
           <td class="p-2 text-center">
-            {{ d.subtotal | number:'1.0-0':'es-CO' }}
+            {{ d.subtotal | number:'1.0-2':'es-CO' }}
           </td>
         </tr>
       </tbody>
     </table>
+
+    <div class="mt-4 flex justify-end">
+      <div class="w-full max-w-xs text-sm space-y-1">
+        <div class="flex justify-between">
+          <span>Subtotal</span>
+          <strong>{{ ventaSeleccionada.subtotal | number:'1.0-2':'es-CO' }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Descuento</span>
+          <strong>{{ ventaSeleccionada.descuentoTotal | number:'1.0-2':'es-CO' }}</strong>
+        </div>
+        <div class="flex justify-between text-base border-t pt-2">
+          <span>Total</span>
+          <strong>{{ ventaSeleccionada.total | number:'1.0-2':'es-CO' }}</strong>
+        </div>
+        <div class="flex justify-between border-t pt-2">
+          <span>Tipo pago</span>
+          <strong>{{ ventaSeleccionada.tipoPago || 'CONTADO' }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Estado</span>
+          <strong>{{ ventaSeleccionada.estadoPago || 'PAGADA' }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Abonado</span>
+          <strong>{{ (ventaSeleccionada.totalAbonado ?? ventaSeleccionada.total) | number:'1.0-2':'es-CO' }}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span>Saldo</span>
+          <strong>{{ (ventaSeleccionada.saldoPendiente ?? 0) | number:'1.0-2':'es-CO' }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 border rounded p-3">
+      <div class="flex items-center justify-between mb-2">
+        <h4 class="font-semibold text-sm">Historial de abonos</h4>
+        <button
+          type="button"
+          class="px-3 py-1 bg-emerald-600 text-white rounded text-xs disabled:opacity-50"
+          [disabled]="!puedeRegistrarAbono(ventaSeleccionada)"
+          (click)="abrirRegistroAbono(ventaSeleccionada)">
+          Registrar abono
+        </button>
+      </div>
+
+      <div *ngIf="cargandoAbonos" class="text-xs text-gray-500">Cargando abonos...</div>
+
+      <table *ngIf="!cargandoAbonos && abonosDetalle.length > 0" class="w-full text-xs">
+        <thead>
+          <tr class="border-b">
+            <th class="text-left py-1">Fecha</th>
+            <th class="text-left py-1">Valor</th>
+            <th class="text-left py-1">Metodo</th>
+            <th class="text-left py-1">Observacion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let abono of abonosDetalle" class="border-b last:border-0">
+            <td class="py-1">{{ abono.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="py-1">{{ abono.valor | number:'1.0-2':'es-CO' }}</td>
+            <td class="py-1">{{ abono.metodoPago }}</td>
+            <td class="py-1">{{ abono.observacion || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="!cargandoAbonos && abonosDetalle.length === 0" class="text-xs text-gray-500">
+        No hay abonos registrados.
+      </div>
+    </div>
 
     <ng-template #sinDetalles>
       <div class="p-4 text-center text-gray-500">

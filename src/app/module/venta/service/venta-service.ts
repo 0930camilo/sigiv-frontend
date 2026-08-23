@@ -4,7 +4,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { HeaderTokenUtil } from '../../../shared/services/header-token-util';
-import { VentaRequest, VentasResponse } from '../model/venta.model';
+import { Abono, AbonoRequest, VentaRequest, VentasResponse } from '../model/venta.model';
+
+interface ApiResponse<T> {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: T;
+  timestamp?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +36,10 @@ export class VentaService {
     empresaId: number,
     page = 0,
     size = 10,
-    idVenta?: number | null
+    idVenta?: number | null,
+    fechaInicio?: string,
+    fechaFin?: string,
+    cliente?: string
   ): Observable<VentasResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -37,6 +48,10 @@ export class VentaService {
     if (idVenta !== null && idVenta !== undefined) {
       params = params.set('idVenta', idVenta.toString());
     }
+
+    if (fechaInicio) params = params.set('fechaInicio', fechaInicio);
+    if (fechaFin) params = params.set('fechaFin', fechaFin);
+    if (cliente) params = params.set('cliente', cliente);
 
     return this.http.get<VentasResponse>(
       `${environment.ventasApi}/empresa/${empresaId}/ventas`,
@@ -57,6 +72,16 @@ export class VentaService {
     );
   }
 
+  descargarFacturaPos(id: number) {
+    return this.http.get(
+      `${environment.ventasApi}/${id}/factura-pos`,
+      {
+        responseType: 'blob',
+        headers: this.headerUtil.getAuthHeaders()
+      }
+    );
+  }
+
   enviarFacturaPorCorreo(id: number, correoDestino: string): Observable<any> {
     return this.http.post(
       `${environment.ventasApi}/${id}/factura/enviar-correo`,
@@ -69,7 +94,10 @@ export class VentaService {
     usuarioId: number,
     page: number = 0,
     size: number = 10,
-    idVenta?: number | null
+    idVenta?: number | null,
+    fechaInicio?: string,
+    fechaFin?: string,
+    cliente?: string
   ): Observable<VentasResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -79,12 +107,31 @@ export class VentaService {
       params = params.set('idVenta', idVenta.toString());
     }
 
+    if (fechaInicio) params = params.set('fechaInicio', fechaInicio);
+    if (fechaFin) params = params.set('fechaFin', fechaFin);
+    if (cliente) params = params.set('cliente', cliente);
+
     return this.http.get<VentasResponse>(
       `${environment.ventasApi}/usuario/${usuarioId}/ventas`,
       {
         headers: this.headerUtil.getAuthHeaders(),
         params
       }
+    );
+  }
+
+  registrarAbono(ventaId: number, abono: AbonoRequest): Observable<ApiResponse<Abono>> {
+    return this.http.post<ApiResponse<Abono>>(
+      `${environment.ventasApi}/${ventaId}/abonos`,
+      abono,
+      { headers: this.headerUtil.getAuthHeaders() }
+    );
+  }
+
+  getAbonosByVentaId(ventaId: number): Observable<ApiResponse<Abono[]>> {
+    return this.http.get<ApiResponse<Abono[]>>(
+      `${environment.ventasApi}/${ventaId}/abonos`,
+      { headers: this.headerUtil.getAuthHeaders() }
     );
   }
 

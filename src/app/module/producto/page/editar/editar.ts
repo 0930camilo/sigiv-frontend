@@ -65,6 +65,7 @@ export class EditarProductoComponent implements OnInit, OnChanges {
         nombre: this.producto.nombre,
         descripcion: this.producto.descripcion,
         cantidad: this.producto.cantidad,
+        unidadMedida: this.producto.unidadMedida,
         precioCompra: this.producto.precioCompra,
         precio: this.producto.precio,
         estado: this.producto.estado,
@@ -81,7 +82,8 @@ export class EditarProductoComponent implements OnInit, OnChanges {
     this.formEdit = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: ['', Validators.required],
-      cantidad: [0, [Validators.required, Validators.min(1)]],
+      cantidad: [0, [Validators.required, Validators.min(0)]],
+      unidadMedida: ['UNIDAD', Validators.required],
       precioCompra: [0, Validators.required],
       precio: [0, Validators.required],
       estado: ['Activo', Validators.required],

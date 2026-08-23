@@ -1,14 +1,18 @@
-<div class="p-4 sm:p-6">
+<div class="p-4 sm:p-6 todo">
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Usuarios de la Empresa</h2>
     <app-register [empresaId]="empresaId" (usuarioCreado)="getUsuarios()"></app-register>
   </div>
 
+  <div class=" filtros">
+    <div class="filtro">
   <app-filtros-usuario
     (filtrarNombre)="onFiltrarNombre($event)"
     (filtrarDocumento)="onFiltrarDocumento($event)"
     (filtrarEstado)="onFiltrarEstado($event)">
   </app-filtros-usuario>
+  </div>
+  </div>
 
   <app-reusable-table
     [data]="usuarios"

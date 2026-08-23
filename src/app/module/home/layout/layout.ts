@@ -9,10 +9,12 @@ import { InternalLoader } from '../../../core/services/internal-loader/internal-
 import { EmpresaService } from '../../home/dashboard/empresa/service/empresa.service';
 import { UsuarioService } from '../../home/dashboard/usuario/service/usuario.service';
 import { VentaNotificacionService } from '../../../shared/services/venta-notificacion.service';
+import { CalculadoraFlotante } from '../calculadora-flotante/calculadora-flotante';
 
 @Component({
   selector: 'app-layout',
-  imports: [RouterOutlet, RouterModule, CommonModule],
+  standalone: true,
+  imports: [RouterOutlet, RouterModule, CommonModule, CalculadoraFlotante],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
   changeDetection: ChangeDetectionStrategy.Default
@@ -135,7 +137,7 @@ export class Layout implements OnInit, OnDestroy {
   }
 
   /** 🔹 Cargar total vendido del día */
-  private cargarTotalDelDia(): void {
+  cargarTotalDelDia(): void {
     if (!this.userData) return;
     const now = new Date();
     const hoy = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -181,6 +183,11 @@ export class Layout implements OnInit, OnDestroy {
     return this.isEmpresa
       ? this.userData?.nombre_empresa || 'Empresa'
       : this.userData?.nombre || 'Usuario';
+  }
+
+  getUserInitial(): string {
+    const name = this.getUserName();
+    return name.charAt(0).toUpperCase();
   }
 
   getPanelTitle(): string {

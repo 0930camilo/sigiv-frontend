@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SIGIV</string>
+    <string name="title_activity_main">SIGIV</string>
+    <string name="package_name">com.sigiv.app</string>
+    <string name="custom_url_scheme">com.sigiv.app</string>
+</resources>

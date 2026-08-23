@@ -1,11 +1,23 @@
-<div class="p-4 sm:p-6">
+<div class="p-4 sm:p-6 todo">
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold">Mis Cotizaciones</h2>
   </div>
 
+  <div class="filtros">
+    <div class="filtro">
+  <div class="idven">
+    <app-filtros-cotizaciones
+      (filtrar)="filtrar($event)">
+    </app-filtros-cotizaciones>
+  </div>
+    </div>
+
+
+  </div>
   <app-reusable-table
     [data]="cotizaciones"
     [columns]="columns"
+    [isMobile]="isMobile"
     [loading]="loading"
     [currentPage]="currentPage"
     [totalPages]="totalPages"

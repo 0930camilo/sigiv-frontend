@@ -1,0 +1,270 @@
+/* ================================
+   📊 Dashboard Styles - MEJORADO
+   ================================ */
+
+/* 🔹 Contenedor principal */
+.space-y-8 {
+  padding: 1rem;
+}
+
+/* 🔹 Ajustes para tarjetas */
+.card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  text-align: center;
+}
+
+/* 🔹 Tabla responsiva */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f9fafb;
+}
+
+td, th {
+  padding: 0.75rem;
+}
+
+/* =========================
+   TARJETAS DE ESTADÍSTICAS
+========================= */
+
+.stat-card {
+  @apply bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all cursor-pointer;
+  padding: 0.75rem;
+  border-left-width: 4px;
+  animation: slideInUp 0.5s ease-out forwards;
+
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  .stat-icon-box {
+    @apply w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center text-lg md:text-xl transition-all;
+
+    &:hover {
+      transform: scale(1.05) rotate(3deg);
+    }
+  }
+
+  .stat-value {
+    @apply font-bold mt-1 text-lg md:text-xl lg:text-2xl;
+  }
+
+  .stat-trend {
+    @apply flex items-center gap-2 text-xs md:text-sm mt-2 font-medium;
+
+    &.positive {
+      @apply text-green-600;
+    }
+
+    &.negative {
+      @apply text-red-600;
+    }
+  }
+}
+
+/* Estilo por tipo de tarjeta */
+.stat-card-users {
+  @apply border-l-blue-600;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+
+  .stat-value {
+    @apply text-blue-600;
+  }
+}
+
+.stat-card-sales {
+  @apply border-l-green-600;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+
+  .stat-value {
+    @apply text-green-600;
+  }
+}
+
+.stat-card-profit {
+  @apply border-l-purple-600;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+
+  .stat-value {
+    @apply text-purple-600;
+  }
+}
+
+.stat-card-orders {
+  @apply border-l-orange-600;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+
+  .stat-value {
+    @apply text-orange-600;
+  }
+}
+
+/* =========================
+   ANIMACIONES
+========================= */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ...existing code... */
+.filtro-fechas {
+  display: flex;
+  flex-direction: row; /* siempre en fila */
+  gap: 0rem; /* 🔹 espacio más reducido entre elementos */
+  align-items: center;
+}
+
+.filtro-fechas > div {
+  flex: 0 0 auto; /* cada input ocupa el mismo espacio */
+
+}
+
+.filtro-fechas input {
+  width: 85%; /* tamaño fijo */
+  height: 32px; /* altura cómoda */
+  padding: 0.2rem 0.4rem; /* menos padding interno */
+  margin: 0; /* elimina márgenes extra */
+
+}
+
+.filtro-fechas button {
+  flex-shrink: 0;
+  padding: 0.4rem 0.8rem; /* botón compacto */
+  margin-top: 13px;
+}
+
+/* ================================
+   📱 Responsividad
+   ================================ */
+
+/* Tablets grandes */
+@media (max-width: 1024px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .stat-card {
+    padding: 0.65rem;
+
+    .stat-icon-box {
+      @apply w-8 h-8 text-base;
+    }
+
+    .stat-value {
+      @apply text-lg;
+    }
+  }
+}
+
+/* Tablets y móviles medianos */
+@media (max-width: 768px) {
+  .grid-cols-3,
+  .grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .space-y-8 {
+    padding: 0.5rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+
+  /* 🔹 En móvil el botón ocupa todo el ancho */
+  .filtro-fechas button {
+    width: 100%;
+  }
+
+  .stat-card {
+    padding: 0.6rem;
+
+    .stat-icon-box {
+      @apply w-8 h-8 text-base;
+    }
+
+    .stat-value {
+      @apply text-base;
+    }
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+  .card {
+    padding: 0.75rem;
+  }
+
+  h1 {
+    font-size: 1.25rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  td, th {
+    padding: 0.5rem;
+  }
+
+  .filtro-fechas input {
+    width: 78%;
+    height: 20px;
+    font-size: 12px;
+  }
+
+  .filtro-fechas button {
+    flex-shrink: 0;
+    width: 45px;
+    height: 30px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .stat-card {
+    padding: 0.5rem;
+    border-left-width: 3px;
+
+    .stat-icon-box {
+      @apply w-7 h-7 text-sm;
+    }
+
+    .stat-value {
+      @apply text-sm;
+    }
+
+    .stat-trend {
+      @apply text-xs;
+    }
+  }
+}

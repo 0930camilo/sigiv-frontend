@@ -1,0 +1,275 @@
+.titul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-escanear {
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #2563eb;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px; /* Tamaño del ícono */
+  transition: all 0.2s ease;
+}
+
+.btn-escanear:hover {
+  font-size: 38px;
+}
+
+.btn-escanear:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.filtros{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.input-filtro,
+.filtros select {
+  width: 100%;
+  height: 35px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 13px;
+  box-sizing: border-box;
+  appearance: none;        /* quita estilos nativos */
+  -webkit-appearance: none;/* Safari/Chrome */
+  -moz-appearance: none;   /* Firefox */
+  background-color: #fff;
+  text-align: left;        /* alinear texto a la izquierda */
+}
+
+.input-filtro:focus{
+  border-color:#22c55e;
+  outline:none;
+}
+
+.contenedor-tabla{
+  overflow:auto;
+  max-height:80vh;
+}
+
+.tabla-productos{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.tabla-productos thead{
+  background:#16a34a;
+  color:#fff;
+}
+
+.tabla-productos th,
+.tabla-productos td{
+  padding:14px;
+  text-align: left;
+}
+
+.tabla-productos tbody tr{
+  border-bottom:1px solid #e5e7eb;
+}
+
+.tabla-productos tbody tr:hover{
+  background:#f0fdf4;
+}
+
+.nombre-producto{
+  max-width:250px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.centrar{
+  text-align:center;
+}
+
+.derecha{
+  text-align:right;
+}
+
+.cantidad{
+  width:60px;
+  padding:6px;
+  text-align:center;
+  border:1px solid #d1d5db;
+  border-radius:6px;
+}
+
+.btn-agregar{
+  padding:8px 12px;
+  border:none;
+  border-radius:8px;
+  background:#22c55e;
+  color:#fff;
+  cursor:pointer;
+}
+
+.btn-agregar:hover{
+  background:#16a34a;
+}
+
+.btn-agregar:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+.sin-productos{
+  text-align:center;
+  padding:30px;
+  color:#6b7280;
+}
+
+.paginacion{
+  margin-top:20px;
+  padding-top:15px;
+  border-top:1px solid #e5e7eb;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.btn-pagina{
+  padding:10px 18px;
+  border:none;
+  border-radius:10px;
+  background:#e5e7eb;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.btn-pagina:hover{
+  background:#d1d5db;
+}
+
+.btn-pagina:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+.btn-toggle-carrito{
+  display:none;
+}
+
+
+@media (max-width:480px){
+.contenedor-venta{
+  width: 115%;
+  margin-top: -25px;
+  margin-left: -25px;
+}
+  .titul {
+    margin-bottom: 10px;
+  }
+
+  .btn-escanear {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+
+  .btn-escanear:hover {
+    font-size: 24px;
+  }
+
+  .btn-toggle-carrito{
+    display:flex;
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:55px;
+    height:55px;
+    border:none;
+    border-radius:50%;
+    background:#2563eb;
+    color:#fff;
+    font-size:24px;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+    box-shadow:0 5px 15px rgba(0,0,0,.3);
+  }
+
+  .panel-carrito{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100%;
+    height:90vh;
+    z-index:9998;
+    border-radius:20px 20px 0 0;
+    overflow:auto;
+    transform:translateY(100%);
+    transition:.3s;
+  }
+
+  .panel-carrito.mostrar{
+    transform:translateY(0);
+  }
+
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:9997;
+  }
+  .filtros{
+    width: 135%;
+    margin: 0 auto;
+  }
+
+  .input-filtro{
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+}
+
+  .tabla-productos th {
+    text-align: left !important;
+    font-size: 10px;   /* opcional: más compacto en móvil */
+    padding: 8px;      /* opcional: menos espacio */
+  }
+
+  .tabla-productos td {
+    font-size: 10px;   /* opcional: texto más pequeño */
+    padding: 8px;
+    text-align: left;
+  }
+
+  .nombre-producto {
+    max-width: 150px;  /* opcional: limitar ancho en móvil */
+    white-space: normal; /* permitir salto de línea */
+  }
+  .paginacion {
+    flex-direction: row;       /* mantener en fila */
+    justify-content: center;   /* centrar todo */
+    gap: 8px;                  /* espacio entre elementos */
+    flex-wrap: wrap;           /* permite que se acomoden si no caben */
+    text-align: center;
+  }
+
+  .paginacion span {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .btn-pagina {
+    flex: 1;                   /* que los botones se adapten al ancho */
+    min-width: 90px;           /* ancho mínimo para que no se achiquen demasiado */
+    font-size: 10px;
+  }
