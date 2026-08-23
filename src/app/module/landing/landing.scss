@@ -141,3 +141,92 @@ h2 {
   }
 }
 
+/* =========================
+   MÓVIL PEQUEÑO - 480px
+========================= */
+@media (max-width: 480px) {
+
+  /* Título principal */
+  h1 {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Títulos de secciones */
+  h2 {
+    font-size: 1.5rem !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Subtítulos */
+  h3 {
+    font-size: 1.05rem !important;
+  }
+
+  /* Párrafos */
+  p {
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Listas */
+  li {
+    font-size: 0.85rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Header */
+  header {
+    padding: 0.75rem 1rem !important;
+  }
+
+  header span {
+    font-size: 1.25rem !important;
+  }
+
+  /* Botones */
+  main a {
+    font-size: 0.8rem !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  /* Precio */
+  #precios .text-5xl,
+  #precios .text-6xl {
+    font-size: 2.5rem !important;
+  }
+
+  /* Texto COP / mes */
+  #precios span {
+    font-size: 0.8rem;
+  }
+
+  /* Tarjeta de precios */
+  #precios .p-8 {
+    padding: 1.5rem !important;
+  }
+
+  /* Espaciado de las secciones */
+  section {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  /* Instrucciones */
+  #instrucciones h3 {
+    font-size: 1rem !important;
+  }
+
+  #instrucciones p {
+    font-size: 0.85rem !important;
+  }
+
+  /* Footer */
+  footer,
+  footer p,
+  footer li,
+  footer a {
+    font-size: 0.8rem !important;
+  }
+}
+
