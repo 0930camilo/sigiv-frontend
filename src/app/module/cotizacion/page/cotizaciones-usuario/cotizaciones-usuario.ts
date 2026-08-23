@@ -11,6 +11,10 @@ import { Cotizacion } from '../../model/cotizacion.model';
 
 import { FiltrosCotizacionesComponent, FiltrosCotizacion } from '../filtro/filtro';
 import Swal from 'sweetalert2';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+
 
 @Component({
   selector: 'app-cotizaciones-usuario',
@@ -227,22 +231,166 @@ export class CotizacionesUsuarioComponent implements OnInit {
     }
   }
 
-  descargarPdfDesdePreview(): void {
-    if (!this.pdfBlob || !this.pdfIdActual) return;
-    this.cotizacionService.descargarCotizacionPos(this.pdfIdActual);
-  }
+  async descargarPdfDesdePreview(): Promise<void> {
 
-  imprimirCotizacionPos(): void {
-    if (!this.pdfBlob) return;
-
-    const url = window.URL.createObjectURL(this.pdfBlob);
-    const printWindow = window.open(url, '_blank');
-
-    if (printWindow) {
-      printWindow.onload = () => printWindow.print();
+    if (!this.pdfBlob || !this.pdfIdActual) {
+      return;
     }
 
-    window.setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+    const nombreArchivo =
+      `cotizacion-${this.pdfIdActual}.pdf`;
+
+    try {
+
+      // ==========================================
+      // 🌐 NAVEGADOR
+      // ==========================================
+      if (!Capacitor.isNativePlatform()) {
+
+        const url =
+          window.URL.createObjectURL(this.pdfBlob);
+
+        const a =
+          document.createElement('a');
+
+        a.href = url;
+        a.download = nombreArchivo;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        window.URL.revokeObjectURL(url);
+
+        return;
+      }
+
+      // ==========================================
+      // 📱 ANDROID / CAPACITOR
+      // ==========================================
+
+      const base64 =
+        await this.blobToBase64(this.pdfBlob);
+
+      await Filesystem.writeFile({
+        path: nombreArchivo,
+        data: base64,
+        directory: Directory.Cache
+      });
+
+      const fileUri =
+        await Filesystem.getUri({
+          path: nombreArchivo,
+          directory: Directory.Cache
+        });
+
+      await Share.share({
+        title: `Cotización #${this.pdfIdActual}`,
+        text: `Cotización POS #${this.pdfIdActual}`,
+        url: fileUri.uri,
+        dialogTitle: 'Compartir cotización'
+      });
+
+    } catch (error) {
+
+      console.error(
+        'Error descargando cotización:',
+        error
+      );
+
+      Swal.fire(
+        'Error',
+        'No se pudo guardar o compartir la cotización.',
+        'error'
+      );
+    }
+  }
+
+  async imprimirCotizacionPos(): Promise<void> {
+
+    if (!this.pdfBlob || !this.pdfIdActual) {
+      return;
+    }
+
+    try {
+
+      // ==========================================
+      // 🌐 NAVEGADOR
+      // ==========================================
+      if (!Capacitor.isNativePlatform()) {
+
+        const url =
+          window.URL.createObjectURL(this.pdfBlob);
+
+        const printWindow =
+          window.open(url, '_blank');
+
+        if (!printWindow) {
+
+          Swal.fire(
+            'Bloqueado',
+            'El navegador bloqueó la ventana de impresión.',
+            'warning'
+          );
+
+          return;
+        }
+
+        printWindow.onload = () => {
+          printWindow.focus();
+          printWindow.print();
+        };
+
+        window.setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 10000);
+
+        return;
+      }
+
+      // ==========================================
+      // 📱 ANDROID / CAPACITOR
+      // ==========================================
+
+      const nombreArchivo =
+        `cotizacion-${this.pdfIdActual}.pdf`;
+
+      const base64 =
+        await this.blobToBase64(this.pdfBlob);
+
+      await Filesystem.writeFile({
+        path: nombreArchivo,
+        data: base64,
+        directory: Directory.Cache
+      });
+
+      const fileUri =
+        await Filesystem.getUri({
+          path: nombreArchivo,
+          directory: Directory.Cache
+        });
+
+      await Share.share({
+        title: `Cotización #${this.pdfIdActual}`,
+        text: 'Cotización POS',
+        url: fileUri.uri,
+        dialogTitle: 'Abrir cotización'
+      });
+
+    } catch (error) {
+
+      console.error(
+        'Error preparando cotización para impresión:',
+        error
+      );
+
+      Swal.fire(
+        'Error',
+        'No se pudo abrir la cotización en Android.',
+        'error'
+      );
+    }
+
   }
 
   cerrarPreviewPdf(): void {
@@ -252,5 +400,41 @@ export class CotizacionesUsuarioComponent implements OnInit {
     this.pdfIdActual = null;
     this.cotizacionActual = null;
     this.cdr.markForCheck();
+  }
+
+  private blobToBase64(blob: Blob): Promise<string> {
+
+    return new Promise((resolve, reject) => {
+
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+
+        try {
+
+          const result =
+            reader.result as string;
+
+          const base64 =
+            result.split(',')[1];
+
+          if (!base64) {
+            reject(
+              new Error('No se pudo convertir el PDF a Base64')
+            );
+            return;
+          }
+
+          resolve(base64);
+
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsDataURL(blob);
+    });
   }
 }

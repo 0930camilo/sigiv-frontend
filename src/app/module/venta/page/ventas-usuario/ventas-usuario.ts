@@ -9,6 +9,10 @@ import { VentaService } from '../../service/venta-service';
 import { Abono, Venta } from '../../model/venta.model';
 import { FiltrosVentasComponent } from '../filtro/filtro';
 import Swal from 'sweetalert2';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+
 
 @Component({
   selector: 'app-ventas-usuario',
@@ -311,46 +315,198 @@ export class VentasUsuarioComponent implements OnInit {
   }
 
   previewFactura(id: number): void {
-    this.facturaActual = this.ventas.find((venta) => venta.idventa === id) ?? null;
+    this.facturaActual =
+      this.ventas.find((venta) => venta.idventa === id) ?? null;
 
     this.ventaService.descargarFacturaPos(id).subscribe({
       next: (blob) => {
+
         this.facturaBlob = blob;
         this.facturaIdActual = id;
+
         const url = window.URL.createObjectURL(blob);
-        this.facturaPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+
+        this.facturaPreviewUrl =
+          this.sanitizer.bypassSecurityTrustResourceUrl(url);
+
         this.mostrarPreviewFactura = true;
+
         this.cdr.markForCheck();
       },
+
       error: (err) => {
         console.error('Error cargando factura:', err);
+
+        Swal.fire(
+          'Error',
+          'No se pudo cargar la factura.',
+          'error'
+        );
+
         this.cdr.markForCheck();
       }
     });
   }
 
-  descargarFacturaDesdePreview(): void {
-    if (!this.facturaBlob || !this.facturaIdActual) return;
+  async descargarFacturaDesdePreview(): Promise<void> {
 
-    const url = window.URL.createObjectURL(this.facturaBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `factura-${this.facturaIdActual}.pdf`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
-
-  imprimirFacturaPos(): void {
-    if (!this.facturaBlob) return;
-
-    const url = window.URL.createObjectURL(this.facturaBlob);
-    const printWindow = window.open(url, '_blank');
-
-    if (printWindow) {
-      printWindow.onload = () => printWindow.print();
+    if (!this.facturaBlob || !this.facturaIdActual) {
+      return;
     }
 
-    window.setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+    const nombreArchivo =
+      `factura-${this.facturaIdActual}.pdf`;
+
+    try {
+
+      // ==========================================
+      // 🌐 NAVEGADOR
+      // ==========================================
+      if (!Capacitor.isNativePlatform()) {
+
+        const url =
+          window.URL.createObjectURL(this.facturaBlob);
+
+        const a =
+          document.createElement('a');
+
+        a.href = url;
+        a.download = nombreArchivo;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        window.URL.revokeObjectURL(url);
+
+        return;
+      }
+
+      // ==========================================
+      // 📱 ANDROID / CAPACITOR
+      // ==========================================
+
+      const base64 =
+        await this.blobToBase64(this.facturaBlob);
+
+      await Filesystem.writeFile({
+        path: nombreArchivo,
+        data: base64,
+        directory: Directory.Cache
+      });
+
+      const fileUri =
+        await Filesystem.getUri({
+          path: nombreArchivo,
+          directory: Directory.Cache
+        });
+
+      await Share.share({
+        title: `Factura #${this.facturaIdActual}`,
+        text: `Factura POS #${this.facturaIdActual}`,
+        url: fileUri.uri,
+        dialogTitle: 'Compartir factura'
+      });
+
+    } catch (error) {
+
+      console.error(
+        'Error descargando factura:',
+        error
+      );
+
+      Swal.fire(
+        'Error',
+        'No se pudo guardar o compartir la factura.',
+        'error'
+      );
+    }
+  }
+
+  async imprimirFacturaPos(): Promise<void> {
+
+    if (!this.facturaBlob || !this.facturaIdActual) {
+      return;
+    }
+
+    try {
+
+      // ==========================================
+      // 🌐 NAVEGADOR
+      // ==========================================
+      if (!Capacitor.isNativePlatform()) {
+
+        const url =
+          window.URL.createObjectURL(this.facturaBlob);
+
+        const printWindow =
+          window.open(url, '_blank');
+
+        if (!printWindow) {
+
+          Swal.fire(
+            'Bloqueado',
+            'El navegador bloqueó la ventana de impresión.',
+            'warning'
+          );
+
+          return;
+        }
+
+        printWindow.onload = () => {
+          printWindow.focus();
+          printWindow.print();
+        };
+
+        window.setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 10000);
+
+        return;
+      }
+
+      // ==========================================
+      // 📱 ANDROID / CAPACITOR
+      // ==========================================
+
+      const nombreArchivo =
+        `factura-${this.facturaIdActual}.pdf`;
+
+      const base64 =
+        await this.blobToBase64(this.facturaBlob);
+
+      await Filesystem.writeFile({
+        path: nombreArchivo,
+        data: base64,
+        directory: Directory.Cache
+      });
+
+      const fileUri =
+        await Filesystem.getUri({
+          path: nombreArchivo,
+          directory: Directory.Cache
+        });
+
+      await Share.share({
+        title: `Factura #${this.facturaIdActual}`,
+        text: 'Factura POS',
+        url: fileUri.uri,
+        dialogTitle: 'Abrir factura'
+      });
+
+    } catch (error) {
+
+      console.error(
+        'Error preparando factura para impresión:',
+        error
+      );
+
+      Swal.fire(
+        'Error',
+        'No se pudo abrir la factura en Android.',
+        'error'
+      );
+    }
   }
 
   cerrarPreviewFactura(): void {
@@ -395,6 +551,41 @@ export class VentasUsuarioComponent implements OnInit {
         const msg = err.error?.message || 'No se pudo enviar la factura POS por correo.';
         Swal.fire('Error', msg, 'error');
       }
+    });
+  }
+
+
+  private blobToBase64(blob: Blob): Promise<string> {
+
+    return new Promise((resolve, reject) => {
+
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+
+        try {
+
+          const result =
+            reader.result as string;
+
+          const base64 =
+            result.split(',')[1];
+
+          if (!base64) {
+            reject(new Error('No se pudo convertir el PDF a Base64'));
+            return;
+          }
+
+          resolve(base64);
+
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsDataURL(blob);
     });
   }
 }

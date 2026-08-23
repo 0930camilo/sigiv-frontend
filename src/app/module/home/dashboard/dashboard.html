@@ -226,7 +226,7 @@
 
     <!-- Productos más vendidos -->
     <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-      <h2 class="text-lg font-semibold mb-4 text-gray-700">Productos Más Vendidos (Top 5)</h2>
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Productos Más Vendidos (Top 10)</h2>
       <div *ngIf="barChartData.datasets[0].data.length > 0; else noDataProductos" class="h-64">
         <canvas baseChart
           [data]="barChartData"

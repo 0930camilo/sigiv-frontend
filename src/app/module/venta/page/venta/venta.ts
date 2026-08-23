@@ -10,7 +10,9 @@ import { VentaService } from '../../service/venta-service';
 import { Abono, Venta } from '../../model/venta.model';
 import { FiltrosVentasComponent } from '../filtro/filtro';
 import Swal from 'sweetalert2';
-
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 @Component({
   selector: 'app-venta',
   standalone: true,
@@ -363,28 +365,150 @@ export class VentaComponent implements OnInit {
   // ===============================
   // DESCARGAR FACTURA DESDE PREVIEW
   // ===============================
-  descargarFacturaDesdePreview(): void {
-    if (!this.facturaBlob || !this.facturaIdActual) return;
-
-    const url = window.URL.createObjectURL(this.facturaBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `factura-${this.facturaIdActual}.pdf`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
-
-  imprimirFacturaPos(): void {
-    if (!this.facturaBlob) return;
-
-    const url = window.URL.createObjectURL(this.facturaBlob);
-    const printWindow = window.open(url, '_blank');
-
-    if (printWindow) {
-      printWindow.onload = () => printWindow.print();
+  async descargarFacturaDesdePreview(): Promise<void> {
+    if (!this.facturaBlob || !this.facturaIdActual) {
+      return;
     }
 
-    window.setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+    const nombreArchivo = `factura-${this.facturaIdActual}.pdf`;
+
+    try {
+
+      // ==========================================
+      // NAVEGADOR WEB
+      // ==========================================
+      if (!Capacitor.isNativePlatform()) {
+
+        const url = window.URL.createObjectURL(this.facturaBlob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombreArchivo;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        window.URL.revokeObjectURL(url);
+
+        return;
+      }
+
+      // ==========================================
+      // ANDROID / CAPACITOR
+      // ==========================================
+
+      const base64 = await this.blobToBase64(this.facturaBlob);
+
+      await Filesystem.writeFile({
+        path: nombreArchivo,
+        data: base64,
+        directory: Directory.Cache
+      });
+
+      const fileUri = await Filesystem.getUri({
+        path: nombreArchivo,
+        directory: Directory.Cache
+      });
+
+      await Share.share({
+        title: `Factura #${this.facturaIdActual}`,
+        text: `Factura #${this.facturaIdActual}`,
+        url: fileUri.uri,
+        dialogTitle: 'Compartir factura'
+      });
+
+    } catch (error) {
+
+      console.error('Error descargando factura:', error);
+
+      Swal.fire(
+        'Error',
+        'No se pudo guardar o compartir la factura.',
+        'error'
+      );
+    }
+  }
+  async imprimirFacturaPos(): Promise<void> {
+
+    if (!this.facturaBlob || !this.facturaIdActual) {
+      return;
+    }
+
+    try {
+
+      // ==========================================
+      // NAVEGADOR WEB
+      // ==========================================
+      if (!Capacitor.isNativePlatform()) {
+
+        const url = window.URL.createObjectURL(this.facturaBlob);
+
+        const printWindow = window.open(url, '_blank');
+
+        if (!printWindow) {
+          Swal.fire(
+            'Bloqueado',
+            'El navegador bloqueó la ventana de impresión.',
+            'warning'
+          );
+          return;
+        }
+
+        printWindow.onload = () => {
+          printWindow.focus();
+          printWindow.print();
+        };
+
+        window.setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 10000);
+
+        return;
+      }
+
+      // ==========================================
+      // ANDROID / CAPACITOR
+      // ==========================================
+
+      const nombreArchivo =
+        `factura-${this.facturaIdActual}.pdf`;
+
+      const base64 =
+        await this.blobToBase64(this.facturaBlob);
+
+      await Filesystem.writeFile({
+        path: nombreArchivo,
+        data: base64,
+        directory: Directory.Cache
+      });
+
+      const fileUri =
+        await Filesystem.getUri({
+          path: nombreArchivo,
+          directory: Directory.Cache
+        });
+
+      await Share.share({
+        title: `Factura #${this.facturaIdActual}`,
+        text: 'Factura POS',
+        url: fileUri.uri,
+        dialogTitle: 'Abrir factura'
+      });
+
+    } catch (error) {
+
+      console.error(
+        'Error preparando factura para impresión:',
+        error
+      );
+
+      Swal.fire(
+        'Error',
+        'No se pudo abrir la factura en Android.',
+        'error'
+      );
+    }
   }
 
   // ===============================
@@ -434,7 +558,25 @@ export class VentaComponent implements OnInit {
       }
     });
   }
+  private blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
 
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+
+        const result = reader.result as string;
+
+        const base64 = result.split(',')[1];
+
+        resolve(base64);
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsDataURL(blob);
+    });
+  }
   private actualizarColumnas(): void {
     this.isMobile = window.innerWidth <= 480;
     if (this.isMobile) {
